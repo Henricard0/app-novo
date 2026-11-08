@@ -1,6 +1,7 @@
 // Edge Function "ai" — ponte segura entre o app e a API da Anthropic (Claude).
 // A chave ANTHROPIC_API_KEY fica só aqui no servidor (secret do Supabase), nunca no app.
-// O Supabase só executa esta função para usuários logados (verify_jwt = true).
+// O Supabase exige um JWT válido (verify_jwt = true) e, além disso, a função confere
+// que o token é de um usuário logado — a chave anônima pública do app não basta.
 //
 // Ações:
 //   summary    → resumo em Markdown
@@ -9,6 +10,7 @@
 //   ocr        → lê uma foto (escrita à mão, quadro, diagrama) e devolve Markdown editável
 
 import Anthropic from 'npm:@anthropic-ai/sdk@1.6.0';
+import { createClient } from 'npm:@supabase/supabase-js@2.119.0';
 import { betaJSONSchemaOutputFormat } from 'npm:@anthropic-ai/sdk@1.6.0/helpers/beta/json-schema';
 
 const MODEL = 'claude-opus-5-5';
@@ -39,6 +41,18 @@ interface Body {
 }
 
 class UserError extends Error {}
+
+/** Só usuários logados podem gastar créditos de IA (a chave anônima é pública). */
+async function isSignedIn(req: Request): Promise<boolean> {
+  const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+  if (!token) return false;
+  const url = Deno.env.get('SUPABASE_URL');
+  const anon = Deno.env.get('SUPABASE_ANON_KEY');
+  if (!url || !anon) return false;
+  const supabase = createClient(url, anon, { auth: { persistSession: false } });
+  const { data, error } = await supabase.auth.getUser(token);
+  return !error && Boolean(data.user);
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -217,6 +231,7 @@ async function ocr(body: Body) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json({ error: 'Método não permitido.' }, 405);
+  if (!(await isSignedIn(req))) return json({ error: 'Entre na sua conta para usar a IA.' }, 401);
 
   let body: Body;
   try {
