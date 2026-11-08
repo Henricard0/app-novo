@@ -1,0 +1,43 @@
+# Gera o app instalável para iPhone e/ou Android na nuvem da Expo (EAS),
+# sem precisar de Mac. Execute manualmente em Actions → "Build do app" → Run workflow.
+# Requer o secret EXPO_TOKEN (expo.dev → Account settings → Access tokens).
+name: Build do app
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Plataforma
+        type: choice
+        options: [all, ios, android]
+        default: all
+      profile:
+        description: Perfil (preview = instalação direta; production = lojas)
+        type: choice
+        options: [preview, production, development]
+        default: preview
+      submit:
+        description: Enviar para TestFlight / Google Play depois do build (só production)
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+      - name: Build
+        run: >
+          eas build --non-interactive --no-wait
+          --platform ${{ inputs.platform }}
+          --profile ${{ inputs.profile }}
+          ${{ inputs.submit && inputs.profile == 'production' && '--auto-submit' || '' }}

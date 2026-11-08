@@ -1,0 +1,79 @@
+{
+  "expo": {
+    "name": "Lumen",
+    "slug": "lumen-estudos",
+    "scheme": "lumen",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.henricard0.lumen",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.henricard0.lumen",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "O Lumen usa a câmera para fotografar suas anotações e diagramas feitos à mão.",
+          "photosPermission": "O Lumen acessa suas fotos para anexar anotações e diagramas às notas.",
+          "microphonePermission": "O Lumen usa o microfone para você ditar suas notas de estudo."
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "O Lumen usa o microfone para você ditar suas notas de estudo.",
+          "speechRecognitionPermission": "O Lumen transcreve sua voz em texto para criar notas de estudo.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox",
+            "com.google.android.as"
+          ]
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#6366F1"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "backgroundColor": "#F7F7F8",
+          "dark": {
+            "backgroundColor": "#0B0C10"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

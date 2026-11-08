@@ -1,0 +1,6 @@
+# Configuração do Supabase CLI para este projeto (o resto usa os valores padrão).
+project_id = "lumen"
+
+[functions.ai]
+# Só usuários logados no app podem chamar a IA.
+verify_jwt = true

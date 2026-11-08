@@ -1,0 +1,34 @@
+# dependências
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# pastas nativas geradas (Continuous Native Generation)
+/ios
+/android
+
+# credenciais e builds
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.ipa
+*.apk
+*.aab
+
+# variáveis de ambiente
+.env
+.env*.local
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# sistema
+.DS_Store
+*.log
