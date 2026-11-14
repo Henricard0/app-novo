@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tríade · Sala de supervisão</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F2}
+a{color:#1E5A48}a:hover{color:#143D31}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #18211D; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Menu do supervisor" style="flex: 1 1 240px; background: #FFFFFF; border-right: 1px solid #E2E5E0; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="7" r="4.5" fill="#1E5A48"></circle><circle cx="7" cy="20" r="4.5" fill="#1E5A48" opacity="0.5"></circle><circle cx="21" cy="20" r="4.5" fill="#9A5512"></circle></svg>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Tríade</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B0F; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Supervisão</span>
+<a href="Supervisor.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Painel</a>
+<a href="Sessao.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #FBEFE1; color: #8A4B0F; font-weight: 600; font-size: 15px; text-decoration: none">Sala de supervisão</a>
+<a href="Estagio.dc.html" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Estágio <span style="padding: 2px 8px; border-radius: 999px; background: #FBEFE1; color: #8A4B0F; font-size: 12px; font-weight: 600">3</span></a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Supervisionandos</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Agenda</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Recebimentos</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635E; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Seu consultório</span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Pacientes e prontuário <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Agenda de atendimentos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Financeiro <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<div style="margin-top: 8px; padding: 14px; border-radius: 12px; background: #F4F5F2; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600">Atenda seus pacientes aqui também</span>
+<span style="font-size: 12px; line-height: 1.45; color: #5A635E">A supervisão é gratuita para você. Agenda, prontuário e financeiro ficam no plano Essencial.</span>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 10px; border: none; background: #1E5A48; color: #FFFFFF; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer">Conhecer o plano Essencial</button>
+</div>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #E2E5E0">
+<div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #FBEFE1; color: #8A4B0F; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">PA</span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600">Paulo Andrade</span>
+<span style="font-size: 12px; color: #5A635E">CRP-08 · plano Supervisor (grátis)</span>
+</div>
+</div>
+<a href="Main.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none; min-height: 32px; display: flex; align-items: center">Ver como psicólogo →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px 40px 48px; box-sizing: border-box">
+<div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em">Sala de supervisão</h1>
+<span style="font-size: 15px; color: #5A635E">Qui, 19 de novembro · 19h00 · com Marina Costa</span>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #1E5A48; background: #FFFFFF; color: #1E5A48; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Iniciar chamada de vídeo</button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<section aria-labelledby="caso" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="caso" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 700">Paciente A., 34 anos</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">TCC</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">12 sessões</span>
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">desde jun/2026</span>
+</div>
+</div>
+<div style="padding: 16px; border-radius: 12px; background: #FBEFE1; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B0F; text-transform: uppercase; letter-spacing: 0.05em">Pergunta da Marina</span>
+<span style="font-size: 16px; line-height: 1.5; color: #18211D">Como manejar as faltas recorrentes sem que ela sinta que estou desistindo dela?</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; font-weight: 600; color: #5A635E">Sessão 12 · nov/2026</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #2A332E">A paciente relatou ter faltado às duas últimas sessões por “excesso de trabalho” no [trabalho] e contou que a mãe voltou a morar com ela [local removido]. Disse sentir culpa ao cancelar e medo de que eu “desista dela”. Retomamos o combinado sobre faltas e ela pediu para manter o horário de quinta.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 14px; border-top: 1px solid #EEF0ED">
+<span style="font-size: 13px; font-weight: 600; color: #5A635E">Sessão 11 · out/2026</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #2A332E">A paciente cancelou duas horas antes, por mensagem. Ofereci reagendamento na mesma semana e ela não respondeu.</p>
+</div>
+<span style="font-size: 13px; color: #5A635E">Marina escolheu compartilhar 2 registros, já anonimizados.</span>
+</section>
+
+<section aria-labelledby="devolutiva" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<h2 id="devolutiva" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 700">Devolutiva</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="obs" style="font-size: 14px; font-weight: 600">O que você observou</label>
+<textarea id="obs" rows="4" value="{{observed}}" onChange="{{setObserved}}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid #C9CFC9; font: 400 15px/1.55 Inter, system-ui, sans-serif; color: #18211D; resize: vertical"></textarea>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="hip" style="font-size: 14px; font-weight: 600">Hipóteses e caminhos</label>
+<textarea id="hip" rows="4" value="{{paths}}" onChange="{{setPaths}}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid #C9CFC9; font: 400 15px/1.55 Inter, system-ui, sans-serif; color: #18211D; resize: vertical"></textarea>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 14px; font-weight: 600">Encaminhamentos para a Marina</span>
+<sc-for list="{{tasks}}" as="task" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 6px 10px 14px; border-radius: 10px; background: #F4F5F2">
+<span style="font-size: 14px; line-height: 1.45">{{task.text}}</span>
+<button type="button" onClick="{{task.remove}}" aria-label="Remover encaminhamento" style="flex: 0 0 auto; width: 44px; height: 44px; border: none; background: transparent; color: #5A635E; font-size: 20px; line-height: 1; cursor: pointer; border-radius: 8px">×</button>
+</div>
+</sc-for>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<label for="novo" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Novo encaminhamento</label>
+<input id="novo" type="text" placeholder="Novo encaminhamento" value="{{newTask}}" onChange="{{setNewTask}}" style="flex: 1 1 220px; min-height: 44px; box-sizing: border-box; padding: 0 14px; border-radius: 10px; border: 1px solid #C9CFC9; font: 400 15px Inter, system-ui, sans-serif; color: #18211D">
+<button type="button" onClick="{{addTask}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DAD5; background: #FFFFFF; color: #18211D; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Adicionar</button>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 4px 14px; border-radius: 10px; border: 1px solid #EEF0ED">
+<input type="checkbox" id="hora" checked="{{registerHour}}" onChange="{{toggleHour}}" style="width: 20px; height: 20px; margin: 0; accent-color: #1E5A48">
+<label for="hora" style="font-size: 14px">Registrar 1h de supervisão nas horas da Marina</label>
+</div>
+<span style="font-size: 13px; color: #5A635E">A devolutiva vai para o espaço de supervisão da Marina. Nada daqui entra no prontuário da paciente.</span>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px">
+<button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DAD5; background: #FFFFFF; color: #18211D; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Salvar rascunho</button>
+<a href="Supervisor.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 10px; background: #1E5A48; color: #FFFFFF; font-weight: 600; font-size: 14px; text-decoration: none">Enviar devolutiva</a>
+</div>
+</section>
+</div>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = this.state || {};
+const tasks = s.tasks ?? [
+'Levar o tema das faltas para a próxima sessão, sem esperar uma nova ausência',
+'Rever o combinado sobre faltas junto com a paciente, como acordo e não como punição'
+];
+const newTask = s.newTask ?? '';
+const registerHour = s.registerHour ?? true;
+return {
+observed: s.observed ?? 'A culpa ao faltar e o medo de ser abandonada aparecem juntos. Vale olhar as faltas também como parte do padrão que ela traz, não só como questão de agenda.',
+paths: s.paths ?? 'Explorar com ela o que acontece nas horas antes de cancelar. Nomear na sessão o medo de que você desista dela e observar como ela reage.',
+setObserved: (e) => this.setState({ observed: e.target.value }),
+setPaths: (e) => this.setState({ paths: e.target.value }),
+tasks: tasks.map((t, i) => ({
+text: t,
+remove: () => this.setState({ tasks: tasks.filter((_, j) => j !== i) })
+})),
+newTask: newTask,
+setNewTask: (e) => this.setState({ newTask: e.target.value }),
+addTask: () => {
+const v = newTask.trim();
+if (!v) return;
+this.setState({ tasks: tasks.concat([v]), newTask: '' });
+},
+registerHour: registerHour,
+toggleHour: () => this.setState({ registerHour: !registerHour })
+};
+}
+}
+</script>
+</body>
+</html>

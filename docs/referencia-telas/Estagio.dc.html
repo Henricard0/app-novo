@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tríade · Validação de registros do estágio</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F2}
+a{color:#1E5A48}a:hover{color:#143D31}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #18211D; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Menu do supervisor" style="flex: 1 1 240px; background: #FFFFFF; border-right: 1px solid #E2E5E0; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="7" r="4.5" fill="#1E5A48"></circle><circle cx="7" cy="20" r="4.5" fill="#1E5A48" opacity="0.5"></circle><circle cx="21" cy="20" r="4.5" fill="#9A5512"></circle></svg>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Tríade</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B0F; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Supervisão</span>
+<a href="Supervisor.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Painel</a>
+<a href="Sessao.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Sala de supervisão</a>
+<a href="Estagio.dc.html" aria-current="page" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #FBEFE1; color: #8A4B0F; font-weight: 600; font-size: 15px; text-decoration: none">Estágio <span style="padding: 2px 8px; border-radius: 999px; background: #FFFFFF; color: #8A4B0F; font-size: 12px; font-weight: 600">{{pendingCount}}</span></a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Supervisionandos</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Agenda</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Recebimentos</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635E; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Seu consultório</span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Pacientes e prontuário <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Agenda de atendimentos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Financeiro <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<div style="margin-top: 8px; padding: 14px; border-radius: 12px; background: #F4F5F2; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600">Atenda seus pacientes aqui também</span>
+<span style="font-size: 12px; line-height: 1.45; color: #5A635E">A supervisão é gratuita para você. Agenda, prontuário e financeiro ficam no plano Essencial.</span>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 10px; border: none; background: #1E5A48; color: #FFFFFF; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer">Conhecer o plano Essencial</button>
+</div>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #E2E5E0">
+<div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #FBEFE1; color: #8A4B0F; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">PA</span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600">Paulo Andrade</span>
+<span style="font-size: 12px; color: #5A635E">CRP-08 · plano Supervisor (grátis)</span>
+</div>
+</div>
+<a href="Main.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none; min-height: 32px; display: flex; align-items: center">Ver como psicólogo →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px 40px 48px; box-sizing: border-box">
+<div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em">Validação de registros do estágio</h1>
+<span style="font-size: 15px; color: #5A635E">Estágio clínico · serviço-escola · 3 estagiários. Os registros só entram no prontuário depois da sua validação.</span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<section aria-labelledby="fila" style="flex: 1 1 300px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+<h2 id="fila" style="margin: 0 0 4px; font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">Aguardando você · {{pendingCount}}</h2>
+<sc-for list="{{records}}" as="r" hint-placeholder-count="3">
+<button type="button" onClick="{{r.pick}}" aria-pressed="{{r.selected}}" style="text-align: left; width: 100%; padding: 14px; border-radius: 12px; background: {{r.bg}}; border: 1px solid {{r.border}}; cursor: pointer; display: flex; flex-direction: column; gap: 6px; font-family: Inter, system-ui, sans-serif; color: #18211D">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%">
+<span style="font-size: 15px; font-weight: 600">{{r.who}}</span>
+<span style="padding: 3px 8px; border-radius: 999px; background: {{r.chipBg}}; color: {{r.chipFg}}; font-size: 12px; font-weight: 600; white-space: nowrap">{{r.statusLabel}}</span>
+</span>
+<span style="font-size: 13px; color: #3D4641">{{r.what}} · {{r.patient}}</span>
+<span style="font-size: 12px; color: #5A635E">Enviado {{r.when}}</span>
+</button>
+</sc-for>
+</section>
+
+<section aria-labelledby="reg" style="flex: 2 1 480px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 id="reg" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 700">{{cur.what}} · {{cur.patient}}</h2>
+<span style="font-size: 14px; color: #5A635E">Escrito por {{cur.who}}, estagiária(o) · versão 1 · enviado {{cur.when}}</span>
+</div>
+<span style="padding: 4px 10px; border-radius: 999px; background: {{cur.chipBg}}; color: {{cur.chipFg}}; font-size: 12px; font-weight: 600">{{cur.statusLabel}}</span>
+</div>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #2A332E">{{cur.text}}</p>
+<sc-if value="{{cur.hasComment}}" hint-placeholder-val="{{true}}">
+<div style="padding: 14px 16px; border-radius: 12px; background: #FBEFE1; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B0F; text-transform: uppercase; letter-spacing: 0.05em">Seu comentário no trecho {{cur.commentQuote}}</span>
+<span style="font-size: 14px; line-height: 1.5; color: #18211D">{{cur.commentNote}}</span>
+</div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="coment" style="font-size: 14px; font-weight: 600">Comentário para o estagiário</label>
+<textarea id="coment" rows="3" placeholder="Oriente o que ajustar antes de validar" value="{{draft}}" onChange="{{setDraft}}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 10px; border: 1px solid #C9CFC9; font: 400 15px/1.5 Inter, system-ui, sans-serif; color: #18211D; resize: vertical"></textarea>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px">
+<button type="button" onClick="{{askFix}}" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #9A5512; background: #FFFFFF; color: #8A4B0F; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Pedir ajuste</button>
+<button type="button" onClick="{{validate}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: none; background: #1E5A48; color: #FFFFFF; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Validar e assinar</button>
+</div>
+</section>
+</div>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = this.state || {};
+const base = [
+{ id: 'b', who: 'Beatriz N.', what: 'Sessão 4', patient: 'Paciente D.', when: 'hoje, 11:20', text: 'Paciente chegou no horário. Relatou melhora no sono depois de combinar horários fixos para dormir e disse que “a ansiedade sumiu”. Retomamos o registro de pensamentos da semana; trouxe dois exemplos ligados à faculdade. Combinamos manter o registro e incluir situações em casa.', commentQuote: '“a ansiedade sumiu”', commentNote: 'Registre como fala da paciente e descreva o que você observou na sessão. Evite concluir que o sintoma desapareceu.' },
+{ id: 'c', who: 'Caio F.', what: 'Triagem', patient: 'Paciente H.', when: 'ontem, 16:05', text: 'Paciente procurou o serviço-escola por dificuldade de concentração nos estudos e brigas frequentes em casa. Relatou dormir menos de cinco horas por noite. Sem acompanhamento psicológico anterior. Incluído na lista para atendimento individual.', commentQuote: '', commentNote: '' },
+{ id: 'l', who: 'Larissa M.', what: 'Sessão 9', patient: 'Paciente S.', when: 'ontem, 9:40', text: 'Paciente retomou o conflito com a irmã. Trabalhamos o registro de pensamentos sobre a discussão do fim de semana e identificamos a crença de que “ninguém leva minhas opiniões a sério”. Combinamos experimentar expressar uma discordância em casa durante a semana.', commentQuote: '', commentNote: '' }
+];
+const statuses = s.statuses ?? { b: 'pending', c: 'pending', l: 'pending' };
+const selected = s.selected ?? 'b';
+const look = {
+pending: { label: 'Para validar', bg: '#EEF0ED', fg: '#47504B' },
+fix: { label: 'Ajuste pedido', bg: '#FBEFE1', fg: '#8A4B0F' },
+ok: { label: 'Validado', bg: '#E6F0EC', fg: '#1E5A48' }
+};
+const records = base.map((r) => {
+const st = look[statuses[r.id]];
+const isSel = r.id === selected;
+return Object.assign({}, r, {
+selected: isSel,
+bg: isSel ? '#F4F8F6' : '#FFFFFF',
+border: isSel ? '#1E5A48' : '#E2E5E0',
+statusLabel: st.label,
+chipBg: st.bg,
+chipFg: st.fg,
+hasComment: !!r.commentNote,
+pick: () => this.setState({ selected: r.id, draft: '' })
+});
+});
+const cur = records.find((r) => r.selected) || records[0];
+const setStatus = (v) => {
+const next = Object.assign({}, statuses);
+next[cur.id] = v;
+this.setState({ statuses: next, draft: '' });
+};
+return {
+records: records,
+cur: cur,
+pendingCount: base.filter((r) => statuses[r.id] === 'pending').length,
+draft: s.draft ?? '',
+setDraft: (e) => this.setState({ draft: e.target.value }),
+askFix: () => setStatus('fix'),
+validate: () => setStatus('ok')
+};
+}
+}
+</script>
+</body>
+</html>

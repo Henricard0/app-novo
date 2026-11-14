@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tríade · Início do psicólogo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F2}
+a{color:#1E5A48}a:hover{color:#143D31}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #18211D; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Menu principal" style="flex: 1 1 240px; background: #FFFFFF; border-right: 1px solid #E2E5E0; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="7" r="4.5" fill="#1E5A48"></circle><circle cx="7" cy="20" r="4.5" fill="#1E5A48" opacity="0.5"></circle><circle cx="21" cy="20" r="4.5" fill="#9A5512"></circle></svg>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Tríade</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635E; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Consultório</span>
+<a href="Main.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #E6F0EC; color: #1E5A48; font-weight: 600; font-size: 15px; text-decoration: none">Início</a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Agenda</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Pacientes</span>
+<a href="Supervisao.dc.html" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Supervisão <span style="padding: 2px 8px; border-radius: 999px; background: #FBEFE1; color: #8A4B0F; font-size: 12px; font-weight: 600">1 nova</span></a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Financeiro</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Documentos</span>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #E2E5E0">
+<div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #1E5A48; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">MC</span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600">Marina Costa</span>
+<span style="font-size: 12px; color: #5A635E">Psicóloga · CRP-08</span>
+</div>
+</div>
+<a href="Supervisor.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none; min-height: 32px; display: flex; align-items: center">Ver como supervisor →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px 40px 48px; box-sizing: border-box">
+<div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #5A635E">Sexta, 13 de novembro</span>
+<h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em">Boa tarde, Marina</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DAD5; background: #FFFFFF; color: #18211D; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Nova sessão</button>
+<a href="LevarCaso.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 10px; background: #1E5A48; color: #FFFFFF; font-weight: 600; font-size: 14px; text-decoration: none">Levar caso para supervisão</a>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+
+<section aria-labelledby="hoje" style="flex: 3 1 480px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<h2 id="hoje" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 700">Sessões de hoje</h2>
+<span style="font-size: 13px; color: #5A635E">4 sessões</span>
+</div>
+<div style="display: flex; flex-direction: column">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid #EEF0ED">
+<span style="width: 52px; font-size: 15px; font-weight: 600">14:00</span>
+<div style="flex: 1 1 180px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">Lucas M.</span>
+<span style="font-size: 13px; color: #5A635E">Presencial · Sala 2</span>
+</div>
+<span style="padding: 4px 10px; border-radius: 999px; background: #E6F0EC; color: #1E5A48; font-size: 12px; font-weight: 600">Evolução registrada</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid #EEF0ED">
+<span style="width: 52px; font-size: 15px; font-weight: 600">15:00</span>
+<div style="flex: 1 1 180px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">Ana B.</span>
+<span style="font-size: 13px; color: #5A635E">Online · sala virtual</span>
+</div>
+<span style="padding: 4px 10px; border-radius: 999px; background: #FBEFE1; color: #8A4B0F; font-size: 12px; font-weight: 600">Evolução pendente</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid #EEF0ED">
+<span style="width: 52px; font-size: 15px; font-weight: 600">17:00</span>
+<div style="flex: 1 1 180px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">Rafael T.</span>
+<span style="font-size: 13px; color: #5A635E">Presencial · Sala 1</span>
+</div>
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">Confirmada</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid #EEF0ED">
+<span style="width: 52px; font-size: 15px; font-weight: 600">18:00</span>
+<div style="flex: 1 1 180px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">Júlia P.</span>
+<span style="font-size: 13px; color: #5A635E">Online · sala virtual</span>
+</div>
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">Aguardando confirmação</span>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="sup" style="flex: 2 1 340px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-top: 4px solid #9A5512; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<h2 id="sup" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 700">Supervisão</h2>
+<a href="Supervisao.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none">Abrir</a>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5A635E">Próxima supervisão</span>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 700">Qui, 19 de novembro · 19h00</span>
+<span style="font-size: 14px; color: #3D4641">com Paulo Andrade · individual · online</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600; color: #3D4641">Na pauta</span>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2">
+<span style="font-size: 14px">Paciente A., 34 anos</span>
+<span style="padding: 3px 8px; border-radius: 999px; background: #E6F0EC; color: #1E5A48; font-size: 12px; font-weight: 600">Enviado</span>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2">
+<span style="font-size: 14px">Paciente R., 27 anos</span>
+<span style="padding: 3px 8px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">Rascunho</span>
+</div>
+</div>
+<a href="Supervisao.dc.html" style="display: flex; flex-direction: column; gap: 4px; padding: 14px; border-radius: 10px; background: #FBEFE1; text-decoration: none">
+<span style="font-size: 13px; font-weight: 600; color: #8A4B0F">Devolutiva nova</span>
+<span style="font-size: 14px; color: #18211D">Paulo respondeu sobre o caso Paciente L., 41 anos</span>
+</a>
+</section>
+</div>
+
+<section aria-labelledby="pend" style="background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<h2 id="pend" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 700">Pendências</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="flex: 1 1 220px; padding: 16px; border-radius: 10px; border: 1px solid #EEF0ED; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 24px; font-weight: 700">2</span>
+<span style="font-size: 14px; color: #3D4641">evoluções para registrar</span>
+</div>
+<div style="flex: 1 1 220px; padding: 16px; border-radius: 10px; border: 1px solid #EEF0ED; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 24px; font-weight: 700">3</span>
+<span style="font-size: 14px; color: #3D4641">recibos a emitir no Receita Saúde</span>
+</div>
+<div style="flex: 1 1 220px; padding: 16px; border-radius: 10px; border: 1px solid #EEF0ED; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 24px; font-weight: 700">1</span>
+<span style="font-size: 14px; color: #3D4641">contrato terapêutico para assinar</span>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

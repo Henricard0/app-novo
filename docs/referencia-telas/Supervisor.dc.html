@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tríade · Painel do supervisor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F2}
+a{color:#1E5A48}a:hover{color:#143D31}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #18211D; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Menu do supervisor" style="flex: 1 1 240px; background: #FFFFFF; border-right: 1px solid #E2E5E0; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="7" r="4.5" fill="#1E5A48"></circle><circle cx="7" cy="20" r="4.5" fill="#1E5A48" opacity="0.5"></circle><circle cx="21" cy="20" r="4.5" fill="#9A5512"></circle></svg>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Tríade</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #8A4B0F; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Supervisão</span>
+<a href="Supervisor.dc.html" aria-current="page" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #FBEFE1; color: #8A4B0F; font-weight: 600; font-size: 15px; text-decoration: none">Painel</a>
+<a href="Sessao.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Sala de supervisão</a>
+<a href="Estagio.dc.html" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Estágio <span style="padding: 2px 8px; border-radius: 999px; background: #FBEFE1; color: #8A4B0F; font-size: 12px; font-weight: 600">3</span></a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Supervisionandos</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Agenda</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Recebimentos</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635E; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Seu consultório</span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Pacientes e prontuário <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Agenda de atendimentos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<span style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; color: #5A635E; font-size: 15px">Financeiro <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5A635E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<div style="margin-top: 8px; padding: 14px; border-radius: 12px; background: #F4F5F2; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600">Atenda seus pacientes aqui também</span>
+<span style="font-size: 12px; line-height: 1.45; color: #5A635E">A supervisão é gratuita para você. Agenda, prontuário e financeiro ficam no plano Essencial.</span>
+<button type="button" style="min-height: 44px; padding: 0 14px; border-radius: 10px; border: none; background: #1E5A48; color: #FFFFFF; font: 600 13px Inter, system-ui, sans-serif; cursor: pointer">Conhecer o plano Essencial</button>
+</div>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #E2E5E0">
+<div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #FBEFE1; color: #8A4B0F; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">PA</span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600">Paulo Andrade</span>
+<span style="font-size: 12px; color: #5A635E">CRP-08 · plano Supervisor (grátis)</span>
+</div>
+</div>
+<a href="Main.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none; min-height: 32px; display: flex; align-items: center">Ver como psicólogo →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px 40px 48px; box-sizing: border-box">
+<div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #5A635E">Sexta, 13 de novembro</span>
+<h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em">Boa tarde, Paulo</h1>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: none; background: #1E5A48; color: #FFFFFF; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Convidar supervisionando</button>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px">
+<div style="flex: 1 1 220px; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5A635E">Casos na pauta da semana</span>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 32px; font-weight: 800">6</span>
+</div>
+<div style="flex: 1 1 220px; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5A635E">Horas de supervisão em novembro</span>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 32px; font-weight: 800">14h</span>
+</div>
+<a href="Estagio.dc.html" style="flex: 1 1 220px; background: #FBEFE1; border: 1px solid #F1D9BD; border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: #18211D">
+<span style="font-size: 13px; color: #8A4B0F; font-weight: 600">Registros de estágio para validar</span>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 32px; font-weight: 800">3</span>
+</a>
+</div>
+
+<section aria-labelledby="pauta" style="background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<h2 id="pauta" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 700">Pauta da semana</h2>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; border-radius: 12px; border: 1px solid #EEF0ED">
+<div style="flex: 0 1 200px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Qui, 19/11 · 19h00</span>
+<span style="font-size: 13px; color: #5A635E">Marina Costa · individual</span>
+</div>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; background: #F4F5F2">
+<div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Paciente A., 34 anos</span>
+<span style="font-size: 13px; color: #3D4641">Como manejar as faltas recorrentes sem que ela sinta que estou desistindo dela?</span>
+</div>
+<a href="Sessao.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border-radius: 10px; background: #1E5A48; color: #FFFFFF; font-size: 13px; font-weight: 600; text-decoration: none">Abrir na sala</a>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; border-radius: 12px; border: 1px solid #EEF0ED">
+<div style="flex: 0 1 200px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Sex, 20/11 · 10h00</span>
+<span style="font-size: 13px; color: #5A635E">Grupo TCC · 4 pessoas</span>
+</div>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="padding: 12px 14px; border-radius: 10px; background: #F4F5F2; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Paciente F., 16 anos · trazido por Bianca S.</span>
+<span style="font-size: 13px; color: #3D4641">Como conduzir a devolutiva aos responsáveis sem quebrar a confiança do adolescente?</span>
+</div>
+<div style="padding: 12px 14px; border-radius: 10px; background: #F4F5F2; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Paciente J., 52 anos · trazido por Diego R.</span>
+<span style="font-size: 13px; color: #3D4641">Luto recente e retorno ao trabalho: o que priorizar nas próximas sessões?</span>
+</div>
+<div style="padding: 12px 14px; border-radius: 10px; background: #F4F5F2; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Paciente E., 29 anos · trazido por Carla V.</span>
+<span style="font-size: 13px; color: #3D4641">Resistência às tarefas entre sessões</span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; padding: 16px; border-radius: 12px; border: 1px solid #EEF0ED">
+<div style="flex: 0 1 200px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Sáb, 21/11 · 9h00</span>
+<span style="font-size: 13px; color: #5A635E">Rodrigo Lima · individual</span>
+</div>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="padding: 12px 14px; border-radius: 10px; background: #F4F5F2; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Paciente M., 38 anos</span>
+<span style="font-size: 13px; color: #3D4641">Sinais de ideação: revisar plano de segurança</span>
+</div>
+<div style="padding: 12px 14px; border-radius: 10px; background: #F4F5F2; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">Casal P. e T.</span>
+<span style="font-size: 13px; color: #3D4641">Primeira sessão conjunta: como organizar o contrato</span>
+</div>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="superv" style="background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+<h2 id="superv" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 18px; font-weight: 700">Supervisionandos</h2>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14px">
+<thead>
+<tr style="text-align: left; color: #5A635E; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em">
+<th scope="col" style="padding: 10px 12px 10px 0; font-weight: 600">Nome</th>
+<th scope="col" style="padding: 10px 12px; font-weight: 600">Formato</th>
+<th scope="col" style="padding: 10px 12px; font-weight: 600">Desde</th>
+<th scope="col" style="padding: 10px 12px; font-weight: 600">Horas em 2026</th>
+<th scope="col" style="padding: 10px 0 10px 12px; font-weight: 600">Próxima</th>
+</tr>
+</thead>
+<tbody>
+<tr style="border-top: 1px solid #EEF0ED"><td style="padding: 14px 12px 14px 0; font-weight: 600">Marina Costa</td><td style="padding: 14px 12px; color: #3D4641">Individual · semanal</td><td style="padding: 14px 12px; color: #5A635E">mar/2026</td><td style="padding: 14px 12px">38h</td><td style="padding: 14px 0 14px 12px; color: #3D4641">Qui, 19/11</td></tr>
+<tr style="border-top: 1px solid #EEF0ED"><td style="padding: 14px 12px 14px 0; font-weight: 600">Grupo TCC (4 pessoas)</td><td style="padding: 14px 12px; color: #3D4641">Grupo · semanal</td><td style="padding: 14px 12px; color: #5A635E">fev/2026</td><td style="padding: 14px 12px">41h</td><td style="padding: 14px 0 14px 12px; color: #3D4641">Sex, 20/11</td></tr>
+<tr style="border-top: 1px solid #EEF0ED"><td style="padding: 14px 12px 14px 0; font-weight: 600">Rodrigo Lima</td><td style="padding: 14px 12px; color: #3D4641">Individual · quinzenal</td><td style="padding: 14px 12px; color: #5A635E">ago/2025</td><td style="padding: 14px 12px">22h</td><td style="padding: 14px 0 14px 12px; color: #3D4641">Sáb, 21/11</td></tr>
+<tr style="border-top: 1px solid #EEF0ED"><td style="padding: 14px 12px 14px 0; font-weight: 600">Estágio clínico (3 estagiários)</td><td style="padding: 14px 12px; color: #3D4641">Estágio · semanal</td><td style="padding: 14px 12px; color: #5A635E">ago/2026</td><td style="padding: 14px 12px">—</td><td style="padding: 14px 0 14px 12px; color: #3D4641">Seg, 23/11</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
