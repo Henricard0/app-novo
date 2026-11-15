@@ -54,6 +54,10 @@ Há um projeto no Supabase usado só para testes, **com dados fictícios** (regi
 - E-mails: o servidor de e-mail padrão do Supabase só entrega para membros da equipe do projeto, e no plano gratuito não deixa trocar os textos (continuam em inglês). Os textos em português de `supabase/templates/` entram quando houver um SMTP próprio.
 - **Não use para dados reais.** Para produção, criar um projeto na região São Paulo (LGPD).
 
+### Site publicado (teste)
+
+O app está publicado na Vercel em <https://triade-hazel.vercel.app>, ligado ao projeto Supabase de teste (projeto `triade` na Vercel; as variáveis `VITE_SUPABASE_*` estão configuradas lá). Para publicar de novo a partir da sua máquina: `npx vercel deploy --prod`. A configuração do site (rotas, cabeçalhos e `noindex`) fica em `vercel.json`.
+
 ## Comandos
 
 | Comando | O que faz |
