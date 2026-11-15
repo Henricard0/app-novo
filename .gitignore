@@ -11,3 +11,6 @@ coverage
 # Supabase CLI
 supabase/.branches
 supabase/.temp
+
+# Vercel CLI
+.vercel
