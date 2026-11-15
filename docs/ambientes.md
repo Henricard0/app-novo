@@ -11,18 +11,20 @@ O Tríade tem dois ambientes no Supabase. **Dados reais só no de produção, e 
 
 ## Produção (em preparação)
 
-- **Supabase:** projeto `roeqxevkplkumpcnndgj`, criado em 15/11/2026 numa organização separada da de teste.
-- **Região:** precisa ser São Paulo (`sa-east-1`), por causa da LGPD. Conferir antes de qualquer configuração: a região não muda depois de criado o projeto.
+- **Supabase:** projeto `llqunvzphflvrghvjmbb` ("triade-producao"), organização "Tríade" (plano gratuito), região São Paulo (`sa-east-1`), criado em 15/11/2026.
+- **URL:** `https://llqunvzphflvrghvjmbb.supabase.co`. A chave pública (publishable) está no painel, em Project Settings → API Keys.
+- **Senha do banco:** gerada automaticamente na criação. Para usar o Supabase CLI (`supabase link`), redefinir em Project Settings → Database.
 - **Site:** nenhum aponta para ele ainda.
+- **Projeto descartado:** `roeqxevkplkumpcnndgj` ("Tríade", us-east-1) foi criado fora de São Paulo e está pausado. Apagar pelo painel; isso apaga também a chave secreta dele, que foi exposta numa conversa.
 
 ### Configuração inicial (sem custo)
 
-1. Conferir a região. Se não for `sa-east-1`, recriar o projeto.
-2. Apagar a chave secreta (`sb_secret_...`) criada junto com o projeto: ela foi exposta numa conversa. Se algum dia precisar de uma, criar outra. O app não usa chave secreta.
-3. Aplicar as migrations de `supabase/migrations/` e registrá-las em `supabase_migrations.schema_migrations`. **Não** rodar o `seed.sql`: usuários fictícios não entram em produção.
-4. Conferir, só com consultas de leitura, que RLS e policies estão iguais às do teste. Os testes pgTAP rodam no teste e no ambiente local, não em produção.
-5. Login: as mesmas regras de senha e de confirmação de e-mail do teste. **Cadastro desligado** (`disable_signup`) até o lançamento.
-6. Exigir SSL nas conexões com o banco.
+- [x] Região São Paulo.
+- [x] Migrations de `supabase/migrations/` aplicadas, com a mesma versão do arquivo em `supabase_migrations.schema_migrations`. O `seed.sql` **não** foi rodado: usuários fictícios não entram em produção.
+- [x] RLS, policies, permissões, triggers e funções conferidos com consultas de leitura: idênticos ao teste. Os verificadores de segurança e desempenho do Supabase não apontaram problemas. Os testes pgTAP rodam no teste e no ambiente local, não em produção.
+- [ ] Login, no painel (Authentication): **cadastro desligado** até o lançamento ("Allow new users to sign up"); confirmação de e-mail ligada; troca de senha segura ligada; senha com no mínimo 8 caracteres, letras e números.
+- [ ] Exigir SSL nas conexões diretas com o banco (Project Settings → Database).
+- [ ] Apagar o projeto descartado `roeqxevkplkumpcnndgj`.
 
 ### Antes do primeiro paciente real
 
@@ -36,5 +38,5 @@ O Tríade tem dois ambientes no Supabase. **Dados reais só no de produção, e 
 
 ## Acesso do Claude
 
-- O Claude configura o Supabase pela conexão em <https://claude.ai/customize/connectors>, que precisa incluir a organização do projeto. Conexões só são lidas quando a sessão começa.
+- O Claude configura o Supabase pela conexão em <https://claude.ai/customize/connectors>, que precisa incluir a organização do projeto. Hoje a conexão alcança a organização "Tríade" (produção): dá para aplicar migrations e consultar o banco, mas não mudar as configurações de login, que ficam no painel.
 - Nunca cole no chat chaves secretas (`sb_secret_...`, `service_role`) nem a senha do banco. A chave pública (`sb_publishable_...`) e a URL do projeto podem ser compartilhadas.
