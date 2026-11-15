@@ -10,15 +10,15 @@ Plataforma web de gestão de consultório para psicólogos, com **supervisão cl
 ## Stack
 
 - React + TypeScript + Vite + Tailwind CSS
-- Supabase: Auth, Postgres com RLS, Storage, Edge Functions se precisar
-- Supabase CLI para rodar localmente; migrations em `supabase/migrations/`
-- Tipos gerados do banco em `src/types/database.ts`
+- Firebase: Authentication (e-mail e senha), Cloud Firestore na região São Paulo (`southamerica-east1`), Cloud Storage e Cloud Functions se precisar (Functions exigem o plano Blaze)
+- Firebase CLI e emuladores para rodar localmente; regras de segurança em `firestore.rules`
+- Formato dos documentos em `src/types/modelo.ts` (escrito à mão; mantenha igual ao que as regras validam)
 - React Router para as rotas
 
 ## Regras inegociáveis
 
-1. **Sigilo.** Dado clínico nunca sai do consultório do psicólogo sem passar pela anonimização e pela revisão dele. O supervisor só enxerga cópias anonimizadas (`supervision_case_excerpts`). Nenhuma policy de RLS pode dar ao supervisor de casos acesso a `patients`, `clinical_records` ou `supervision_case_sources`.
-2. **RLS em toda tabela**, ativada na mesma migration que cria a tabela. Para cada tabela nova, escreva testes de acesso por papel (psicólogo, supervisor, estagiário, usuário sem vínculo).
+1. **Sigilo.** Dado clínico nunca sai do consultório do psicólogo sem passar pela anonimização e pela revisão dele. O supervisor só enxerga cópias anonimizadas (`supervision_case_excerpts`). Nenhuma regra de segurança do Firestore pode dar ao supervisor de casos acesso a `patients`, `clinical_records` ou `supervision_case_sources`.
+2. **Regras de segurança em toda coleção**, escritas em `firestore.rules` junto com a coleção (tudo é negado por padrão). Para cada coleção nova, escreva testes de acesso por papel (psicólogo, supervisor, estagiário, usuário sem vínculo) em `tests/regras/`.
 3. **Registro clínico não é apagado de verdade** (soft delete com `deleted_at`): guarda mínima de 5 anos (Res. CFP 01/2009). Alterações em registros geram versão.
 4. **Interface 100% em português do Brasil.**
 5. **Dados de exemplo e seeds sempre fictícios.** Nunca use dados reais de pacientes.

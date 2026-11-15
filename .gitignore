@@ -14,3 +14,10 @@ supabase/.temp
 
 # Vercel CLI
 .vercel
+
+# Firebase
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+.firebase/

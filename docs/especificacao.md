@@ -24,7 +24,7 @@ Referência de mercado: o PsicoManager já cobre bem a gestão de consultório (
 | Essencial (pago) | Psicólogos | Consultório completo (agenda, pacientes, prontuário, financeiro) + supervisão, como supervisionando e como supervisor |
 
 - O supervisor escolhe se assina ou não. Sem assinar, as áreas de consultório aparecem bloqueadas com convite para o Essencial (ver `docs/referencia-telas/Supervisor.dc.html`).
-- Implementar como permissões por plano: coluna `profiles.plan` e uma função `has_feature(feature text)` usada no front e nas policies/funções do banco.
+- Implementar como permissões por plano: campo `profiles.plan` e uma função `has_feature(feature)` usada no front e nas regras de segurança do Firestore.
 - Preços: [A DEFINIR].
 
 ## 4. Fluxos
@@ -63,7 +63,7 @@ Status do caso: `rascunho` → `na_pauta` → `discutido` → `devolutiva_recebi
 
 ## 5. Anonimização
 
-**v1 (determinística, sem API externa; pode rodar no navegador ou numa Edge Function):**
+**v1 (determinística, sem API externa; pode rodar no navegador ou numa Cloud Function):**
 - Substitui o nome do paciente (nome completo, primeiro nome e apelidos cadastrados) por "A paciente" / "O paciente". Rótulo do caso: inicial + idade ("Paciente A., 34 anos").
 - Remove CPF, RG, telefones, e-mails, CEP e padrões de endereço (regex).
 - Remove nomes cadastrados de familiares e contatos do paciente (`patient_contacts`).
@@ -75,9 +75,11 @@ Status do caso: `rascunho` → `na_pauta` → `discutido` → `devolutiva_recebi
 
 ## 6. Modelo de dados (proposta inicial)
 
-| Tabela | Campos principais |
+Cada linha abaixo vira uma coleção do Firestore (ou subcoleção, quando fizer sentido na fase). Os nomes e campos continuam valendo.
+
+| Coleção | Campos principais |
 |---|---|
-| `profiles` | `id` (= auth.users.id), `full_name`, `crp_region`, `crp_number`, `plan` (`supervisor_free` \| `essencial`) |
+| `profiles` | `id` (= uid do Firebase Authentication), `full_name`, `crp_region`, `crp_number`, `plan` (`supervisor_free` \| `essencial`) |
 | `patients` | `id`, `owner_id`, `full_name`, `nicknames[]`, `birth_date`, contatos, `deleted_at` |
 | `patient_contacts` | `id`, `patient_id`, `name`, `relation` |
 | `appointments` | `id`, `owner_id`, `patient_id`, `starts_at`, `ends_at`, `modality`, `room`, `status` |
@@ -96,8 +98,8 @@ Status do caso: `rascunho` → `na_pauta` → `discutido` → `devolutiva_recebi
 | `record_reviews` | `id`, `record_id`, `reviewer_id`, `status`, `comment`, `anchor_text`, `created_at` |
 | `audit_log` | `actor_id`, `action`, `entity`, `entity_id`, `at` — compartilhamentos e acessos a prontuário |
 
-**Acesso (RLS), em resumo:**
-- `patients`, `clinical_records`, `supervision_case_sources`: só o dono (`owner_id` / `supervisee_id` = `auth.uid()`).
+**Acesso (regras de segurança do Firestore), em resumo:**
+- `patients`, `clinical_records`, `supervision_case_sources`: só o dono (`owner_id` / `supervisee_id` = `request.auth.uid`).
 - `supervision_cases`, `supervision_case_excerpts`, `supervision_feedback`, `supervision_feedback_tasks`: o supervisionando do caso e o supervisor do vínculo.
 - Estágio: o supervisor do grupo vê os registros dos estagiários do grupo (completos, porque é o responsável técnico). A modelagem de clínica-escola (paciente pertence ao serviço, não ao estagiário) fica para a fase 4 e deve ser decidida com o Henrique.
 
@@ -116,7 +118,7 @@ Ainda sem tela desenhada: login e cadastro, aceite de convite, agenda, lista e f
 
 ## 8. Roadmap
 
-- **Fase 0 — Base:** Vite + React + TS + Tailwind; Supabase local (CLI); autenticação; layout com menu lateral; tokens de design.
+- **Fase 0 — Base:** Vite + React + TS + Tailwind; Firebase (Authentication + Firestore) com emuladores locais; autenticação; layout com menu lateral; tokens de design.
 - **Fase 1 — Consultório mínimo:** pacientes, agenda simples, prontuário com versões e soft delete.
 - **Fase 2 — Supervisão:** convites e vínculos, levar caso (anonimização v1), pauta, sala e devolutiva, horas.
 - **Fase 3 — Planos:** plano Supervisor grátis, permissões por plano, cadastro a partir do convite.
@@ -129,5 +131,5 @@ Ainda sem tela desenhada: login e cadastro, aceite de convite, agenda, lista e f
 - **Prontuário eletrônico:** permitido desde que atenda à LGPD, ao Código de Ética (Res. CFP 10/2005) e à Res. CFP 01/2009.
 - **Res. CFP 5/2025:** normas de orientação, supervisão e coordenação de estágio.
 - **Código de Ética, arts. 6º e 12:** ao compartilhar informações técnicas, só o necessário.
-- **LGPD:** dado de saúde é dado pessoal sensível. Hospedar o banco no Brasil (Supabase, região São Paulo) simplifica. Termos de uso e política de privacidade antes de abrir para usuários reais.
+- **LGPD:** dado de saúde é dado pessoal sensível. Hospedar o banco no Brasil (Firestore, região São Paulo) simplifica. O Firebase Authentication não permite escolher a região: e-mail e senha dos usuários ficam fora do país, então nenhum dado clínico vai para o login (e isso entra na política de privacidade). Termos de uso e política de privacidade antes de abrir para usuários reais.
 - **CFP sobre IA:** o profissional responde integralmente pelo uso de ferramentas de IA.

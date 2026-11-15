@@ -1,10 +1,10 @@
 import { Navigate, type RouteObject } from 'react-router'
 import { ExigeLogin, SomenteVisitante } from '@/auth/guardas'
 import { LayoutApp } from '@/components/layout/LayoutApp'
+import { AcaoConta } from '@/pages/auth/AcaoConta'
 import { CriarConta } from '@/pages/auth/CriarConta'
 import { Entrar } from '@/pages/auth/Entrar'
 import { EsqueciSenha } from '@/pages/auth/EsqueciSenha'
-import { NovaSenha } from '@/pages/auth/NovaSenha'
 import { EmConstrucao } from '@/pages/EmConstrucao'
 import { Inicio } from '@/pages/Inicio'
 import { NaoEncontrada } from '@/pages/NaoEncontrada'
@@ -19,7 +19,7 @@ export const rotas: RouteObject[] = [
       { path: '/esqueci-a-senha', element: <EsqueciSenha /> },
     ],
   },
-  { path: '/nova-senha', element: <NovaSenha /> },
+  { path: '/acao', element: <AcaoConta /> },
   {
     element: <ExigeLogin />,
     children: [

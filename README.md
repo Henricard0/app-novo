@@ -12,7 +12,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 
 | Fase | Situação |
 |---|---|
-| 0. Base (projeto, Supabase, login, layout, tokens) | Concluída |
+| 0. Base (projeto, Firebase, login, layout, tokens) | Concluída |
 | 1. Consultório mínimo | A fazer |
 | 2. Supervisão | A fazer |
 | 3. Planos | A fazer |
@@ -21,17 +21,17 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 
 ## Como rodar na sua máquina
 
-Requisitos: **Node 20.19 ou mais novo** e **Docker** (o Supabase local roda em contêineres).
+Requisitos: **Node 20.19 ou mais novo** e **Java 21** (os emuladores do Firebase rodam em Java). Não precisa de conta no Firebase para desenvolver.
 
 ```bash
 npm install
-npm run db:start          # sobe o Supabase local, aplica as migrations e o seed
-cp .env.example .env.local
-npx supabase status       # copie "API URL" e "Publishable key" para o .env.local
-npm run dev               # http://localhost:5173
+cp .env.example .env.local     # já vem pronto para os emuladores
+npm run emuladores            # terminal 1: Authentication e Firestore locais (painel em http://127.0.0.1:4000)
+npm run emuladores:semear     # terminal 2: cria os usuários de exemplo
+npm run dev                   # terminal 2: http://localhost:5173
 ```
 
-### Usuários de exemplo (fictícios)
+### Usuários de exemplo (fictícios, só nos emuladores)
 
 Todos com a senha `senha-teste-123`:
 
@@ -41,23 +41,17 @@ Todos com a senha `senha-teste-123`:
 | `paulo.andrade@example.com` | Psicólogo e supervisor, CRP 08/4567 |
 | `bianca.lima@example.com` | Estagiária, sem CRP |
 
-### E-mails de cadastro e senha
+Os emuladores começam vazios toda vez que são ligados: rode `npm run emuladores:semear` de novo.
 
-O cadastro exige confirmar o e-mail. Localmente nenhum e-mail sai de verdade: eles aparecem no Mailpit, em <http://127.0.0.1:54324>. Os textos dos e-mails estão em `supabase/templates/`. No projeto hospedado, copie esses textos no painel do Supabase (Authentication → Emails).
+### E-mails de confirmação e de nova senha
 
-O painel do banco local (Supabase Studio) fica em <http://127.0.0.1:54323>.
+O cadastro exige confirmar o e-mail antes de entrar. Nos emuladores nenhum e-mail sai de verdade: os links aparecem no painel (<http://127.0.0.1:4000>, aba Authentication) e no terminal dos emuladores. No projeto real, o Firebase envia os e-mails em português para qualquer endereço.
 
-### Ambiente de teste hospedado
-
-Há um projeto no Supabase usado só para testes, **com dados fictícios** (região us-east-1). A migration já foi aplicada e os mesmos usuários de exemplo existem lá. Para apontar o app para ele, coloque no `.env.local` a URL do projeto e a "Publishable key" (painel do Supabase → Project Settings → API Keys).
-
-- Login: senha mínima de 8 caracteres com letras e números; redirecionamentos liberados para `http://localhost:5173`.
-- E-mails: o servidor de e-mail padrão do Supabase só entrega para membros da equipe do projeto, e no plano gratuito não deixa trocar os textos (continuam em inglês). Os textos em português de `supabase/templates/` entram quando houver um SMTP próprio.
-- **Não use para dados reais.** Para produção, criar um projeto na região São Paulo (LGPD).
+Os links dos e-mails abrem a rota `/acao` do app (confirmar e-mail e criar nova senha). Para isso, no console do Firebase: Authentication → Templates → editar cada modelo → "Customize action URL" → `https://<endereço do site>/acao`. Sem essa configuração, os links abrem a página padrão do Firebase, que também funciona.
 
 ### Site publicado (teste)
 
-O app está publicado na Vercel em <https://triade-hazel.vercel.app>, ligado ao projeto Supabase de teste (projeto `triade` na Vercel; as variáveis `VITE_SUPABASE_*` estão configuradas lá). Para publicar de novo a partir da sua máquina: `npx vercel deploy --prod`. A configuração do site (rotas, cabeçalhos e `noindex`) fica em `vercel.json`.
+O app está publicado na Vercel em <https://triade-hazel.vercel.app> (projeto `triade`), ligado ao projeto de teste do Firebase. As variáveis `VITE_FIREBASE_*` estão configuradas lá. Para publicar de novo: `npx vercel deploy --prod`. A configuração do site (rotas, cabeçalhos e `noindex`) fica em `vercel.json`. Ambientes e o que falta para dados reais: [`docs/ambientes.md`](docs/ambientes.md).
 
 ## Comandos
 
@@ -68,11 +62,10 @@ O app está publicado na Vercel em <https://triade-hazel.vercel.app>, ligado ao 
 | `npm run lint` | ESLint (inclui regras de acessibilidade) |
 | `npm run typecheck` | Verificação de tipos do TypeScript |
 | `npm test` | Testes do front (Vitest + Testing Library) |
-| `npm run db:start` / `db:stop` | Liga e desliga o Supabase local |
-| `npm run db:reset` | Recria o banco local do zero (migrations + seed) |
-| `npm run db:test` | Testes de acesso ao banco (pgTAP), com o Supabase local ligado |
-| `npm run db:test:sem-docker` | Os mesmos testes num Postgres comum, sem Docker (ver o script) |
-| `npm run db:types` | Regenera `src/types/database.ts` a partir do banco local |
+| `npm run test:regras` | Testes das regras de segurança do Firestore, por papel (sobe o emulador sozinho) |
+| `npm run emuladores` | Liga Authentication e Firestore locais |
+| `npm run emuladores:semear` | Cria os usuários de exemplo nos emuladores |
+| `npm run regras:publicar` | Publica `firestore.rules` no projeto do Firebase (precisa de `npx firebase login`) |
 
 ## Estrutura
 
@@ -81,20 +74,17 @@ src/
   auth/            sessão (AuthProvider), chamadas de login/cadastro, guardas de rota
   components/ui/   botões, cartão, etiqueta, campos, avisos, logo
   components/layout/  moldura do app (menu lateral) e das telas de entrada
-  lib/             cliente Supabase, validações, datas, CRP, tradução de erros
-  pages/           telas (uma por rota)
+  lib/             Firebase, validações, datas, CRP, tradução de erros
+  pages/           telas (uma por rota); pages/auth/AcaoConta trata os links dos e-mails
   rotas.tsx        mapa de rotas
-  types/database.ts  tipos do banco (gerados)
-supabase/
-  migrations/      uma migration por mudança; RLS na mesma migration da tabela
-  tests/database/  testes de acesso por papel (pgTAP)
-  seed.sql         dados de exemplo fictícios
-  templates/       e-mails de autenticação em português
-scripts/           teste do banco sem Docker
+  types/modelo.ts  formato dos documentos do Firestore
+firestore.rules    regras de segurança (tudo negado por padrão)
+tests/regras/      testes das regras por papel, no emulador
+scripts/           usuários de exemplo para os emuladores
 ```
 
 ## Regras do banco
 
-- RLS ativada em toda tabela, na mesma migration que a cria, com testes de acesso por papel (psicólogo, supervisor, estagiário e usuário sem vínculo).
-- `profiles`: cada usuário lê e edita só o próprio perfil (nome e CRP). O perfil é criado automaticamente no cadastro. Ninguém insere ou apaga perfis pelo app.
+- Toda coleção tem regras em `firestore.rules`, escritas junto com ela, e testes de acesso por papel (psicólogo, supervisor, estagiário e usuário sem vínculo) em `tests/regras/`. O que não está liberado é negado.
+- `profiles/{uid}`: cada usuário lê e edita só o próprio perfil (nome e CRP). O perfil é criado no cadastro, com os campos validados pelas regras. Ninguém apaga perfis pelo app.
 - Dados de exemplo sempre fictícios.
