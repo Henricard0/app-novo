@@ -1,0 +1,74 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/manrope';
+@import 'tailwindcss';
+
+/*
+ * Tokens de design (docs/design.md).
+ * Geram classes como bg-bg, bg-surface, text-ink, text-ink-2, text-muted,
+ * bg-pine, text-pine, bg-pine-soft, border-ocre, text-ocre-text, bg-ocre-soft…
+ */
+@theme {
+  --color-bg: #f4f5f2;
+  --color-surface: #ffffff;
+  --color-border: #e2e5e0;
+  --color-border-soft: #eef0ed;
+  --color-border-strong: #d5dad5;
+  --color-input-border: #c9cfc9;
+
+  --color-ink: #18211d;
+  --color-ink-2: #3d4641;
+  --color-muted: #5a635e;
+
+  --color-pine: #1e5a48;
+  --color-pine-dark: #143d31;
+  --color-pine-soft: #e6f0ec;
+
+  --color-ocre: #9a5512;
+  --color-ocre-text: #8a4b0f;
+  --color-ocre-soft: #fbefe1;
+
+  --color-chip-neutral: #eef0ed;
+  --color-chip-neutral-text: #47504b;
+
+  --color-danger: #a3271f;
+  --color-danger-soft: #fbeceb;
+
+  --font-display: 'Manrope Variable', 'Inter Variable', ui-sans-serif, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 10px;
+  --radius-card: 14px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-sans text-[15px] text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  a {
+    @apply text-pine hover:text-pine-dark;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-pine;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tríade · Levar caso para supervisão</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F2}
+a{color:#1E5A48}a:hover{color:#143D31}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F4F5F2; font-family: Inter, system-ui, sans-serif; color: #18211D; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Menu principal" style="flex: 1 1 240px; background: #FFFFFF; border-right: 1px solid #E2E5E0; padding: 24px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="7" r="4.5" fill="#1E5A48"></circle><circle cx="7" cy="20" r="4.5" fill="#1E5A48" opacity="0.5"></circle><circle cx="21" cy="20" r="4.5" fill="#9A5512"></circle></svg>
+<span style="font-family: Manrope, Inter, sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.02em">Tríade</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635E; text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px 6px">Consultório</span>
+<a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 10px; color: #3D4641; font-size: 15px; text-decoration: none">Início</a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Agenda</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Pacientes</span>
+<a href="Supervisao.dc.html" aria-current="page" style="display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 0 12px; border-radius: 10px; background: #E6F0EC; color: #1E5A48; font-weight: 600; font-size: 15px; text-decoration: none">Supervisão <span style="padding: 2px 8px; border-radius: 999px; background: #FBEFE1; color: #8A4B0F; font-size: 12px; font-weight: 600">1 nova</span></a>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Financeiro</span>
+<span style="display: flex; align-items: center; min-height: 44px; padding: 0 12px; color: #3D4641; font-size: 15px">Documentos</span>
+</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px 8px 0; border-top: 1px solid #E2E5E0">
+<div style="display: flex; align-items: center; gap: 10px">
+<span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 50%; background: #1E5A48; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600">MC</span>
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 14px; font-weight: 600">Marina Costa</span>
+<span style="font-size: 12px; color: #5A635E">Psicóloga · CRP-08</span>
+</div>
+</div>
+<a href="Supervisor.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none; min-height: 32px; display: flex; align-items: center">Ver como supervisor →</a>
+</div>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; padding: 32px 40px 48px; box-sizing: border-box">
+<div style="max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; color: #5A635E">Pacientes / Ana Beatriz Souza / Supervisão</span>
+<h1 style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em">Levar caso para supervisão</h1>
+</div>
+
+<ol aria-label="Etapas" style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px">
+<li style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #E6F0EC; color: #1E5A48; font-size: 13px; font-weight: 600">1 · Registros escolhidos ✓</li>
+<li aria-current="step" style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #1E5A48; color: #FFFFFF; font-size: 13px; font-weight: 600">2 · Revisar o que o supervisor vai ver</li>
+<li style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E2E5E0; color: #47504B; font-size: 13px; font-weight: 600">3 · Enviar para a pauta</li>
+</ol>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+<section aria-labelledby="orig" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+<h2 id="orig" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">No prontuário</h2>
+<span style="padding: 4px 10px; border-radius: 999px; background: #EEF0ED; color: #47504B; font-size: 12px; font-weight: 600">Só você vê</span>
+</div>
+<span style="font-size: 13px; font-weight: 600; color: #5A635E">Sessão 12 · 06/11/2026</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #2A332E"><mark style="background: #FBEFE1; color: #18211D; padding: 1px 4px; border-radius: 4px">Ana Beatriz</mark> relatou ter faltado às duas últimas sessões por “excesso de trabalho” na <mark style="background: #FBEFE1; color: #18211D; padding: 1px 4px; border-radius: 4px">Transportes Ribeiro</mark> e contou que a mãe, <mark style="background: #FBEFE1; color: #18211D; padding: 1px 4px; border-radius: 4px">Cláudia</mark>, voltou a morar com ela no <mark style="background: #FBEFE1; color: #18211D; padding: 1px 4px; border-radius: 4px">bairro Água Verde</mark>. Disse sentir culpa ao cancelar e medo de que eu “desista dela”. Retomamos o combinado sobre faltas e ela pediu para manter o horário de quinta.</p>
+</section>
+
+<section aria-labelledby="visto" style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #1E5A48; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px">
+<h2 id="visto" style="margin: 0; font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">O que o supervisor vai ver</h2>
+<span style="padding: 4px 10px; border-radius: 999px; background: #E6F0EC; color: #1E5A48; font-size: 12px; font-weight: 600">{{idLabel}} · TCC</span>
+</div>
+<span style="font-size: 13px; font-weight: 600; color: #5A635E">Sessão 12 · {{dateLabel}}</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #2A332E"><span style="background: #E6F0EC; color: #143D31; padding: 1px 4px; border-radius: 4px">A paciente</span> relatou ter faltado às duas últimas sessões por “excesso de trabalho” <span style="background: #E6F0EC; color: #143D31; padding: 1px 4px; border-radius: 4px">{{jobLabel}}</span> e contou que a mãe voltou a morar com ela <span style="background: #E6F0EC; color: #143D31; padding: 1px 4px; border-radius: 4px">[local removido]</span>. Disse sentir culpa ao cancelar e medo de que eu “desista dela”. Retomamos o combinado sobre faltas e ela pediu para manter o horário de quinta.</p>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+<section aria-labelledby="ajustes" style="flex: 1 1 360px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px">
+<h2 id="ajustes" style="margin: 0 0 8px; font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">Ajustes de privacidade</h2>
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<input type="checkbox" id="opt-idade" checked="{{keepAge}}" onChange="{{toggleAge}}" style="width: 20px; height: 20px; margin: 0; accent-color: #1E5A48">
+<label for="opt-idade" style="font-size: 15px">Manter a idade</label>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<input type="checkbox" id="opt-data" checked="{{monthOnly}}" onChange="{{toggleMonth}}" style="width: 20px; height: 20px; margin: 0; accent-color: #1E5A48">
+<label for="opt-data" style="font-size: 15px">Trocar datas exatas por mês e ano</label>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<input type="checkbox" id="opt-trab" checked="{{keepJob}}" onChange="{{toggleJob}}" style="width: 20px; height: 20px; margin: 0; accent-color: #1E5A48">
+<label for="opt-trab" style="font-size: 15px">Manter o setor de trabalho, sem o nome da empresa</label>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; min-height: 44px">
+<input type="checkbox" id="opt-terc" checked="{{true}}" disabled="{{true}}" readOnly="{{true}}" style="width: 20px; height: 20px; margin: 0; accent-color: #1E5A48">
+<label for="opt-terc" style="font-size: 15px; color: #5A635E">Remover nomes, contatos e endereços (sempre)</label>
+</div>
+</section>
+
+<section aria-labelledby="achados" style="flex: 1 1 360px; min-width: 0; background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+<h2 id="achados" style="margin: 0 0 6px; font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">4 trechos identificáveis encontrados</h2>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2; font-size: 14px"><span>Nome da paciente</span><span style="color: #1E5A48; font-weight: 600">→ “A paciente”</span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2; font-size: 14px"><span>Empresa onde trabalha</span><span style="color: #1E5A48; font-weight: 600">→ {{jobShort}}</span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2; font-size: 14px"><span>Nome da mãe</span><span style="color: #1E5A48; font-weight: 600">→ removido</span></div>
+<div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #F4F5F2; font-size: 14px"><span>Bairro</span><span style="color: #1E5A48; font-weight: 600">→ removido</span></div>
+<span style="font-size: 13px; color: #5A635E">Revise sempre: a detecção ajuda, mas quem responde pelo sigilo é você.</span>
+</section>
+</div>
+
+<section style="background: #FFFFFF; border: 1px solid #E2E5E0; border-radius: 14px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+<label for="pergunta" style="font-family: Manrope, Inter, sans-serif; font-size: 17px; font-weight: 700">O que você quer discutir com o supervisor?</label>
+<textarea id="pergunta" rows="3" value="{{question}}" onChange="{{setQuestion}}" style="width: 100%; box-sizing: border-box; padding: 14px; border-radius: 10px; border: 1px solid #C9CFC9; font: 400 15px/1.5 Inter, system-ui, sans-serif; color: #18211D; resize: vertical"></textarea>
+<span style="font-size: 13px; color: #5A635E">Compartilhe só o necessário para discutir o caso.</span>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 12px">
+<a href="Supervisao.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; font-size: 14px; font-weight: 600; text-decoration: none">Cancelar</a>
+<button type="button" style="min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DAD5; background: #FFFFFF; color: #18211D; font: 600 14px Inter, system-ui, sans-serif; cursor: pointer">Salvar rascunho</button>
+<a href="Supervisao.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 10px; background: #1E5A48; color: #FFFFFF; font-weight: 600; font-size: 14px; text-decoration: none">Enviar para a pauta de quinta</a>
+</div>
+
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = this.state || {};
+const keepAge = s.keepAge ?? true;
+const monthOnly = s.monthOnly ?? true;
+const keepJob = s.keepJob ?? false;
+const question = s.question ?? 'Como manejar as faltas recorrentes sem que ela sinta que estou desistindo dela?';
+return {
+keepAge: keepAge,
+monthOnly: monthOnly,
+keepJob: keepJob,
+question: question,
+idLabel: keepAge ? 'Paciente A., 34 anos' : 'Paciente A.',
+dateLabel: monthOnly ? 'nov/2026' : '06/11/2026',
+jobLabel: keepJob ? 'no trabalho (setor de logística)' : 'no [trabalho]',
+jobShort: keepJob ? '“setor de logística”' : 'removida',
+toggleAge: () => this.setState({ keepAge: !keepAge }),
+toggleMonth: () => this.setState({ monthOnly: !monthOnly }),
+toggleJob: () => this.setState({ keepJob: !keepJob }),
+setQuestion: (e) => this.setState({ question: e.target.value })
+};
+}
+}
+</script>
+</body>
+</html>

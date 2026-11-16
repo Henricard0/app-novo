@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+*.local
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.DS_Store
+
+# Supabase CLI
+supabase/.branches
+supabase/.temp
+
+# Vercel CLI
+.vercel
