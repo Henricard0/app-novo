@@ -1,4 +1,4 @@
-import type { User } from 'firebase/auth'
+import type { Session, User } from '@supabase/supabase-js'
 import { render } from '@testing-library/react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { vi } from 'vitest'
@@ -12,12 +12,22 @@ export const PERFIL_FICTICIO: Perfil = {
   crp_number: '12345',
 }
 
-export function usuarioFicticio(): User {
-  return {
-    uid: PERFIL_FICTICIO.id,
+export function sessaoFicticia(): Session {
+  const user = {
+    id: PERFIL_FICTICIO.id,
     email: 'marina.costa@example.com',
-    emailVerified: true,
+    user_metadata: { full_name: 'Marina Costa' },
+    app_metadata: {},
+    aud: 'authenticated',
+    created_at: '2026-11-15T00:00:00Z',
   } as User
+  return {
+    access_token: 'token-ficticio',
+    refresh_token: 'refresh-ficticio',
+    expires_in: 3600,
+    token_type: 'bearer',
+    user,
+  }
 }
 
 type Opcoes = { logado?: boolean; carregando?: boolean; perfil?: Perfil | null }
@@ -25,9 +35,11 @@ type Opcoes = { logado?: boolean; carregando?: boolean; perfil?: Perfil | null }
 /** Monta o app numa rota, com um estado de autenticação de mentira. */
 export function renderizarRota(caminho: string, opcoes: Opcoes = {}) {
   const { logado = false, carregando = false, perfil = PERFIL_FICTICIO } = opcoes
+  const session = logado ? sessaoFicticia() : null
   const auth: EstadoAuth = {
     carregando,
-    usuario: logado ? usuarioFicticio() : null,
+    session,
+    user: session?.user ?? null,
     perfil: logado ? perfil : null,
     sair: vi.fn().mockResolvedValue(undefined),
   }

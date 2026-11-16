@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from '@/App'
-import { firebaseConfigurado } from '@/lib/firebase'
+import { supabaseConfigurado } from '@/lib/supabase'
 import { ConfiguracaoAusente } from '@/pages/ConfiguracaoAusente'
 import '@/index.css'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>{firebaseConfigurado ? <App /> : <ConfiguracaoAusente />}</StrictMode>,
+  <StrictMode>{supabaseConfigurado ? <App /> : <ConfiguracaoAusente />}</StrictMode>,
 )

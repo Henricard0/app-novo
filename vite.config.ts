@@ -14,12 +14,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
-    include: ['src/**/*.test.{ts,tsx}'],
     env: {
-      VITE_FIREBASE_PROJECT_ID: 'demo-triade',
-      VITE_FIREBASE_API_KEY: 'chave-de-teste',
-      VITE_FIREBASE_AUTH_DOMAIN: 'demo-triade.firebaseapp.com',
-      VITE_FIREBASE_APP_ID: 'app-de-teste',
+      VITE_SUPABASE_URL: 'http://127.0.0.1:54321',
+      VITE_SUPABASE_PUBLISHABLE_KEY: 'chave-de-teste',
     },
   },
 })

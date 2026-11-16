@@ -8,9 +8,7 @@ vi.mock('@/auth/api', () => ({
   entrar: vi.fn(),
   criarConta: vi.fn(),
   pedirNovaSenha: vi.fn(),
-  conferirLinkNovaSenha: vi.fn(),
   definirNovaSenha: vi.fn(),
-  confirmarEmail: vi.fn(),
 }))
 
 const mockApi = vi.mocked(api)
@@ -56,6 +54,10 @@ describe('Entrar', () => {
     expect(screen.getByRole('button', { name: 'Ocultar senha' })).toBeInTheDocument()
   })
 
+  it('avisa quando o link do e-mail expirou', async () => {
+    renderizarRota('/entrar?error=access_denied&error_code=otp_expired')
+    expect(await screen.findByRole('alert')).toHaveTextContent('O link expirou ou já foi usado.')
+  })
 })
 
 describe('Criar conta', () => {
@@ -135,26 +137,18 @@ describe('Esqueci minha senha', () => {
   })
 })
 
-describe('Links dos e-mails (/acao)', () => {
-  it('link sem código é tratado como inválido', async () => {
-    renderizarRota('/acao')
-    expect(await screen.findByRole('heading', { name: 'Link inválido ou expirado' })).toBeInTheDocument()
-  })
-
-  it('nova senha: link vencido oferece pedir outro', async () => {
-    mockApi.conferirLinkNovaSenha.mockResolvedValue({ erro: 'O link expirou ou já foi usado. Peça um novo.', email: null })
-    renderizarRota('/acao?mode=resetPassword&oobCode=codigo-vencido')
+describe('Nova senha', () => {
+  it('sem sessão, o link é tratado como inválido', async () => {
+    renderizarRota('/nova-senha')
     expect(await screen.findByRole('heading', { name: 'Link inválido ou expirado' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Pedir novo link' })).toHaveAttribute('href', '/esqueci-a-senha')
   })
 
-  it('nova senha: exige as duas senhas iguais e usa o código do link', async () => {
-    mockApi.conferirLinkNovaSenha.mockResolvedValue({ erro: null, email: 'marina.costa@example.com' })
+  it('com sessão, exige as duas senhas iguais', async () => {
     mockApi.definirNovaSenha.mockResolvedValue({ erro: null })
     const usuario = userEvent.setup()
-    renderizarRota('/acao?mode=resetPassword&oobCode=codigo-bom')
-    expect(await screen.findByText('Para a conta marina.costa@example.com.')).toBeInTheDocument()
-    await usuario.type(screen.getByLabelText('Nova senha'), 'nova-senha-456')
+    renderizarRota('/nova-senha', { logado: true })
+    await usuario.type(await screen.findByLabelText('Nova senha'), 'nova-senha-456')
     await usuario.type(screen.getByLabelText('Repita a nova senha'), 'nova-senha-457')
     await usuario.click(screen.getByRole('button', { name: 'Salvar nova senha' }))
     expect(screen.getByText('As senhas não são iguais.')).toBeInTheDocument()
@@ -163,21 +157,7 @@ describe('Links dos e-mails (/acao)', () => {
     await usuario.clear(screen.getByLabelText('Repita a nova senha'))
     await usuario.type(screen.getByLabelText('Repita a nova senha'), 'nova-senha-456')
     await usuario.click(screen.getByRole('button', { name: 'Salvar nova senha' }))
-    expect(mockApi.definirNovaSenha).toHaveBeenCalledWith('codigo-bom', 'nova-senha-456')
+    expect(mockApi.definirNovaSenha).toHaveBeenCalledWith('nova-senha-456')
     expect(await screen.findByRole('heading', { name: 'Senha alterada' })).toBeInTheDocument()
-  })
-
-  it('confirmar e-mail: mostra sucesso e leva para Entrar', async () => {
-    mockApi.confirmarEmail.mockResolvedValue({ erro: null })
-    renderizarRota('/acao?mode=verifyEmail&oobCode=codigo-confirmacao')
-    expect(await screen.findByRole('heading', { name: 'E-mail confirmado' })).toBeInTheDocument()
-    expect(mockApi.confirmarEmail).toHaveBeenCalledWith('codigo-confirmacao')
-    expect(screen.getByRole('link', { name: 'Entrar' })).toHaveAttribute('href', '/entrar')
-  })
-
-  it('confirmar e-mail: link usado mostra o aviso de link inválido', async () => {
-    mockApi.confirmarEmail.mockResolvedValue({ erro: 'O link expirou ou já foi usado. Peça um novo.' })
-    renderizarRota('/acao?mode=verifyEmail&oobCode=codigo-usado')
-    expect(await screen.findByRole('heading', { name: 'Link inválido ou expirado' })).toBeInTheDocument()
   })
 })

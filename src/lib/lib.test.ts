@@ -77,19 +77,20 @@ describe('validação', () => {
 })
 
 describe('traduzirErroAuth', () => {
-  it('usa o código do erro do Firebase', () => {
-    expect(traduzirErroAuth({ code: 'auth/invalid-credential', message: 'Firebase: Error' })).toBe(
+  it('usa o código do erro', () => {
+    expect(traduzirErroAuth({ code: 'invalid_credentials', message: 'Invalid login credentials' })).toBe(
       'E-mail ou senha incorretos.',
     )
-    expect(traduzirErroAuth({ code: 'auth/email-already-in-use' })).toBe('Já existe uma conta com este e-mail.')
-    expect(traduzirErroAuth({ code: 'auth/expired-action-code' })).toMatch(/link expirou/)
+    expect(traduzirErroAuth({ code: 'user_already_exists' })).toBe('Já existe uma conta com este e-mail.')
+  })
+  it('cai no texto em inglês quando não há código', () => {
+    expect(traduzirErroAuth({ message: 'Email not confirmed' })).toMatch(/Confirme seu e-mail/)
   })
   it('reconhece falha de conexão', () => {
-    expect(traduzirErroAuth({ code: 'auth/network-request-failed' })).toBe(ERRO_CONEXAO)
-    expect(traduzirErroAuth({ name: 'TypeError', message: 'Failed to fetch' })).toBe(ERRO_CONEXAO)
+    expect(traduzirErroAuth({ name: 'AuthRetryableFetchError', status: 0 })).toBe(ERRO_CONEXAO)
   })
   it('nunca mostra a mensagem em inglês', () => {
-    expect(traduzirErroAuth({ code: 'auth/algo-novo', message: 'Something unexpected' })).toBe(ERRO_GENERICO)
+    expect(traduzirErroAuth({ message: 'Something unexpected' })).toBe(ERRO_GENERICO)
     expect(traduzirErroAuth(null)).toBe(ERRO_GENERICO)
   })
 })

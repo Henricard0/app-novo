@@ -1,14 +1,14 @@
-import type { User } from 'firebase/auth'
+import type { Session, User } from '@supabase/supabase-js'
 import { createContext, useContext } from 'react'
-import type { Perfil } from '@/types/modelo'
+import type { Tables } from '@/types/database'
 
-export type { Perfil }
+export type Perfil = Pick<Tables<'profiles'>, 'id' | 'full_name' | 'crp_region' | 'crp_number'>
 
 export type EstadoAuth = {
   /** true enquanto a sessão salva ainda está sendo lida. */
   carregando: boolean
-  /** Usuário logado e com e-mail confirmado; null caso contrário. */
-  usuario: User | null
+  session: Session | null
+  user: User | null
   /** null enquanto carrega ou se não foi possível ler o perfil. */
   perfil: Perfil | null
   sair: () => Promise<void>
@@ -22,7 +22,13 @@ export function useAuth(): EstadoAuth {
   return valor
 }
 
-/** Nome para exibir: do perfil ou, na falta dele, a parte do e-mail antes do @. */
-export function nomeParaExibir(estado: Pick<EstadoAuth, 'perfil' | 'usuario'>): string {
-  return estado.perfil?.full_name || estado.usuario?.email?.split('@')[0] || ''
+/** Nome para exibir: do perfil, dos dados do cadastro ou do e-mail. */
+export function nomeParaExibir(estado: Pick<EstadoAuth, 'perfil' | 'user'>): string {
+  const doCadastro = estado.user?.user_metadata?.full_name
+  return (
+    estado.perfil?.full_name ||
+    (typeof doCadastro === 'string' && doCadastro.trim()) ||
+    estado.user?.email?.split('@')[0] ||
+    ''
+  )
 }

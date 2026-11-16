@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { entrar } from '@/auth/api'
 import { Aviso } from '@/components/ui/Aviso'
 import { Botao } from '@/components/ui/Botao'
@@ -9,12 +9,22 @@ import { LayoutEntrada } from '@/components/layout/LayoutEntrada'
 import { useTituloPagina } from '@/lib/titulo'
 import { validarEmail } from '@/lib/validacao'
 
+/** Links de e-mail que falharam voltam com error_code na URL (query ou hash). */
+function erroDoLink(search: string, hash: string): string | null {
+  const params = new URLSearchParams(search)
+  const doHash = new URLSearchParams(hash.replace(/^#/, ''))
+  const codigo = params.get('error_code') ?? doHash.get('error_code')
+  if (!codigo && !params.get('error') && !doHash.get('error')) return null
+  return 'O link expirou ou já foi usado. Entre com sua senha ou peça um novo link.'
+}
+
 export function Entrar() {
   useTituloPagina('Entrar')
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erros, setErros] = useState<{ email?: string | null; senha?: string | null }>({})
-  const [erroGeral, setErroGeral] = useState<string | null>(null)
+  const [erroGeral, setErroGeral] = useState<string | null>(() => erroDoLink(location.search, location.hash))
   const [enviando, setEnviando] = useState(false)
 
   async function aoEnviar(e: FormEvent<HTMLFormElement>) {

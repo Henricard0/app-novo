@@ -1,43 +1,49 @@
-import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
-import { doc, getDoc } from 'firebase/firestore'
+import type { Session } from '@supabase/supabase-js'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { auth, db } from '@/lib/firebase'
-import type { PerfilDoc } from '@/types/modelo'
+import { supabase } from '@/lib/supabase'
 import { ContextoAuth, type EstadoAuth, type Perfil } from './contexto'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [carregando, setCarregando] = useState(true)
-  const [usuarioFirebase, setUsuarioFirebase] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   // Perfil guardado junto com o id de quem ele é, para nunca mostrar o perfil de uma sessão anterior.
   const [perfilLido, setPerfilLido] = useState<{ id: string; perfil: Perfil | null } | null>(null)
 
-  useEffect(
-    () =>
-      onAuthStateChanged(auth, (u) => {
-        setUsuarioFirebase(u)
-        setCarregando(false)
-      }),
-    [],
-  )
+  useEffect(() => {
+    let ativo = true
 
-  // Conta com e-mail ainda não confirmado não conta como sessão: logo após o
-  // cadastro o Firebase entra sozinho, e o app não deve tratar isso como login.
-  const usuario = usuarioFirebase?.emailVerified ? usuarioFirebase : null
-  const idUsuario = usuario?.uid ?? null
+    supabase.auth.getSession().then(({ data }) => {
+      if (!ativo) return
+      setSession(data.session)
+      setCarregando(false)
+    })
+
+    // Não chamar o Supabase dentro deste callback (pode travar o cliente):
+    // só atualiza o estado; o perfil é lido no efeito abaixo.
+    const { data } = supabase.auth.onAuthStateChange((_evento, novaSessao) => {
+      if (!ativo) return
+      setSession(novaSessao)
+      setCarregando(false)
+    })
+
+    return () => {
+      ativo = false
+      data.subscription.unsubscribe()
+    }
+  }, [])
+
+  const idUsuario = session?.user.id ?? null
 
   useEffect(() => {
     if (!idUsuario) return
     let ativo = true
-    getDoc(doc(db, 'profiles', idUsuario))
-      .then((instantaneo) => {
-        const dados = instantaneo.data() as PerfilDoc | undefined
-        const perfil = dados
-          ? { id: idUsuario, full_name: dados.full_name, crp_region: dados.crp_region, crp_number: dados.crp_number }
-          : null
-        if (ativo) setPerfilLido({ id: idUsuario, perfil })
-      })
-      .catch(() => {
-        if (ativo) setPerfilLido({ id: idUsuario, perfil: null })
+    supabase
+      .from('profiles')
+      .select('id, full_name, crp_region, crp_number')
+      .eq('id', idUsuario)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (ativo) setPerfilLido({ id: idUsuario, perfil: data ?? null })
       })
     return () => {
       ativo = false
@@ -47,10 +53,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const perfil = perfilLido && perfilLido.id === idUsuario ? perfilLido.perfil : null
 
   const sair = useCallback(async () => {
-    await signOut(auth)
+    await supabase.auth.signOut()
   }, [])
 
-  const valor = useMemo<EstadoAuth>(() => ({ carregando, usuario, perfil, sair }), [carregando, usuario, perfil, sair])
+  const valor = useMemo<EstadoAuth>(
+    () => ({ carregando, session, user: session?.user ?? null, perfil, sair }),
+    [carregando, session, perfil, sair],
+  )
 
   return <ContextoAuth.Provider value={valor}>{children}</ContextoAuth.Provider>
 }
