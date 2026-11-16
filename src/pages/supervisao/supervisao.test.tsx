@@ -29,6 +29,15 @@ vi.mock('@/lib/supervisao/api', async (original) => {
   }
 })
 
+vi.mock('@/lib/supervisao/casos', async (original) => {
+  const real = await original<typeof import('@/lib/supervisao/casos')>()
+  return {
+    ...real,
+    listarCasos: vi.fn().mockResolvedValue({ dados: [], erro: null }),
+    listarHoras: vi.fn().mockResolvedValue({ dados: [], erro: null }),
+  }
+})
+
 const m = vi.mocked(api)
 const AGORA = new Date().toISOString()
 const EU = PERFIL_FICTICIO.id

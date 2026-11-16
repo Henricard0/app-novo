@@ -88,6 +88,9 @@ export function FichaPaciente() {
         acoes={
           <>
             <LinkBotao to={`/pacientes/${p.id}/registros/novo`}>Novo registro</LinkBotao>
+            <LinkBotao to={`/pacientes/${p.id}/supervisao/novo`} variante="supervisao">
+              Levar para supervisão
+            </LinkBotao>
             <LinkBotao to={`/agenda/nova?paciente=${p.id}`} variante="secundario">
               Agendar sessão
             </LinkBotao>

@@ -297,6 +297,304 @@ export type Database = {
         }
         Relationships: []
       }
+      supervision_case_excerpts: {
+        Row: {
+          anonymized_body: string
+          case_id: string
+          created_at: string
+          id: string
+          period_label: string | null
+          position: number
+        }
+        Insert: {
+          anonymized_body: string
+          case_id: string
+          created_at?: string
+          id?: string
+          period_label?: string | null
+          position?: number
+        }
+        Update: {
+          anonymized_body?: string
+          case_id?: string
+          created_at?: string
+          id?: string
+          period_label?: string | null
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_case_excerpts_case_id_fkey'
+            columns: ['case_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_cases'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_case_sources: {
+        Row: {
+          case_id: string
+          created_at: string
+          patient_id: string
+          record_ids: string[]
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          patient_id: string
+          record_ids?: string[]
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          patient_id?: string
+          record_ids?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_case_sources_case_id_fkey'
+            columns: ['case_id']
+            isOneToOne: true
+            referencedRelation: 'supervision_cases'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_case_sources_patient_id_fkey'
+            columns: ['patient_id']
+            isOneToOne: false
+            referencedRelation: 'patients'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_cases: {
+        Row: {
+          case_label: string
+          created_at: string
+          id: string
+          link_id: string
+          meeting_id: string | null
+          question: string | null
+          sent_at: string | null
+          status: string
+          supervisee_id: string
+        }
+        Insert: {
+          case_label: string
+          created_at?: string
+          id?: string
+          link_id: string
+          meeting_id?: string | null
+          question?: string | null
+          sent_at?: string | null
+          status?: string
+          supervisee_id?: string
+        }
+        Update: {
+          case_label?: string
+          created_at?: string
+          id?: string
+          link_id?: string
+          meeting_id?: string | null
+          question?: string | null
+          sent_at?: string | null
+          status?: string
+          supervisee_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_cases_link_id_fkey'
+            columns: ['link_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_links'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_cases_meeting_id_fkey'
+            columns: ['meeting_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_meetings'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_cases_supervisee_id_fkey'
+            columns: ['supervisee_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_feedback: {
+        Row: {
+          author_id: string
+          case_id: string
+          created_at: string
+          id: string
+          observed: string | null
+          paths: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          author_id?: string
+          case_id: string
+          created_at?: string
+          id?: string
+          observed?: string | null
+          paths?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          author_id?: string
+          case_id?: string
+          created_at?: string
+          id?: string
+          observed?: string | null
+          paths?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_feedback_case_id_fkey'
+            columns: ['case_id']
+            isOneToOne: true
+            referencedRelation: 'supervision_cases'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_feedback_tasks: {
+        Row: {
+          created_at: string
+          done_at: string | null
+          feedback_id: string
+          id: string
+          position: number
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          done_at?: string | null
+          feedback_id: string
+          id?: string
+          position?: number
+          text: string
+        }
+        Update: {
+          created_at?: string
+          done_at?: string | null
+          feedback_id?: string
+          id?: string
+          position?: number
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_feedback_tasks_feedback_id_fkey'
+            columns: ['feedback_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_feedback'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_hours: {
+        Row: {
+          created_at: string
+          id: string
+          link_id: string
+          meeting_id: string | null
+          minutes: number
+          occurred_on: string
+          registered_by: string
+          supervisee_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link_id: string
+          meeting_id?: string | null
+          minutes: number
+          occurred_on?: string
+          registered_by?: string
+          supervisee_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link_id?: string
+          meeting_id?: string | null
+          minutes?: number
+          occurred_on?: string
+          registered_by?: string
+          supervisee_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_hours_link_id_fkey'
+            columns: ['link_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_links'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_hours_meeting_id_fkey'
+            columns: ['meeting_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_meetings'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_hours_supervisee_id_fkey'
+            columns: ['supervisee_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_meetings: {
+        Row: {
+          created_at: string
+          created_by: string
+          duration_min: number
+          id: string
+          link_id: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          duration_min?: number
+          id?: string
+          link_id: string
+          starts_at: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          duration_min?: number
+          id?: string
+          link_id?: string
+          starts_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_meetings_link_id_fkey'
+            columns: ['link_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_links'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       supervision_invites: {
         Row: {
           created_at: string
@@ -507,6 +805,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      enviar_caso: { Args: { p_case: string }; Returns: undefined }
+      enviar_devolutiva: { Args: { p_feedback: string; p_minutos?: number }; Returns: undefined }
+      marcar_caso_discutido: { Args: { p_case: string }; Returns: undefined }
+      marcar_encaminhamento: { Args: { p_feito: boolean; p_task: string }; Returns: undefined }
       aceitar_convite: { Args: { p_token: string }; Returns: string }
       cancelar_solicitacao: { Args: { p_id: string }; Returns: undefined }
       encerrar_vinculo: { Args: { p_id: string }; Returns: undefined }

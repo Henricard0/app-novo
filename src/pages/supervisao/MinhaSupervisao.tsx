@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { useAuth } from '@/auth/contexto'
 import { Aviso } from '@/components/ui/Aviso'
 import { Botao, LinkBotao } from '@/components/ui/Botao'
@@ -25,6 +26,7 @@ import {
   type PessoaResumo,
   type Vinculo,
 } from '@/lib/supervisao/api'
+import { ROTULO_SITUACAO_CASO, formatarHoras, listarCasos, listarHoras } from '@/lib/supervisao/casos'
 import { useTituloPagina } from '@/lib/titulo'
 
 function Pessoa({ pessoa }: { pessoa: PessoaResumo | null }) {
@@ -51,19 +53,29 @@ export function MinhaSupervisao() {
   const pedidos = useConsulta('solicitacoes', listarSolicitacoes)
   const vinculos = useConsulta('vinculos', listarVinculos)
   const convites = useConsulta('convites', listarConvites)
+  const casos = useConsulta('casos', listarCasos)
+  const horas = useConsulta('horas', listarHoras)
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState<string | null>(null)
   const [encerrando, setEncerrando] = useState<Vinculo | null>(null)
   const [copiado, setCopiado] = useState<string | null>(null)
 
-  if (pedidos.carregando || vinculos.carregando || convites.carregando) return <TelaCarregando />
+  if (pedidos.carregando || vinculos.carregando || convites.carregando || casos.carregando || horas.carregando) {
+    return <TelaCarregando />
+  }
 
   const recebidos = (pedidos.dados ?? []).filter((p) => p.supervisor_id === eu && p.status === 'pendente')
   const enviados = (pedidos.dados ?? []).filter((p) => p.requester_id === eu).slice(0, 10)
   const ativos = (vinculos.dados ?? []).filter((v) => v.status === 'ativo')
   const meusSupervisores = ativos.filter((v) => v.supervisee_id === eu)
   const meusSupervisionandos = ativos.filter((v) => v.supervisor_id === eu)
+  const casosLevados = (casos.dados ?? []).filter((c) => c.supervisee_id === eu)
+  const naPauta = (casos.dados ?? []).filter((c) => c.supervisee_id !== eu && c.status === 'na_pauta')
+  const anoAtual = new Date().getFullYear()
+  const minhasHoras = (horas.dados ?? []).filter((h) => h.supervisee_id === eu)
+  const minutosNoAno = minhasHoras.filter((h) => h.occurred_on.startsWith(String(anoAtual))).reduce((t, h) => t + h.minutes, 0)
+  const minutosPorVinculo = (linkId: string) => (horas.dados ?? []).filter((h) => h.link_id === linkId).reduce((t, h) => t + h.minutes, 0)
 
   async function executar(chave: string, acao: () => Promise<{ erro: string | null }>, sucesso: string) {
     setOcupado(chave)
@@ -152,6 +164,7 @@ export function MinhaSupervisao() {
               vinculos={meusSupervisores}
               pessoa={(v) => v.supervisor}
               aoEncerrar={setEncerrando}
+              minutos={minutosPorVinculo}
             />
           )}
         </Cartao>
@@ -166,6 +179,7 @@ export function MinhaSupervisao() {
               vinculos={meusSupervisionandos}
               pessoa={(v) => v.supervisionando}
               aoEncerrar={setEncerrando}
+              minutos={minutosPorVinculo}
             />
           )}
         </Cartao>
@@ -246,12 +260,57 @@ export function MinhaSupervisao() {
         </Cartao>
       ) : null}
 
-      <Cartao titulo="Casos, pauta e devolutivas" destaque="supervisao">
-        <Vazio
-          titulo="Chegam na próxima etapa (Fase 2b)."
-          detalhe="Levar casos anonimizados para a pauta, sala de supervisão, devolutivas e horas."
-        />
-      </Cartao>
+      {meusSupervisionandos.length ? (
+        <Cartao
+          titulo="Pauta"
+          destaque="supervisao"
+          extra={
+            <Link to="/supervisao/pauta" className="inline-flex min-h-11 items-center font-semibold">
+              Abrir pauta
+            </Link>
+          }
+        >
+          <p className="text-[15px] text-ink-2">
+            {naPauta.length
+              ? `${naPauta.length} ${naPauta.length === 1 ? 'caso esperando' : 'casos esperando'} sua devolutiva.`
+              : 'Nenhum caso esperando devolutiva.'}
+          </p>
+        </Cartao>
+      ) : null}
+
+      {meusSupervisores.length || casosLevados.length ? (
+        <div className="flex flex-wrap items-start gap-6">
+          <Cartao titulo="Horas de supervisão" className="flex-[1_1_240px]">
+            <p className="text-[30px] font-bold text-pine">{formatarHoras(minutosNoAno)}</p>
+            <p className="text-sm text-muted">em {anoAtual}. Cada encontro registrado pelo supervisor entra aqui automaticamente.</p>
+          </Cartao>
+          <Cartao titulo="Casos levados à supervisão" className="flex-[3_1_420px]">
+            {casosLevados.length === 0 ? (
+              <Vazio titulo="Você ainda não levou casos." detalhe="Abra um paciente e use “Levar para supervisão”." />
+            ) : (
+              <ul className="flex flex-col">
+                {casosLevados.map((c) => {
+                  const sit = ROTULO_SITUACAO_CASO[c.status] ?? ROTULO_SITUACAO_CASO.rascunho!
+                  return (
+                    <li key={c.id} className="flex flex-wrap items-start justify-between gap-3 border-b border-border-soft py-3 first:pt-0 last:border-b-0">
+                      <span className="flex min-w-0 flex-col gap-0.5">
+                        <Link to={`/supervisao/casos/${c.id}`} className="font-semibold">
+                          {c.case_label}
+                        </Link>
+                        {c.question ? <span className="break-words text-sm text-ink-2">{c.question}</span> : null}
+                        <span className="text-[13px] text-muted">
+                          {c.sent_at ? `Enviado em ${formatarData(new Date(c.sent_at))}` : 'Não enviado'} · {c.supervision_links?.supervisor?.full_name}
+                        </span>
+                      </span>
+                      <Etiqueta tom={sit.tom}>{c.status === 'devolutiva_recebida' ? 'Devolutiva recebida' : sit.texto}</Etiqueta>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </Cartao>
+        </div>
+      ) : null}
 
       <Dialogo aberto={Boolean(encerrando)} titulo="Encerrar supervisão?" aoFechar={() => setEncerrando(null)}>
         {encerrando ? (
@@ -288,10 +347,12 @@ function ListaVinculos({
   vinculos,
   pessoa,
   aoEncerrar,
+  minutos,
 }: {
   vinculos: Vinculo[]
   pessoa: (v: Vinculo) => PessoaResumo | null
   aoEncerrar: (v: Vinculo) => void
+  minutos: (linkId: string) => number
 }) {
   return (
     <ul className="flex flex-col">
@@ -301,6 +362,7 @@ function ListaVinculos({
             <Pessoa pessoa={pessoa(v)} />
             <span className="text-[13px] text-muted">
               Desde {formatarData(new Date(v.created_at))} · {v.origin === 'convite' ? 'por convite' : 'pela rede'}
+              {minutos(v.id) ? ` · ${formatarHoras(minutos(v.id))} de supervisão` : ''}
             </span>
           </span>
           <button
