@@ -12,6 +12,8 @@ export type EstadoAuth = {
   /** null enquanto carrega ou se não foi possível ler o perfil. */
   perfil: Perfil | null
   sair: () => Promise<void>
+  /** Lê o perfil de novo do banco (depois de editar nome ou CRP). */
+  recarregarPerfil: () => void
 }
 
 export const ContextoAuth = createContext<EstadoAuth | null>(null)

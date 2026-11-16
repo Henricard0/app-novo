@@ -15,6 +15,11 @@ import { FormPaciente } from '@/pages/pacientes/FormPaciente'
 import { ListaPacientes } from '@/pages/pacientes/ListaPacientes'
 import { FormRegistro } from '@/pages/prontuario/FormRegistro'
 import { HistoricoRegistro } from '@/pages/prontuario/HistoricoRegistro'
+import { MeuPerfil } from '@/pages/perfil/MeuPerfil'
+import { AceitarConvite } from '@/pages/supervisao/AceitarConvite'
+import { EncontrarSupervisor } from '@/pages/supervisao/EncontrarSupervisor'
+import { MinhaSupervisao } from '@/pages/supervisao/MinhaSupervisao'
+import { PerfilSupervisorPublico } from '@/pages/supervisao/PerfilSupervisorPublico'
 
 export const rotas: RouteObject[] = [
   { path: '/', element: <Navigate to="/inicio" replace /> },
@@ -44,16 +49,11 @@ export const rotas: RouteObject[] = [
           { path: '/pacientes/:id/registros/novo', element: <FormRegistro /> },
           { path: '/pacientes/:id/registros/:registroId/editar', element: <FormRegistro /> },
           { path: '/pacientes/:id/registros/:registroId/historico', element: <HistoricoRegistro /> },
-          {
-            path: '/supervisao',
-            element: (
-              <EmConstrucao
-                titulo="Supervisão"
-                fase="Fase 2"
-                descricao="Convide seu supervisor, leve casos anonimizados para a pauta, receba devolutivas e acumule horas de supervisão."
-              />
-            ),
-          },
+          { path: '/supervisao', element: <MinhaSupervisao /> },
+          { path: '/supervisao/encontrar', element: <EncontrarSupervisor /> },
+          { path: '/supervisao/supervisores/:id', element: <PerfilSupervisorPublico /> },
+          { path: '/convite/:token', element: <AceitarConvite /> },
+          { path: '/perfil', element: <MeuPerfil /> },
           {
             path: '/financeiro',
             element: (

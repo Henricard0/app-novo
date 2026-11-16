@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router'
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation } from 'react-router'
 import { nomeParaExibir, useAuth } from '@/auth/contexto'
 import { Logo } from '@/components/ui/Logo'
+import { useConsulta } from '@/lib/consultorio/useConsulta'
 import { formatarCrp } from '@/lib/crp'
+import { contarSolicitacoesRecebidas } from '@/lib/supervisao/api'
 import { iniciais } from '@/lib/texto'
 import { ITENS_CONSULTORIO } from './itens-menu'
 
@@ -19,6 +21,13 @@ export function LayoutApp() {
   const [rotaAtual, setRotaAtual] = useState(location.pathname)
   const conteudo = useRef<HTMLElement>(null)
   const rotaComFoco = useRef(location.pathname)
+
+  const idUsuario = auth.user?.id ?? ''
+  // Pedidos de supervisão esperando resposta. Atualiza a cada troca de página.
+  const pendentes = useConsulta(`pedidos-recebidos:${idUsuario}:${location.pathname}`, () =>
+    contarSolicitacoesRecebidas(idUsuario),
+  )
+  const totalPendentes = pendentes.dados ?? 0
 
   const nome = nomeParaExibir(auth)
   const crp = formatarCrp(auth.perfil?.crp_region, auth.perfil?.crp_number)
@@ -94,6 +103,12 @@ export function LayoutApp() {
                   className={({ isActive }) => `${CLASSE_ITEM} ${isActive ? ITEM_ATIVO : ITEM_INATIVO}`}
                 >
                   {item.rotulo}
+                  {item.para === '/supervisao' && totalPendentes > 0 ? (
+                    <span className="ml-auto rounded-full bg-ocre px-2 py-0.5 text-xs font-bold text-white">
+                      {totalPendentes}
+                      <span className="sr-only"> {totalPendentes === 1 ? 'pedido novo' : 'pedidos novos'}</span>
+                    </span>
+                  ) : null}
                 </NavLink>
               </li>
             ))}
@@ -113,6 +128,12 @@ export function LayoutApp() {
               <span className="truncate text-xs text-muted">{crp ?? 'Sem CRP cadastrado'}</span>
             </div>
           </div>
+          <Link
+            to="/perfil"
+            className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
+          >
+            Meu perfil
+          </Link>
           <button
             type="button"
             onClick={() => void auth.sair()}

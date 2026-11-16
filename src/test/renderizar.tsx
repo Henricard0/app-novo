@@ -42,6 +42,7 @@ export function renderizarRota(caminho: string, opcoes: Opcoes = {}) {
     user: session?.user ?? null,
     perfil: logado ? perfil : null,
     sair: vi.fn().mockResolvedValue(undefined),
+    recarregarPerfil: vi.fn(),
   }
   const router = createMemoryRouter(rotas, { initialEntries: [caminho] })
   const resultado = render(

@@ -90,3 +90,11 @@ begin
   values (v_marina, v_lucia, v_inicio, v_inicio + interval '50 minutes', 'presencial', 'Sala 1');
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Fase 2a: o Paulo (fictício) aparece na rede de supervisores.
+-- ---------------------------------------------------------------------------
+insert into public.supervisor_profiles (id, offers_supervision, accepting_new, bio, approaches, areas, years_experience, modalities, city, state)
+values ('a1b2c3d4-0000-4000-8000-000000000002', true, true,
+  'Supervisor fictício para testes. Supervisiono casos de ansiedade em TCC.',
+  '{TCC,ACT}', '{Ansiedade}', 12, '{online,presencial}', 'Curitiba', 'PR');

@@ -14,7 +14,8 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 |---|---|
 | 0. Base (projeto, Supabase, login, layout, tokens) | Concluída |
 | 1. Consultório mínimo (pacientes, agenda, prontuário) | Concluída |
-| 2. Supervisão | A fazer |
+| 2a. Rede de supervisores (perfil, busca, pedido, convite por link) | Concluída |
+| 2b. Supervisão (casos, pauta, devolutivas, horas) | A fazer |
 | 3. Planos | A fazer |
 | 4. Estágio | A fazer |
 | 5. Extras | A fazer |
@@ -102,5 +103,10 @@ scripts/           teste do banco sem Docker
 - `clinical_record_versions`: cada edição do texto, da data ou da sessão guarda a versão anterior, gravada pelo próprio banco. Ninguém escreve, altera ou apaga versões.
 - `mover_sessao(id, início, fim, seguintes)`: usada pelo calendário ao arrastar. Respeita a RLS (só move sessões suas) e, se pedido, aplica o mesmo deslocamento às sessões seguintes da série que ainda estão agendadas.
 - `audit_log`: o banco registra quem criou, editou, excluiu, arquivou ou reativou pacientes e registros. Só leitura.
-- O seed traz pacientes, sessões e registros fictícios da Marina para testar.
+- `supervisor_profiles`: cada um edita o próprio; qualquer usuário logado vê os perfis de quem ligou "Ofereço supervisão" **e** tem CRP.
+- `profiles`: além do próprio, cada um vê nome e CRP de quem está na rede, de quem trocou pedido de supervisão com ele e das pontas dos seus vínculos.
+- `supervision_requests`: quem pediu e quem recebeu leem. Só dá para pedir a quem está na rede e aceitando novos. Aceitar, recusar e cancelar só pelas funções `responder_solicitacao` e `cancelar_solicitacao`.
+- `supervision_invites`: só quem criou vê. Aceitar só por `aceitar_convite(token)`, que confere validade, uso único e CRP de quem vai ser supervisor; `ver_convite(token)` mostra quem convidou antes de aceitar.
+- `supervision_links`: as duas pontas leem; nascem só pelas funções acima e terminam por `encerrar_vinculo`. Vínculo **não** dá acesso a pacientes, agenda ou prontuário (testado).
+- O seed traz pacientes, sessões e registros fictícios da Marina e o Paulo como supervisor de exemplo na rede.
 - Dados de exemplo sempre fictícios.

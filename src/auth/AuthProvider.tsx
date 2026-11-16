@@ -7,6 +7,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [carregando, setCarregando] = useState(true)
   const [session, setSession] = useState<Session | null>(null)
   // Perfil guardado junto com o id de quem ele é, para nunca mostrar o perfil de uma sessão anterior.
+  const [versaoPerfil, setVersaoPerfil] = useState(0)
   const [perfilLido, setPerfilLido] = useState<{ id: string; perfil: Perfil | null } | null>(null)
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       ativo = false
     }
-  }, [idUsuario])
+  }, [idUsuario, versaoPerfil])
 
   const perfil = perfilLido && perfilLido.id === idUsuario ? perfilLido.perfil : null
 
@@ -56,9 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
+  const recarregarPerfil = useCallback(() => setVersaoPerfil((v) => v + 1), [])
+
   const valor = useMemo<EstadoAuth>(
-    () => ({ carregando, session, user: session?.user ?? null, perfil, sair }),
-    [carregando, session, perfil, sair],
+    () => ({ carregando, session, user: session?.user ?? null, perfil, sair, recarregarPerfil }),
+    [carregando, session, perfil, sair, recarregarPerfil],
   )
 
   return <ContextoAuth.Provider value={valor}>{children}</ContextoAuth.Provider>

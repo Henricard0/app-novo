@@ -29,10 +29,13 @@ Referência de mercado: o PsicoManager já cobre bem a gestão de consultório (
 
 ## 4. Fluxos
 
-### 4.1 Vínculo de supervisão
-1. O psicólogo convida o supervisor por e-mail, ou o supervisor convida o supervisionando.
-2. Quem não tem conta faz cadastro no plano Supervisor (grátis) a partir do convite.
-3. Ao aceitar, nasce um `supervision_link` com formato (individual ou grupo), frequência, modalidade (online/presencial) e valor opcional.
+### 4.1 Rede de supervisores e vínculo de supervisão
+1. **Rede:** qualquer psicólogo com CRP pode ligar "Ofereço supervisão" em "Meu perfil" e preencher apresentação, formação, abordagens, áreas, anos de experiência, modalidade, formato, cidade/UF e valor (só informativo; o pagamento é combinado fora da plataforma). Só usuários logados veem a rede.
+2. **Encontrar e pedir:** o psicólogo busca na rede (texto, abordagem, modalidade, UF), abre o perfil, confere o CRP pela consulta pública do CFP e envia um pedido com mensagem curta. O supervisor vê nome, CRP e mensagem e aceita ou recusa. Avisos dentro do site (contador no menu).
+3. **Convite por link:** para quem já tem supervisor fora da plataforma, qualquer um dos dois gera um link (vale 14 dias, uso único) e manda por WhatsApp ou e-mail. Quem fica como supervisor precisa ter CRP.
+4. Ao aceitar (pedido ou convite), nasce um `supervision_link` ativo. Qualquer uma das pontas pode encerrar.
+5. Quem não tem conta faz cadastro a partir do convite (o plano Supervisor grátis entra na Fase 3).
+6. **Depois:** selo "CRP verificado", foto no perfil, feed e chat ficam para fases futuras.
 
 ### 4.2 Levar caso para supervisão (tela `LevarCaso.dc.html`)
 1. A partir do paciente, o psicólogo escolhe um ou mais registros do prontuário.
@@ -83,7 +86,10 @@ Status do caso: `rascunho` → `na_pauta` → `discutido` → `devolutiva_recebi
 | `appointments` | `id`, `owner_id`, `patient_id`, `series_id` (sessões semanais), `starts_at`, `ends_at`, `modality`, `location`, `status` (`agendada` \| `realizada` \| `faltou` \| `cancelada`) |
 | `clinical_records` | `id`, `owner_id`, `patient_id`, `appointment_id`, `author_id`, `session_date`, `body`, `status` (`final` \| `pendente` \| `ajuste_pedido` \| `validado`), `created_at`, `updated_by`, `deleted_at`, `deleted_by`, `deleted_reason` |
 | `clinical_record_versions` | `id`, `record_id`, `body`, `created_at`, `created_by` |
-| `supervision_links` | `id`, `supervisor_id`, `supervisee_id`, `group_id`, `format`, `frequency`, `modality`, `status` (`convidado` \| `ativo` \| `encerrado`) |
+| `supervisor_profiles` | `id` (= profiles.id), `offers_supervision`, `accepting_new`, `bio`, `education`, `approaches[]`, `areas[]`, `years_experience`, `modalities[]`, `formats[]`, `city`, `state`, `price_info` |
+| `supervision_requests` | `id`, `requester_id`, `supervisor_id`, `message`, `status` (`pendente` \| `aceita` \| `recusada` \| `cancelada`), `responded_at`, `link_id` |
+| `supervision_invites` | `id`, `token`, `inviter_id`, `inviter_role` (`supervisor` \| `supervisionando`), `expires_at`, `used_at`, `used_by`, `link_id` |
+| `supervision_links` | `id`, `supervisor_id`, `supervisee_id`, `format`, `origin` (`solicitacao` \| `convite`), `status` (`ativo` \| `encerrado`), `ended_at`, `ended_by` (grupo, frequência e modalidade entram na Fase 2b) |
 | `supervision_groups` | `id`, `supervisor_id`, `name` |
 | `supervision_meetings` | `id`, `link_id` ou `group_id`, `scheduled_at`, `duration_min`, `status` |
 | `supervision_cases` | `id`, `supervisee_id`, `link_id`, `meeting_id`, `case_label`, `approach`, `question`, `status` |
@@ -118,7 +124,8 @@ Ainda sem tela desenhada: login e cadastro, aceite de convite, agenda, lista e f
 
 - **Fase 0 — Base:** Vite + React + TS + Tailwind; Supabase local (CLI); autenticação; layout com menu lateral; tokens de design.
 - **Fase 1 — Consultório mínimo:** pacientes, agenda simples, prontuário com versões e soft delete.
-- **Fase 2 — Supervisão:** convites e vínculos, levar caso (anonimização v1), pauta, sala e devolutiva, horas.
+- **Fase 2a — Rede de supervisores:** perfil de supervisor, busca, pedido de supervisão, convite por link, vínculos.
+- **Fase 2b — Supervisão:** levar caso (anonimização v1), pauta, sala e devolutiva, horas, grupos.
 - **Fase 3 — Planos:** plano Supervisor grátis, permissões por plano, cadastro a partir do convite.
 - **Fase 4 — Estágio:** grupos, fila de validação, comentários, assinatura.
 - **Fase 5 — Extras:** financeiro, recibos (Receita Saúde / NFS-e), declarações em PDF, assinatura digital.

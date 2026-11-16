@@ -297,11 +297,230 @@ export type Database = {
         }
         Relationships: []
       }
+      supervision_invites: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          inviter_id: string
+          inviter_role: string
+          link_id: string | null
+          token: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          inviter_id?: string
+          inviter_role: string
+          link_id?: string | null
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          inviter_id?: string
+          inviter_role?: string
+          link_id?: string | null
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_invites_inviter_id_fkey'
+            columns: ['inviter_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_links: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          ended_by: string | null
+          format: string
+          id: string
+          origin: string
+          status: string
+          supervisee_id: string
+          supervisor_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          format?: string
+          id?: string
+          origin: string
+          status?: string
+          supervisee_id: string
+          supervisor_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          format?: string
+          id?: string
+          origin?: string
+          status?: string
+          supervisee_id?: string
+          supervisor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_links_supervisee_id_fkey'
+            columns: ['supervisee_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_links_supervisor_id_fkey'
+            columns: ['supervisor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervision_requests: {
+        Row: {
+          created_at: string
+          id: string
+          link_id: string | null
+          message: string | null
+          requester_id: string
+          responded_at: string | null
+          status: string
+          supervisor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link_id?: string | null
+          message?: string | null
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+          supervisor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link_id?: string | null
+          message?: string | null
+          requester_id?: string
+          responded_at?: string | null
+          status?: string
+          supervisor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervision_requests_requester_id_fkey'
+            columns: ['requester_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'supervision_requests_supervisor_id_fkey'
+            columns: ['supervisor_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      supervisor_profiles: {
+        Row: {
+          accepting_new: boolean
+          approaches: string[]
+          areas: string[]
+          bio: string | null
+          city: string | null
+          created_at: string
+          education: string | null
+          formats: string[]
+          id: string
+          modalities: string[]
+          offers_supervision: boolean
+          price_info: string | null
+          state: string | null
+          updated_at: string
+          years_experience: number | null
+        }
+        Insert: {
+          accepting_new?: boolean
+          approaches?: string[]
+          areas?: string[]
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          education?: string | null
+          formats?: string[]
+          id: string
+          modalities?: string[]
+          offers_supervision?: boolean
+          price_info?: string | null
+          state?: string | null
+          updated_at?: string
+          years_experience?: number | null
+        }
+        Update: {
+          accepting_new?: boolean
+          approaches?: string[]
+          areas?: string[]
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          education?: string | null
+          formats?: string[]
+          id?: string
+          modalities?: string[]
+          offers_supervision?: boolean
+          price_info?: string | null
+          state?: string | null
+          updated_at?: string
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'supervisor_profiles_id_fkey'
+            columns: ['id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      aceitar_convite: { Args: { p_token: string }; Returns: string }
+      cancelar_solicitacao: { Args: { p_id: string }; Returns: undefined }
+      encerrar_vinculo: { Args: { p_id: string }; Returns: undefined }
+      responder_solicitacao: { Args: { p_aceitar: boolean; p_id: string }; Returns: string }
+      ver_convite: {
+        Args: { p_token: string }
+        Returns: {
+          inviter_crp_number: string | null
+          inviter_crp_region: string | null
+          inviter_name: string
+          inviter_role: string
+          valido: boolean
+        }[]
+      }
       excluir_registro_clinico: {
         Args: { p_id: string; p_motivo?: string }
         Returns: undefined

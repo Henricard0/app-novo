@@ -84,11 +84,11 @@ describe('layout do app', () => {
     const usuario = userEvent.setup()
     const { router } = renderizarRota('/inicio', { logado: true })
     await usuario.click(await screen.findByRole('button', { name: 'Menu' }))
-    await usuario.click(screen.getByRole('link', { name: 'Supervisão' }))
-    expect(await screen.findByRole('heading', { level: 1, name: 'Supervisão' })).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/supervisao')
+    await usuario.click(screen.getByRole('link', { name: 'Financeiro' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Financeiro' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/financeiro')
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.getByText(/Em construção · Fase 2/)).toBeInTheDocument()
+    expect(screen.getByText(/Em construção · Fase 5/)).toBeInTheDocument()
   })
 
   it('o botão Sair encerra a sessão', async () => {
