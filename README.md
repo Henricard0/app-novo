@@ -16,7 +16,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 1. Consultório mínimo (pacientes, agenda, prontuário) | Concluída |
 | 2a. Rede de supervisores (perfil, busca, pedido, convite por link) | Concluída |
 | 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas, grupos) | Concluída |
-| 3. Planos e assinatura (Mercado Pago, modo de teste) | Em andamento: falta a conta de teste Comprador e o webhook |
+| 3. Planos e assinatura (Mercado Pago, modo de teste) | Concluída em modo de teste |
 | 4. Estágio | A fazer |
 | 5. Extras | A fazer |
 
@@ -129,6 +129,6 @@ scripts/           teste do banco sem Docker
 - A anonimização (`src/lib/supervisao/anonimizar.ts`) roda no navegador, sem API externa, e a revisão do psicólogo é obrigatória antes de enviar.
 - `profiles.plan` e `profiles.trial_ends_at`: o navegador não consegue mudar (não há grant); só o servidor, depois de confirmar o pagamento na API do Mercado Pago.
 - `subscriptions`: o dono só lê; quem escreve são as Edge Functions `assinatura` (criar, sincronizar, cancelar) e `mercado-pago-webhook` (avisos assinados com `MP_WEBHOOK_SECRET`, conferidos direto na API do Mercado Pago).
-- Limite do plano gratuito: 10 pacientes ativos, aplicado por gatilho no banco (`limitar_pacientes_do_plano`). Teste grátis de 30 dias sem limite.
+- Limites: Gratuito 10 e Básico 30 pacientes ativos; Essencial e Profissional sem limite. Aplicados por gatilho no banco (`limitar_pacientes_do_plano`). Teste grátis de 30 dias do Profissional.
 - O seed traz pacientes, sessões e registros fictícios da Marina e o Paulo como supervisor de exemplo na rede.
 - Dados de exemplo sempre fictícios.

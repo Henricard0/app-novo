@@ -7,7 +7,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 delete from public.supervisor_profiles;
 
-select plan(17);
+select plan(20);
 
 insert into auth.users (id, aud, role, email, raw_user_meta_data) values
   ('11111111-1111-4111-8111-111111111111', 'authenticated', 'authenticated', 'psicologa.teste@example.com',
@@ -26,8 +26,8 @@ insert into public.patients (owner_id, full_name)
   select '11111111-1111-4111-8111-111111111111', 'Paciente Fictício ' || n from generate_series(1, 10) n;
 insert into public.patients (id, owner_id, full_name, archived_at) values
   ('aaaaaaaa-0000-4000-8000-000000000099', '11111111-1111-4111-8111-111111111111', 'Paciente Arquivado', now());
-insert into public.subscriptions (user_id, provider_id, cycle, amount, status) values
-  ('22222222-2222-4222-8222-222222222222', 'mp-fake-1', 'mensal', 38.30, 'ativa');
+insert into public.subscriptions (user_id, provider_id, plan, cycle, amount, status) values
+  ('22222222-2222-4222-8222-222222222222', 'mp-fake-1', 'essencial', 'mensal', 39.90, 'ativa');
 
 select ok((select relrowsecurity from pg_class where oid = 'public.subscriptions'::regclass), 'RLS está ativada em subscriptions');
 select is((select trial_ends_at > now() + interval '29 days' from public.profiles where id = '33333333-3333-4333-8333-333333333333'),
@@ -45,9 +45,9 @@ set local request.jwt.claims = '{"sub": "11111111-1111-4111-8111-111111111111", 
 select results_eq($$ select plano, pacientes_ativos, limite_pacientes from public.meu_plano() $$,
   $$ values ('gratuito'::text, 10, 10) $$, 'psicóloga vê que está no gratuito com 10 de 10 pacientes');
 select throws_ok($$ insert into public.patients (full_name) values ('Paciente 11') $$,
-  'P0001', 'limite de pacientes do plano gratuito', 'no gratuito, o 11º paciente ativo é recusado');
+  'P0001', 'limite de pacientes do plano: 10', 'no gratuito, o 11º paciente ativo é recusado');
 select throws_ok($$ update public.patients set archived_at = null where id = 'aaaaaaaa-0000-4000-8000-000000000099' $$,
-  'P0001', 'limite de pacientes do plano gratuito', 'no gratuito, reativar além de 10 também é recusado');
+  'P0001', 'limite de pacientes do plano: 10', 'no gratuito, reativar além de 10 também é recusado');
 select lives_ok($$ update public.patients set archived_at = now() where full_name = 'Paciente Fictício 1' $$,
   'arquivar continua permitido');
 select lives_ok($$ insert into public.patients (full_name) values ('Paciente na vaga liberada') $$,
@@ -56,8 +56,8 @@ select throws_ok($$ update public.profiles set plan = 'essencial' where id = '11
   '42501', null, 'ninguém se dá o plano pago pelo navegador');
 select throws_ok($$ update public.profiles set trial_ends_at = now() + interval '10 years' where id = '11111111-1111-4111-8111-111111111111' $$,
   '42501', null, 'ninguém estica o próprio teste grátis');
-select throws_ok($$ insert into public.subscriptions (user_id, cycle, amount, status)
-  values ('11111111-1111-4111-8111-111111111111', 'anual', 1, 'ativa') $$, '42501', null, 'ninguém cria assinatura pelo navegador');
+select throws_ok($$ insert into public.subscriptions (user_id, plan, cycle, amount, status)
+  values ('11111111-1111-4111-8111-111111111111', 'profissional', 'anual', 1, 'ativa') $$, '42501', null, 'ninguém cria assinatura pelo navegador');
 select is_empty($$ select 1 from public.subscriptions $$, 'psicóloga não vê a assinatura do supervisor');
 select throws_ok($$ select public.plano_efetivo('22222222-2222-4222-8222-222222222222') $$,
   '42501', null, 'ninguém consulta o plano de outra pessoa');
@@ -67,7 +67,19 @@ reset role;
 set local role authenticated;
 set local request.jwt.claims = '{"sub": "22222222-2222-4222-8222-222222222222", "role": "authenticated"}';
 select is((select plano from public.meu_plano()), 'essencial', 'supervisor vê o Essencial');
+select is((select limite_pacientes from public.meu_plano()), null, 'Essencial não tem limite de pacientes');
 select is((select count(*)::int from public.subscriptions), 1, 'supervisor vê a própria assinatura');
+reset role;
+
+-- Básico: até 30
+reset role;
+update public.profiles set plan = 'basico', trial_ends_at = null where id = '44444444-4444-4444-8444-444444444444';
+set local role authenticated;
+set local request.jwt.claims = '{"sub": "44444444-4444-4444-8444-444444444444", "role": "authenticated"}';
+select lives_ok($$ insert into public.patients (full_name) select 'Paciente ' || n from generate_series(1, 30) n $$,
+  'no Básico cabem 30 pacientes ativos');
+select throws_ok($$ insert into public.patients (full_name) values ('Paciente 31') $$,
+  'P0001', 'limite de pacientes do plano: 30', 'no Básico, o 31º é recusado');
 reset role;
 
 -- Estagiária em teste: sem limite

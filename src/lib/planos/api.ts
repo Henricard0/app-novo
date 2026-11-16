@@ -4,11 +4,53 @@ import type { Resposta } from '@/lib/consultorio/useConsulta'
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/types/database'
 
-export const PRECO_MENSAL = 38.3
-export const PRECO_ANUAL = 383
+export type PlanoPago = 'basico' | 'essencial' | 'profissional'
+export type Plano = 'gratuito' | 'teste' | PlanoPago
+
 export const LIMITE_GRATUITO = 10
 
-export type Plano = 'gratuito' | 'teste' | 'essencial'
+/** Preços e recursos de cada plano pago (o servidor recalcula o preço; aqui é só para mostrar). */
+export const PLANOS_PAGOS: ReadonlyArray<{
+  id: PlanoPago
+  nome: string
+  mensal: number
+  anual: number
+  resumo: string
+  recursos: string[]
+}> = [
+  {
+    id: 'basico',
+    nome: 'Básico',
+    mensal: 29.9,
+    anual: 299,
+    resumo: 'Para quem está crescendo o consultório.',
+    recursos: ['Tudo do Gratuito', 'Até 30 pacientes ativos'],
+  },
+  {
+    id: 'essencial',
+    nome: 'Essencial',
+    mensal: 39.9,
+    anual: 399,
+    resumo: 'O consultório completo, sem limites.',
+    recursos: ['Tudo do Básico', 'Pacientes ilimitados', 'Emissão de NFS-e (em breve)'],
+  },
+  {
+    id: 'profissional',
+    nome: 'Profissional',
+    mensal: 49.9,
+    anual: 499,
+    resumo: 'Para quem quer o consultório inteiro num lugar só.',
+    recursos: ['Tudo do Essencial', 'Financeiro e recibos (em breve)', 'Declarações em PDF e assinatura digital (em breve)'],
+  },
+]
+
+export const NOME_DO_PLANO: Record<Plano, string> = {
+  gratuito: 'Gratuito',
+  teste: 'Teste grátis do Profissional',
+  basico: 'Básico',
+  essencial: 'Essencial',
+  profissional: 'Profissional',
+}
 export type MeuPlano = { plano: Plano; trial_ends_at: string | null; pacientes_ativos: number; limite_pacientes: number | null }
 export type Assinatura = Tables<'subscriptions'>
 
@@ -46,9 +88,10 @@ async function chamarAssinatura<T>(corpo: Record<string, unknown>): Promise<{ er
 }
 
 /** Cria a assinatura e devolve a página de pagamento do Mercado Pago. */
-export function iniciarAssinatura(ciclo: 'mensal' | 'anual', recemFormado: boolean) {
+export function iniciarAssinatura(plano: PlanoPago, ciclo: 'mensal' | 'anual', recemFormado: boolean) {
   return chamarAssinatura<{ url: string }>({
     acao: 'criar',
+    plano,
     ciclo,
     recemFormado,
     retorno: `${window.location.origin}/planos?retorno=1`,

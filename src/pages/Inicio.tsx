@@ -50,7 +50,7 @@ export function Inicio() {
 
       {diasRestantes !== null ? (
         <Aviso tom="info">
-          Você está no teste grátis do Essencial: {diasRestantes} {diasRestantes === 1 ? 'dia restante' : 'dias restantes'}.{' '}
+          Você está no teste grátis do Profissional: {diasRestantes} {diasRestantes === 1 ? 'dia restante' : 'dias restantes'}.{' '}
           <Link to="/planos" className="font-semibold">
             Ver planos
           </Link>

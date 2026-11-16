@@ -17,7 +17,8 @@ export function traduzirErroBanco(erro: unknown): string {
       return 'Algum dado está fora do formato aceito. Confira os campos e tente de novo.'
     case 'P0001':
       if (/limite de pacientes/.test((e as { message?: string }).message ?? '')) {
-        return 'Você chegou ao limite de 10 pacientes ativos do plano gratuito. Arquive um paciente ou assine o Essencial em “Planos”.'
+        const limite = /(\d+)/.exec((e as { message?: string }).message ?? '')?.[1] ?? '10'
+        return `Você chegou ao limite de ${limite} pacientes ativos do seu plano. Arquive um paciente ou mude de plano em “Planos”.`
       }
       return ERRO_GENERICO
     case 'P0002':

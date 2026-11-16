@@ -20,13 +20,18 @@ Referência de mercado: o PsicoManager já cobre bem a gestão de consultório (
 
 | Plano | Para quem | O que libera |
 |---|---|---|
-| Supervisor (grátis) | Quem só supervisiona | Pauta, sala de supervisão, devolutivas, registro de horas e declarações, validação de estágio |
-| Essencial (pago) | Psicólogos | Consultório completo (agenda, pacientes, prontuário, financeiro) + supervisão, como supervisionando e como supervisor |
+| Gratuito | Quem supervisiona ou está começando | Supervisão completa e consultório com até 10 pacientes ativos |
+| Básico, Essencial, Profissional (pagos) | Psicólogos | Ver abaixo |
 
 - O supervisor escolhe se assina ou não. Sem assinar, as áreas de consultório aparecem bloqueadas com convite para o Essencial (ver `docs/referencia-telas/Supervisor.dc.html`).
-- Implementar como permissões por plano: coluna `profiles.plan` e uma função `has_feature(feature text)` usada no front e nas policies/funções do banco.
-- **Preços (decididos pelo Henrique em 16/11/2026):** Essencial a **R$ 38,30/mês** ou **R$ 383/ano** (dois meses grátis); **30 dias grátis** sem cartão; **50% de desconto no primeiro ano para recém-formados**. Plano Supervisor grátis.
-- **Plano gratuito:** além do Supervisor, haverá um plano gratuito com menos funcionalidades. O que fica de fora é definido na Fase 3.
+- Implementação: `profiles.plan` (só o servidor muda), `plano_efetivo()`, `limite_de_pacientes()` e gatilho no banco; assinaturas em `subscriptions`.
+- **Planos e preços (decididos pelo Henrique em 16/11/2026):**
+  - **Gratuito** (R$ 0): supervisão completa (rede, casos, devolutivas, horas, grupos) e até **10 pacientes ativos**. Substitui o antigo "Supervisor grátis".
+  - **Básico** (R$ 29,90/mês ou R$ 299/ano): até **30 pacientes ativos**.
+  - **Essencial** (R$ 39,90/mês ou R$ 399/ano): pacientes ilimitados e **emissão de NFS-e**.
+  - **Profissional** (R$ 49,90/mês ou R$ 499/ano): tudo do Essencial + financeiro, recibos, declarações em PDF e assinatura digital.
+  - **30 dias grátis do Profissional** ao se cadastrar, sem cartão; **50% no primeiro ano para recém-formados** em qualquer plano pago.
+  - Arquivados não contam no limite de pacientes. O limite é aplicado no banco.
 - **Supervisionando não precisa de plano pago** para usar a plataforma, encontrar supervisor e levar casos. A supervisão é cobrada pelo supervisor, combinada entre os dois, fora da plataforma.
 - **Pagamento dos planos:** Mercado Pago (assinatura). Até haver CNPJ, só em modo de teste.
 

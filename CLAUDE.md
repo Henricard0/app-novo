@@ -35,7 +35,6 @@ Plataforma web de gestão de consultório para psicólogos, com **supervisão cl
 
 - Em clínica-escola, quem paga as contas dos estagiários (a instituição?) e a quem pertencem os pacientes do serviço?
 - Provedor de assinatura digital.
-- O que fica de fora do plano gratuito.
 - Nome final do produto.
 
-Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; preços do Essencial (R$ 38,30/mês, R$ 383/ano, 30 dias grátis, 50% para recém-formados); pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos.
+Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; planos Gratuito (10 pacientes), Básico R$ 29,90 (30 pacientes), Essencial R$ 39,90 (ilimitado + NFS-e) e Profissional R$ 49,90 (tudo), com 30 dias grátis do Profissional e 50% para recém-formados; pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos.

@@ -75,12 +75,11 @@ Deno.serve(async (req) => {
     .select('user_id')
     .maybeSingle()
   if (linha) {
-    const { count } = await admin
-      .from('subscriptions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', linha.user_id)
-      .eq('status', 'ativa')
-    await admin.from('profiles').update({ plan: (count ?? 0) > 0 ? 'essencial' : 'gratuito' }).eq('id', linha.user_id)
+    // Vale o plano mais completo entre as assinaturas ativas; sem nenhuma, gratuito.
+    const ordem = ['basico', 'essencial', 'profissional']
+    const { data: ativas } = await admin.from('subscriptions').select('plan').eq('user_id', linha.user_id).eq('status', 'ativa')
+    const melhor = (ativas ?? []).map((a) => a.plan as string).sort((a, b) => ordem.indexOf(b) - ordem.indexOf(a))[0]
+    await admin.from('profiles').update({ plan: melhor ?? 'gratuito' }).eq('id', linha.user_id)
   }
   return new Response('ok')
 })

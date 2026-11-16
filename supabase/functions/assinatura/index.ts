@@ -1,7 +1,8 @@
 // Assinatura do plano Essencial pelo Mercado Pago (Fase 3).
 //
 // Ações (POST, com o login do usuário):
-//   { acao: 'criar', ciclo: 'mensal' | 'anual', recemFormado: boolean, retorno: string }
+//   { acao: 'criar', plano: 'basico' | 'essencial' | 'profissional', ciclo: 'mensal' | 'anual',
+//     recemFormado: boolean, retorno: string }
 //     → cria a assinatura (preapproval) e devolve a URL de pagamento do Mercado Pago.
 //   { acao: 'sincronizar' } → consulta o Mercado Pago e atualiza o plano.
 //   { acao: 'cancelar' }    → cancela a assinatura.
@@ -13,7 +14,14 @@
 import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2'
 
 const MP = 'https://api.mercadopago.com'
-const PRECOS = { mensal: 38.3, anual: 383 } as const
+const PRECOS = {
+  basico: { mensal: 29.9, anual: 299 },
+  essencial: { mensal: 39.9, anual: 399 },
+  profissional: { mensal: 49.9, anual: 499 },
+} as const
+const NOMES = { basico: 'Básico', essencial: 'Essencial', profissional: 'Profissional' } as const
+type PlanoPago = keyof typeof PRECOS
+const ORDEM: PlanoPago[] = ['basico', 'essencial', 'profissional']
 const ORIGENS_PERMITIDAS = (Deno.env.get('SITE_ORIGINS') ??
   'https://triade-hazel.vercel.app,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:4173')
   .split(',')
@@ -52,13 +60,16 @@ export async function aplicarSituacao(admin: SupabaseClient, mp: Preapproval) {
     .select('user_id')
     .maybeSingle()
   if (!assinatura) return null
-  // Essencial enquanto houver alguma assinatura ativa do usuário.
-  const { count } = await admin
+  // Vale o plano mais completo entre as assinaturas ativas; sem nenhuma, gratuito.
+  const { data: ativas } = await admin
     .from('subscriptions')
-    .select('id', { count: 'exact', head: true })
+    .select('plan')
     .eq('user_id', assinatura.user_id)
     .eq('status', 'ativa')
-  await admin.from('profiles').update({ plan: (count ?? 0) > 0 ? 'essencial' : 'gratuito' }).eq('id', assinatura.user_id)
+  const melhor = (ativas ?? [])
+    .map((a) => a.plan as PlanoPago)
+    .sort((a, b) => ORDEM.indexOf(b) - ORDEM.indexOf(a))[0]
+  await admin.from('profiles').update({ plan: melhor ?? 'gratuito' }).eq('id', assinatura.user_id)
   return status
 }
 
@@ -76,7 +87,7 @@ Deno.serve(async (req) => {
   if (!user) return resposta({ erro: 'Entre na sua conta.' }, 401)
   const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
 
-  let corpo: { acao?: string; ciclo?: string; recemFormado?: boolean; retorno?: string }
+  let corpo: { acao?: string; plano?: string; ciclo?: string; recemFormado?: boolean; retorno?: string }
   try {
     corpo = await req.json()
   } catch {
@@ -87,6 +98,8 @@ Deno.serve(async (req) => {
     if (corpo.acao === 'criar') {
       const ciclo = corpo.ciclo === 'anual' ? 'anual' : corpo.ciclo === 'mensal' ? 'mensal' : null
       if (!ciclo) return resposta({ erro: 'Escolha mensal ou anual.' }, 400)
+      const plano = ORDEM.includes(corpo.plano as PlanoPago) ? (corpo.plano as PlanoPago) : null
+      if (!plano) return resposta({ erro: 'Escolha um plano.' }, 400)
       let retorno: URL
       try {
         retorno = new URL(corpo.retorno ?? '')
@@ -96,12 +109,12 @@ Deno.serve(async (req) => {
       if (!ORIGENS_PERMITIDAS.includes(retorno.origin)) return resposta({ erro: 'Endereço de retorno não permitido.' }, 400)
 
       const recemFormado = corpo.recemFormado === true
-      const valor = Math.round(PRECOS[ciclo] * (recemFormado ? 0.5 : 1) * 100) / 100
+      const valor = Math.round(PRECOS[plano][ciclo] * (recemFormado ? 0.5 : 1) * 100) / 100
       const resp = await chamarMP('/preapproval', {
         method: 'POST',
         headers: { 'X-Idempotency-Key': crypto.randomUUID() },
         body: JSON.stringify({
-          reason: `Tríade Essencial (${ciclo})${recemFormado ? ' · recém-formado' : ''}`,
+          reason: `Tríade ${NOMES[plano]} (${ciclo})${recemFormado ? ' · recém-formado' : ''}`,
           external_reference: user.id,
           // No modo de teste, o pagador precisa ser a conta de teste "Comprador".
           payer_email: Deno.env.get('MP_PAYER_EMAIL_TESTE') ?? user.email,
@@ -123,6 +136,7 @@ Deno.serve(async (req) => {
       const { error } = await admin.from('subscriptions').insert({
         user_id: user.id,
         provider_id: mp.id,
+        plan: plano,
         cycle: ciclo,
         amount: valor,
         new_graduate_discount: recemFormado,

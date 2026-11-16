@@ -11,7 +11,7 @@ import { Vazio } from '@/components/ui/Vazio'
 import { listarPacientes } from '@/lib/consultorio/api'
 import { idade } from '@/lib/consultorio/formato'
 import { useConsulta } from '@/lib/consultorio/useConsulta'
-import { LIMITE_GRATUITO, buscarMeuPlano } from '@/lib/planos/api'
+import { NOME_DO_PLANO, buscarMeuPlano } from '@/lib/planos/api'
 import { useTituloPagina } from '@/lib/titulo'
 
 /** Compara sem acento e sem diferenciar maiúsculas. */
@@ -23,7 +23,7 @@ export function ListaPacientes() {
   useTituloPagina('Pacientes')
   const { carregando, dados, erro } = useConsulta('pacientes', listarPacientes)
   const plano = useConsulta('meu-plano', buscarMeuPlano)
-  const noGratuito = plano.dados?.plano === 'gratuito'
+  const limite = plano.dados?.limite_pacientes ?? null
   const [busca, setBusca] = useState('')
   const [verArquivados, setVerArquivados] = useState(false)
 
@@ -60,11 +60,11 @@ export function ListaPacientes() {
         />
       </div>
 
-      {noGratuito ? (
+      {limite && plano.dados ? (
         <Aviso tom="info">
-          Plano gratuito: {totalAtivos} de {LIMITE_GRATUITO} pacientes ativos. Pacientes arquivados não contam.{' '}
+          Plano {NOME_DO_PLANO[plano.dados.plano]}: {totalAtivos} de {limite} pacientes ativos. Pacientes arquivados não contam.{' '}
           <Link to="/planos" className="font-semibold">
-            Conhecer o Essencial
+            Ver planos
           </Link>
         </Aviso>
       ) : null}

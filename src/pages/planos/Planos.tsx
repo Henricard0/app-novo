@@ -11,8 +11,8 @@ import { formatarData } from '@/lib/consultorio/formato'
 import { useConsulta } from '@/lib/consultorio/useConsulta'
 import {
   LIMITE_GRATUITO,
-  PRECO_ANUAL,
-  PRECO_MENSAL,
+  NOME_DO_PLANO,
+  PLANOS_PAGOS,
   buscarMeuPlano,
   cancelarAssinatura,
   diasDeTeste,
@@ -20,6 +20,7 @@ import {
   iniciarAssinatura,
   listarAssinaturas,
   sincronizarAssinatura,
+  type PlanoPago,
 } from '@/lib/planos/api'
 import { useTituloPagina } from '@/lib/titulo'
 
@@ -31,7 +32,21 @@ const RECURSOS_GRATUITO = [
   'Supervisionar colegas e grupos',
   `Agenda e prontuário para até ${LIMITE_GRATUITO} pacientes ativos`,
 ]
-const RECURSOS_ESSENCIAL = ['Tudo do plano gratuito', 'Pacientes ilimitados', 'Financeiro, recibos e documentos (em breve)']
+
+function Lista({ itens }: { itens: string[] }) {
+  return (
+    <ul className="flex flex-col gap-2 text-[15px]">
+      {itens.map((r) => (
+        <li key={r} className="flex gap-2">
+          <span aria-hidden="true" className="text-pine">
+            ✓
+          </span>
+          {r}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 /** /planos — e volta do Mercado Pago em /planos?retorno=1 */
 export function Planos() {
@@ -43,10 +58,12 @@ export function Planos() {
   const [recemFormado, setRecemFormado] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
-  const [ocupado, setOcupado] = useState(false)
+  const [ocupado, setOcupado] = useState<PlanoPago | 'cancelar' | null>(null)
   const [confirmandoCancelamento, setConfirmandoCancelamento] = useState(false)
   const voltouDoPagamento = params.get('retorno') === '1'
   const sincronizou = useRef(false)
+  const { recarregar: recarregarPlano } = plano
+  const { recarregar: recarregarAssinaturas } = assinaturas
 
   // Ao voltar do Mercado Pago, confere a situação direto com ele (pelo servidor).
   useEffect(() => {
@@ -57,27 +74,26 @@ export function Planos() {
       else
         setAviso(
           r.dados?.situacao === 'ativa'
-            ? 'Pagamento confirmado. Bem-vindo ao Essencial!'
+            ? 'Pagamento confirmado. Seu plano já está ativo!'
             : 'Recebemos sua assinatura. O plano muda assim que o Mercado Pago confirmar o pagamento.',
         )
       setParams({}, { replace: true })
-      plano.recarregar()
-      assinaturas.recarregar()
+      recarregarPlano()
+      recarregarAssinaturas()
     })
-  }, [voltouDoPagamento, setParams, plano, assinaturas])
+  }, [voltouDoPagamento, setParams, recarregarPlano, recarregarAssinaturas])
 
   if (plano.carregando || assinaturas.carregando) return <TelaCarregando />
   const meu = plano.dados
   const ativa = (assinaturas.dados ?? []).find((a) => a.status === 'ativa' || a.status === 'pausada')
-  const valorMensal = PRECO_MENSAL * (recemFormado ? 0.5 : 1)
-  const valorAnual = PRECO_ANUAL * (recemFormado ? 0.5 : 1)
+  const fator = recemFormado ? 0.5 : 1
 
-  async function assinar() {
-    setOcupado(true)
+  async function assinar(id: PlanoPago) {
+    setOcupado(id)
     setErro(null)
-    const r = await iniciarAssinatura(ciclo, recemFormado)
+    const r = await iniciarAssinatura(id, ciclo, recemFormado)
     if (r.erro || !r.dados?.url) {
-      setOcupado(false)
+      setOcupado(null)
       setErro(r.erro ?? 'Não foi possível abrir o pagamento.')
       return
     }
@@ -85,15 +101,15 @@ export function Planos() {
   }
 
   async function cancelar() {
-    setOcupado(true)
+    setOcupado('cancelar')
     setErro(null)
     const r = await cancelarAssinatura()
-    setOcupado(false)
+    setOcupado(null)
     setConfirmandoCancelamento(false)
     if (r.erro) setErro(r.erro)
     else setAviso('Assinatura cancelada. Você voltou para o plano gratuito.')
-    plano.recarregar()
-    assinaturas.recarregar()
+    recarregarPlano()
+    recarregarAssinaturas()
   }
 
   return (
@@ -106,123 +122,113 @@ export function Planos() {
       {meu ? (
         <section aria-label="Seu plano" className="flex flex-wrap items-center gap-3 rounded-card border border-border bg-surface p-5">
           <span className="text-sm font-semibold text-ink-2">Seu plano:</span>
-          {meu.plano === 'essencial' ? (
-            <>
-              <Etiqueta tom="ok">Essencial</Etiqueta>
-              {ativa ? (
-                <span className="text-sm text-muted">
-                  {ativa.cycle === 'anual' ? 'Anual' : 'Mensal'} · {emReais(Number(ativa.amount))}
-                  {ativa.next_payment_at ? ` · próxima cobrança em ${formatarData(new Date(ativa.next_payment_at))}` : ''}
-                </span>
-              ) : null}
-            </>
-          ) : meu.plano === 'teste' ? (
-            <>
-              <Etiqueta tom="atencao">Teste grátis do Essencial</Etiqueta>
-              <span className="text-sm text-muted">
-                {diasDeTeste(meu.trial_ends_at)} {diasDeTeste(meu.trial_ends_at) === 1 ? 'dia restante' : 'dias restantes'}. Depois, se não assinar,
-                você continua no gratuito, sem perder nada.
-              </span>
-            </>
-          ) : (
-            <>
-              <Etiqueta>Gratuito</Etiqueta>
-              <span className="text-sm text-muted">
-                {meu.pacientes_ativos} de {LIMITE_GRATUITO} pacientes ativos
-              </span>
-            </>
-          )}
+          <Etiqueta tom={meu.plano === 'gratuito' ? 'neutro' : meu.plano === 'teste' ? 'atencao' : 'ok'}>{NOME_DO_PLANO[meu.plano]}</Etiqueta>
+          <span className="text-sm text-muted">
+            {meu.plano === 'teste'
+              ? `${diasDeTeste(meu.trial_ends_at)} ${diasDeTeste(meu.trial_ends_at) === 1 ? 'dia restante' : 'dias restantes'}. Depois, se não assinar, você continua no Gratuito, sem perder nada.`
+              : meu.limite_pacientes
+                ? `${meu.pacientes_ativos} de ${meu.limite_pacientes} pacientes ativos`
+                : ''}
+            {ativa
+              ? ` ${ativa.cycle === 'anual' ? 'Anual' : 'Mensal'} · ${emReais(Number(ativa.amount))}${ativa.next_payment_at ? ` · próxima cobrança em ${formatarData(new Date(ativa.next_payment_at))}` : ''}`
+              : ''}
+          </span>
+          {ativa ? (
+            <Botao variante="secundario" className="ml-auto" onClick={() => setConfirmandoCancelamento(true)} disabled={Boolean(ocupado)}>
+              Cancelar assinatura
+            </Botao>
+          ) : null}
         </section>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <section aria-labelledby="titulo-gratuito" className="flex flex-col gap-4 rounded-card border border-border bg-surface p-5 sm:p-6">
+      <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <fieldset className="flex flex-col gap-1">
+          <legend className="mb-1 text-sm font-semibold text-ink-2">Forma de cobrança</legend>
+          <div className="flex flex-wrap gap-x-6">
+            {(['anual', 'mensal'] as const).map((c) => (
+              <label key={c} className="flex min-h-11 items-center gap-2.5 text-[15px] text-ink-2">
+                <input type="radio" name="ciclo" checked={ciclo === c} onChange={() => setCiclo(c)} className="size-5 accent-pine" />
+                {c === 'anual' ? 'Anual (2 meses grátis)' : 'Mensal'}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <div>
+          <CampoCaixa
+            rotulo="Me formei há menos de 1 ano (50% no primeiro ano)"
+            checked={recemFormado}
+            onChange={(e) => setRecemFormado(e.target.checked)}
+          />
+          <p className="text-[13px] text-muted">Podemos pedir a data de inscrição no CRP para confirmar.</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <section aria-labelledby="titulo-gratuito" className="flex flex-col gap-4 rounded-card border border-border bg-surface p-5">
           <div className="flex flex-col gap-1">
             <h2 id="titulo-gratuito" className="text-xl font-bold">
               Gratuito
             </h2>
-            <p className="text-[28px] font-bold">R$ 0</p>
+            <p className="text-[26px] font-bold">R$ 0</p>
             <p className="text-sm text-muted">Para quem supervisiona ou está começando.</p>
           </div>
-          <ul className="flex flex-col gap-2 text-[15px]">
-            {RECURSOS_GRATUITO.map((r) => (
-              <li key={r} className="flex gap-2">
-                <span aria-hidden="true" className="text-pine">✓</span>
-                {r}
-              </li>
-            ))}
-          </ul>
+          <Lista itens={RECURSOS_GRATUITO} />
         </section>
 
-        <section
-          aria-labelledby="titulo-essencial"
-          className="flex flex-col gap-4 rounded-card border-2 border-pine bg-surface p-5 sm:p-6"
-        >
-          <div className="flex flex-col gap-1">
-            <h2 id="titulo-essencial" className="flex items-center gap-2 text-xl font-bold">
-              Essencial <Etiqueta tom="ok">30 dias grátis</Etiqueta>
-            </h2>
-            <p className="text-[28px] font-bold">
-              {ciclo === 'anual' ? emReais(valorAnual) : emReais(valorMensal)}
-              <span className="text-base font-normal text-muted">{ciclo === 'anual' ? '/ano' : '/mês'}</span>
-            </p>
-            <p className="text-sm text-muted">
-              {ciclo === 'anual'
-                ? `Equivale a ${emReais(valorAnual / 12)} por mês: dois meses grátis.`
-                : `Ou ${emReais(valorAnual)} por ano, com dois meses grátis.`}
-              {recemFormado ? ' Valor com 50% de desconto no primeiro ano.' : ''}
-            </p>
-          </div>
-          <ul className="flex flex-col gap-2 text-[15px]">
-            {RECURSOS_ESSENCIAL.map((r) => (
-              <li key={r} className="flex gap-2">
-                <span aria-hidden="true" className="text-pine">✓</span>
-                {r}
-              </li>
-            ))}
-          </ul>
-
-          {meu?.plano === 'essencial' && ativa ? (
-            <Botao variante="secundario" onClick={() => setConfirmandoCancelamento(true)} disabled={ocupado}>
-              Cancelar assinatura
-            </Botao>
-          ) : (
-            <>
-              <fieldset className="flex flex-col gap-1">
-                <legend className="mb-1 text-sm font-semibold text-ink-2">Forma de cobrança</legend>
-                <div className="flex flex-wrap gap-x-6">
-                  {(['anual', 'mensal'] as const).map((c) => (
-                    <label key={c} className="flex min-h-11 items-center gap-2.5 text-[15px] text-ink-2">
-                      <input
-                        type="radio"
-                        name="ciclo"
-                        checked={ciclo === c}
-                        onChange={() => setCiclo(c)}
-                        className="size-5 accent-pine"
-                      />
-                      {c === 'anual' ? `Anual (${emReais(PRECO_ANUAL)})` : `Mensal (${emReais(PRECO_MENSAL)})`}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              <div>
-                <CampoCaixa
-                  rotulo="Me formei há menos de 1 ano (50% de desconto no primeiro ano)"
-                  checked={recemFormado}
-                  onChange={(e) => setRecemFormado(e.target.checked)}
-                />
-                <p className="text-[13px] text-muted">Podemos pedir a data de inscrição no CRP para confirmar.</p>
+        {PLANOS_PAGOS.map((p) => {
+          const preco = (ciclo === 'anual' ? p.anual : p.mensal) * fator
+          const destaque = p.id === 'essencial'
+          const atual = meu?.plano === p.id
+          return (
+            <section
+              key={p.id}
+              aria-labelledby={`titulo-${p.id}`}
+              className={`flex flex-col gap-4 rounded-card bg-surface p-5 ${destaque ? 'border-2 border-pine' : 'border border-border'}`}
+            >
+              <div className="flex flex-col gap-1">
+                <h2 id={`titulo-${p.id}`} className="flex flex-wrap items-center gap-2 text-xl font-bold">
+                  {p.nome}
+                  {destaque ? <Etiqueta tom="ok">Mais escolhido</Etiqueta> : null}
+                </h2>
+                <p className="text-[26px] font-bold">
+                  {emReais(preco)}
+                  <span className="text-base font-normal text-muted">{ciclo === 'anual' ? '/ano' : '/mês'}</span>
+                </p>
+                <p className="text-sm text-muted">
+                  {ciclo === 'anual' ? `Equivale a ${emReais(preco / 12)} por mês.` : `Ou ${emReais(p.anual * fator)} por ano.`}
+                  {recemFormado ? ' Com 50% de desconto no primeiro ano.' : ''}
+                </p>
+                <p className="text-sm text-ink-2">{p.resumo}</p>
               </div>
-              <Botao onClick={assinar} carregando={ocupado} textoCarregando="Abrindo o Mercado Pago…">
-                Assinar com Mercado Pago
-              </Botao>
-              <p className="text-[13px] text-muted">
-                O pagamento acontece na página do Mercado Pago. O Tríade não vê nem guarda os dados do seu cartão. Cancele quando quiser.
-              </p>
-            </>
-          )}
-        </section>
+              <Lista itens={p.recursos} />
+              <div className="mt-auto">
+                {atual ? (
+                  <Etiqueta tom="ok">Seu plano atual</Etiqueta>
+                ) : ativa ? (
+                  <p className="text-[13px] text-muted">Para trocar de plano, cancele o atual e assine o novo.</p>
+                ) : (
+                  <Botao
+                    className="w-full"
+                    variante={destaque ? 'primario' : 'secundario'}
+                    onClick={() => assinar(p.id)}
+                    carregando={ocupado === p.id}
+                    textoCarregando="Abrindo o Mercado Pago…"
+                    disabled={Boolean(ocupado)}
+                    aria-label={`Assinar o plano ${p.nome} com Mercado Pago`}
+                  >
+                    Assinar {p.nome}
+                  </Botao>
+                )}
+              </div>
+            </section>
+          )
+        })}
       </div>
+
+      <p className="text-[13px] text-muted">
+        O pagamento acontece na página do Mercado Pago. O Tríade não vê nem guarda os dados do seu cartão. Cancele quando quiser. Funções
+        marcadas como “em breve” chegam nas próximas fases, sem mudar o preço.
+      </p>
 
       {MODO_TESTE ? (
         <Aviso tom="info">
@@ -236,11 +242,11 @@ export function Planos() {
           reativar pacientes dentro do limite.
         </p>
         <div className="flex flex-col gap-2">
-          <Botao className="bg-danger hover:bg-danger" carregando={ocupado} onClick={cancelar}>
+          <Botao className="bg-danger hover:bg-danger" carregando={ocupado === 'cancelar'} onClick={cancelar}>
             Cancelar assinatura
           </Botao>
           <Botao variante="secundario" onClick={() => setConfirmandoCancelamento(false)}>
-            Manter o Essencial
+            Manter meu plano
           </Botao>
         </div>
       </Dialogo>
