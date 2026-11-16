@@ -168,7 +168,7 @@ export async function criarGrupo(nome: string): Promise<Resultado> {
 }
 
 export async function definirGrupo(linkId: string, grupoId: string | null): Promise<Resultado> {
-  const { error } = await supabase.rpc('definir_grupo', { p_link: linkId, p_group: grupoId })
+  const { error } = await supabase.rpc('definir_grupo', { p_link: linkId, p_group: grupoId as string })
   return resultado(error)
 }
 

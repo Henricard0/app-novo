@@ -9,6 +9,7 @@ create extension if not exists pgtap with schema extensions;
 
 -- Os testes montam a própria rede: tira o supervisor de exemplo do seed (desfeito no rollback).
 delete from public.supervisor_profiles;
+update public.accountant_profiles set listed = false;
 
 select plan(38);
 

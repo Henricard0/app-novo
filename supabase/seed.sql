@@ -4,6 +4,7 @@
 --   marina.costa@example.com   Psicóloga, CRP 08/12345
 --   paulo.andrade@example.com  Psicólogo e supervisor, CRP 08/04567
 --   bianca.lima@example.com    Estagiária (sem CRP)
+--   carla.souza@example.com    Contadora, CRC-PR 12345 (área do contador; exige verificação em duas etapas)
 
 do $$
 declare
@@ -17,7 +18,9 @@ begin
       ('a1b2c3d4-0000-4000-8000-000000000002'::uuid, 'paulo.andrade@example.com',
         '{"full_name": "Paulo Andrade", "crp_region": "08", "crp_number": "4567"}'::jsonb),
       ('a1b2c3d4-0000-4000-8000-000000000003'::uuid, 'bianca.lima@example.com',
-        '{"full_name": "Bianca Lima"}'::jsonb)
+        '{"full_name": "Bianca Lima"}'::jsonb),
+      ('a1b2c3d4-0000-4000-8000-000000000004'::uuid, 'carla.souza@example.com',
+        '{"full_name": "Carla Souza", "account_type": "contador", "crc_state": "PR", "crc_number": "12345", "crc_category": "contador"}'::jsonb)
     ) as t (id, email, meta)
   loop
     insert into auth.users (
@@ -98,3 +101,25 @@ insert into public.supervisor_profiles (id, offers_supervision, accepting_new, b
 values ('a1b2c3d4-0000-4000-8000-000000000002', true, true,
   'Supervisor fictício para testes. Supervisiono casos de ansiedade em TCC.',
   '{TCC,ACT}', '{Ansiedade}', 12, '{online,presencial}', 'Curitiba', 'PR');
+
+-- ---------------------------------------------------------------------------
+-- Financeiro (fictício): valor das sessões da Marina e algumas despesas.
+-- ---------------------------------------------------------------------------
+update public.patients set default_fee = 180 where owner_id = 'a1b2c3d4-0000-4000-8000-000000000001';
+update public.appointments set fee = 180 where owner_id = 'a1b2c3d4-0000-4000-8000-000000000001';
+update public.appointments
+   set payment_status = 'pago', payment_method = 'pix',
+       paid_on = (starts_at at time zone 'America/Sao_Paulo')::date
+ where owner_id = 'a1b2c3d4-0000-4000-8000-000000000001' and status = 'realizada'
+   and starts_at < now() - interval '8 days';
+insert into public.expenses (owner_id, spent_on, category, description, amount) values
+  ('a1b2c3d4-0000-4000-8000-000000000001', date_trunc('month', current_date)::date + 4, 'aluguel', 'Sala (fictício)', 900),
+  ('a1b2c3d4-0000-4000-8000-000000000001', date_trunc('month', current_date)::date + 9, 'supervisao', 'Supervisão com Paulo (fictício)', 250);
+
+-- Fase 6: a Carla (fictícia) aparece na rede de contadores.
+update public.accountant_profiles
+   set listed = true, firm_name = 'Souza Contabilidade (fictícia)',
+       bio = 'Contadora fictícia para testes. Atendo psicólogos no carnê-leão e no Simples Nacional.',
+       specialties = '{carne_leao,simples_nacional,abertura_empresa}', state = 'PR', city = 'Curitiba',
+       serves_nationwide = true, price_info = 'A partir de R$ 150 por mês (fictício)'
+ where id = 'a1b2c3d4-0000-4000-8000-000000000004';

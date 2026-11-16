@@ -6,6 +6,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 delete from public.supervisor_profiles;
+update public.accountant_profiles set listed = false;
 
 select plan(20);
 
