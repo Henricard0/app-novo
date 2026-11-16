@@ -136,8 +136,9 @@ Ainda sem tela desenhada: login e cadastro, aceite de convite, agenda, lista e f
 - **Fase 2a — Rede de supervisores:** perfil de supervisor, busca, pedido de supervisão, convite por link, vínculos.
 - **Fase 2b — Supervisão:** levar caso (anonimização v1), pauta, sala e devolutiva, horas, grupos.
 - **Fase 3 — Planos:** plano Supervisor grátis, permissões por plano, cadastro a partir do convite.
-- **Fase 4 — Estágio:** grupos, fila de validação, comentários, assinatura.
+- **Fase 4 — Estágio:** **suspensa** (decisão do Henrique em 16/11/2026). Exige contrato de estágio registrado nos órgãos competentes e/ou convênio com cursos de psicologia; volta a ser discutida quando houver esse caminho.
 - **Fase 5 — Extras:** financeiro, recibos (Receita Saúde / NFS-e), declarações em PDF, assinatura digital.
+- **Fase 6 — Fiscal (proposta, depois da Fase 5):** para pessoa física (carnê-leão, DARF) e CNPJ no Simples Nacional (DAS, Fator R). Incluída nos planos Essencial e Profissional. Modelo em estudo pelo Henrique: o Tríade calcula, organiza e lembra; o que for privativo de contador fica com uma contabilidade parceira (CRC). Integrações possíveis: Integra Contador (SERPRO/Receita) para PGDAS-D e DAS; API da NFS-e Nacional (obrigatória para ME/EPP do Simples desde 01/11/2026).
 
 ## 9. Regras e referências
 

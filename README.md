@@ -17,8 +17,9 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 2a. Rede de supervisores (perfil, busca, pedido, convite por link) | Concluída |
 | 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas, grupos) | Concluída |
 | 3. Planos e assinatura (Mercado Pago, modo de teste) | Concluída em modo de teste |
-| 4. Estágio | A fazer |
-| 5. Extras | A fazer |
+| 4. Estágio | Suspensa (exige contrato de estágio registrado ou convênio com cursos) |
+| 5. Extras (financeiro, recibos, NFS-e, declarações) | A fazer |
+| 6. Fiscal (carnê-leão, DAS, Fator R) | Proposta |
 
 ## Como rodar na sua máquina
 

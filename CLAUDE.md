@@ -33,8 +33,8 @@ Plataforma web de gestão de consultório para psicólogos, com **supervisão cl
 
 ## Decisões em aberto (não decida sozinho)
 
-- Em clínica-escola, quem paga as contas dos estagiários (a instituição?) e a quem pertencem os pacientes do serviço?
+- Como incorporar o contador parceiro na Fase 6 (fiscal).
 - Provedor de assinatura digital.
 - Nome final do produto.
 
-Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; planos Gratuito (10 pacientes), Básico R$ 29,90 (30 pacientes), Essencial R$ 39,90 (ilimitado + NFS-e) e Profissional R$ 49,90 (tudo), com 30 dias grátis do Profissional e 50% para recém-formados; pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos.
+Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; planos Gratuito (10 pacientes), Básico R$ 29,90 (30 pacientes), Essencial R$ 39,90 (ilimitado + NFS-e) e Profissional R$ 49,90 (tudo), com 30 dias grátis do Profissional e 50% para recém-formados; pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos; Fase 4 (estágio) suspensa; Fase 6 (fiscal) para pessoa física e CNPJ, nos planos Essencial e Profissional.
