@@ -10,6 +10,15 @@ export const PERFIL_FICTICIO: Perfil = {
   full_name: 'Marina Costa',
   crp_region: '08',
   crp_number: '12345',
+  account_type: 'psicologo',
+}
+
+export const CONTADORA_FICTICIA: Perfil = {
+  id: 'a1b2c3d4-0000-4000-8000-000000000004',
+  full_name: 'Carla Souza',
+  crp_region: null,
+  crp_number: null,
+  account_type: 'contador',
 }
 
 export function sessaoFicticia(): Session {
@@ -41,6 +50,7 @@ export function renderizarRota(caminho: string, opcoes: Opcoes = {}) {
     session,
     user: session?.user ?? null,
     perfil: logado ? perfil : null,
+    perfilCarregando: false,
     sair: vi.fn().mockResolvedValue(undefined),
     recarregarPerfil: vi.fn(),
   }

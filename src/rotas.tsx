@@ -1,13 +1,22 @@
 import { Navigate, type RouteObject } from 'react-router'
-import { ExigeLogin, SomenteVisitante } from '@/auth/guardas'
+import { ExigeContador, ExigeDuasEtapas, ExigeLogin, ExigePsicologo, SomenteVisitante } from '@/auth/guardas'
 import { LayoutApp } from '@/components/layout/LayoutApp'
 import { CriarConta } from '@/pages/auth/CriarConta'
+import { CriarContaContador } from '@/pages/auth/CriarContaContador'
 import { Entrar } from '@/pages/auth/Entrar'
 import { EsqueciSenha } from '@/pages/auth/EsqueciSenha'
 import { NovaSenha } from '@/pages/auth/NovaSenha'
 import { Agenda } from '@/pages/agenda/Agenda'
 import { FormSessao } from '@/pages/agenda/FormSessao'
+import { ClienteContador } from '@/pages/contador/ClienteContador'
+import { Clientes } from '@/pages/contador/Clientes'
+import { DuasEtapas } from '@/pages/contador/DuasEtapas'
+import { EncontrarContador } from '@/pages/contador/EncontrarContador'
+import { MeuContador } from '@/pages/contador/MeuContador'
+import { PerfilContador } from '@/pages/contador/PerfilContador'
+import { PerfilContadorPublico } from '@/pages/contador/PerfilContadorPublico'
 import { EmConstrucao } from '@/pages/EmConstrucao'
+import { Financeiro } from '@/pages/financeiro/Financeiro'
 import { Inicio } from '@/pages/Inicio'
 import { NaoEncontrada } from '@/pages/NaoEncontrada'
 import { FichaPaciente } from '@/pages/pacientes/FichaPaciente'
@@ -33,6 +42,8 @@ export const rotas: RouteObject[] = [
       { path: '/entrar', element: <Entrar /> },
       { path: '/criar-conta', element: <CriarConta /> },
       { path: '/esqueci-a-senha', element: <EsqueciSenha /> },
+      { path: '/contador/entrar', element: <Entrar area="contador" /> },
+      { path: '/contador/cadastro', element: <CriarContaContador /> },
     ],
   },
   { path: '/nova-senha', element: <NovaSenha /> },
@@ -40,47 +51,92 @@ export const rotas: RouteObject[] = [
     element: <ExigeLogin />,
     children: [
       {
-        element: <LayoutApp />,
+        element: <ExigeContador />,
         children: [
-          { path: '/inicio', element: <Inicio /> },
-          { path: '/agenda', element: <Agenda /> },
-          { path: '/agenda/nova', element: <FormSessao /> },
-          { path: '/agenda/:id/editar', element: <FormSessao /> },
-          { path: '/pacientes', element: <ListaPacientes /> },
-          { path: '/pacientes/novo', element: <FormPaciente /> },
-          { path: '/pacientes/:id', element: <FichaPaciente /> },
-          { path: '/pacientes/:id/editar', element: <FormPaciente /> },
-          { path: '/pacientes/:id/registros/novo', element: <FormRegistro /> },
-          { path: '/pacientes/:id/registros/:registroId/editar', element: <FormRegistro /> },
-          { path: '/pacientes/:id/registros/:registroId/historico', element: <HistoricoRegistro /> },
-          { path: '/supervisao', element: <MinhaSupervisao /> },
-          { path: '/supervisao/encontrar', element: <EncontrarSupervisor /> },
-          { path: '/supervisao/pauta', element: <Pauta /> },
-          { path: '/supervisao/casos/:id', element: <CasoSupervisao /> },
-          { path: '/pacientes/:id/supervisao/novo', element: <LevarCaso /> },
-          { path: '/supervisao/supervisores/:id', element: <PerfilSupervisorPublico /> },
-          { path: '/convite/:token', element: <AceitarConvite /> },
-          { path: '/perfil', element: <MeuPerfil /> },
-          { path: '/planos', element: <Planos /> },
           {
-            path: '/financeiro',
-            element: (
-              <EmConstrucao
-                titulo="Financeiro"
-                fase="Fase 5"
-                descricao="Controle de pagamentos e emissão de recibos (Receita Saúde e NFS-e)."
-              />
-            ),
+            element: <LayoutApp area="contador" />,
+            children: [
+              { path: '/contador/seguranca', element: <DuasEtapas /> },
+              {
+                element: <ExigeDuasEtapas />,
+                children: [
+                  { path: '/contador', element: <Clientes /> },
+                  {
+                    path: '/contador/clientes/:id',
+                    element: <ClienteContador />,
+                  },
+                  { path: '/contador/perfil', element: <PerfilContador /> },
+                ],
+              },
+            ],
           },
+        ],
+      },
+      {
+        element: <ExigePsicologo />,
+        children: [
           {
-            path: '/documentos',
-            element: (
-              <EmConstrucao
-                titulo="Documentos"
-                fase="Fase 5"
-                descricao="Declarações em PDF, como a de horas de supervisão, e documentos com assinatura digital."
-              />
-            ),
+            element: <LayoutApp />,
+            children: [
+              { path: '/inicio', element: <Inicio /> },
+              { path: '/agenda', element: <Agenda /> },
+              { path: '/agenda/nova', element: <FormSessao /> },
+              { path: '/agenda/:id/editar', element: <FormSessao /> },
+              { path: '/pacientes', element: <ListaPacientes /> },
+              { path: '/pacientes/novo', element: <FormPaciente /> },
+              { path: '/pacientes/:id', element: <FichaPaciente /> },
+              { path: '/pacientes/:id/editar', element: <FormPaciente /> },
+              {
+                path: '/pacientes/:id/registros/novo',
+                element: <FormRegistro />,
+              },
+              {
+                path: '/pacientes/:id/registros/:registroId/editar',
+                element: <FormRegistro />,
+              },
+              {
+                path: '/pacientes/:id/registros/:registroId/historico',
+                element: <HistoricoRegistro />,
+              },
+              { path: '/supervisao', element: <MinhaSupervisao /> },
+              {
+                path: '/supervisao/encontrar',
+                element: <EncontrarSupervisor />,
+              },
+              { path: '/supervisao/pauta', element: <Pauta /> },
+              { path: '/supervisao/casos/:id', element: <CasoSupervisao /> },
+              {
+                path: '/pacientes/:id/supervisao/novo',
+                element: <LevarCaso />,
+              },
+              {
+                path: '/supervisao/supervisores/:id',
+                element: <PerfilSupervisorPublico />,
+              },
+              { path: '/convite/:token', element: <AceitarConvite /> },
+              { path: '/perfil', element: <MeuPerfil /> },
+              { path: '/planos', element: <Planos /> },
+              { path: '/financeiro', element: <Financeiro /> },
+              { path: '/meu-contador', element: <MeuContador /> },
+              {
+                path: '/meu-contador/encontrar',
+                element: <EncontrarContador />,
+              },
+              {
+                path: '/meu-contador/contadores/:id',
+                element: <PerfilContadorPublico />,
+              },
+              {
+                path: '/documentos',
+                element: (
+                  <EmConstrucao
+                    titulo="Documentos"
+                    fase="Fase 5"
+                    descricao="Declarações em PDF, como a de horas de supervisão, e documentos com assinatura digital."
+                  />
+                ),
+              },
+            ],
           },
         ],
       },

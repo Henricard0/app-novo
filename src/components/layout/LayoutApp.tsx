@@ -6,7 +6,8 @@ import { useConsulta } from '@/lib/consultorio/useConsulta'
 import { formatarCrp } from '@/lib/crp'
 import { contarSolicitacoesRecebidas } from '@/lib/supervisao/api'
 import { iniciais } from '@/lib/texto'
-import { ITENS_CONSULTORIO } from './itens-menu'
+import { contarAvisosDoContador } from '@/lib/contador/api'
+import { ITENS_CONSULTORIO, ITENS_CONTADOR } from './itens-menu'
 
 const CLASSE_ITEM =
   'flex min-h-11 items-center rounded-control px-3 text-[15px] no-underline transition-colors'
@@ -14,7 +15,8 @@ const ITEM_ATIVO = 'bg-pine-soft font-semibold text-pine hover:text-pine'
 const ITEM_INATIVO = 'text-ink-2 hover:bg-bg hover:text-ink'
 
 /** Moldura do app logado: menu lateral (no celular, no topo) e área de conteúdo. */
-export function LayoutApp() {
+export function LayoutApp({ area = 'psicologo' }: { area?: 'psicologo' | 'contador' }) {
+  const contador = area === 'contador'
   const auth = useAuth()
   const location = useLocation()
   const [menuAberto, setMenuAberto] = useState(false)
@@ -24,10 +26,16 @@ export function LayoutApp() {
 
   const idUsuario = auth.user?.id ?? ''
   // Pedidos de supervisão esperando resposta. Atualiza a cada troca de página.
-  const pendentes = useConsulta(`pedidos-recebidos:${idUsuario}:${location.pathname}`, () =>
-    contarSolicitacoesRecebidas(idUsuario),
+  const pendentes = useConsulta(`pedidos-recebidos:${area}:${idUsuario}:${location.pathname}`, () =>
+    contador ? Promise.resolve({ dados: 0, erro: null }) : contarSolicitacoesRecebidas(idUsuario),
   )
   const totalPendentes = pendentes.dados ?? 0
+  // Guias a pagar e pendências do contador.
+  const avisos = useConsulta(`avisos-contador:${area}:${idUsuario}:${location.pathname}`, () =>
+    contador ? Promise.resolve({ dados: 0, erro: null }) : contarAvisosDoContador(),
+  )
+  const totalAvisos = avisos.dados ?? 0
+  const itens = contador ? ITENS_CONTADOR : ITENS_CONSULTORIO
 
   const nome = nomeParaExibir(auth)
   const crp = formatarCrp(auth.perfil?.crp_region, auth.perfil?.crp_number)
@@ -94,12 +102,15 @@ export function LayoutApp() {
         </div>
 
         <nav aria-label="Menu principal" className="flex flex-col gap-1">
-          <span className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-muted">Consultório</span>
+          <span className="px-3 pb-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-muted">
+            {contador ? 'Área do contador' : 'Consultório'}
+          </span>
           <ul className="flex flex-col gap-1">
-            {ITENS_CONSULTORIO.map((item) => (
+            {itens.map((item) => (
               <li key={item.para}>
                 <NavLink
                   to={item.para}
+                  end={item.para === '/contador'}
                   className={({ isActive }) => `${CLASSE_ITEM} ${isActive ? ITEM_ATIVO : ITEM_INATIVO}`}
                 >
                   {item.rotulo}
@@ -107,6 +118,12 @@ export function LayoutApp() {
                     <span className="ml-auto rounded-full bg-ocre px-2 py-0.5 text-xs font-bold text-white">
                       {totalPendentes}
                       <span className="sr-only"> {totalPendentes === 1 ? 'pedido novo' : 'pedidos novos'}</span>
+                    </span>
+                  ) : null}
+                  {item.para === '/meu-contador' && totalAvisos > 0 ? (
+                    <span className="ml-auto rounded-full bg-ocre px-2 py-0.5 text-xs font-bold text-white">
+                      {totalAvisos}
+                      <span className="sr-only"> {totalAvisos === 1 ? 'aviso do contador' : 'avisos do contador'}</span>
                     </span>
                   ) : null}
                 </NavLink>
@@ -125,21 +142,25 @@ export function LayoutApp() {
             </span>
             <div className="flex min-w-0 flex-col">
               <span className="truncate text-sm font-semibold">{nome}</span>
-              <span className="truncate text-xs text-muted">{crp ?? 'Sem CRP cadastrado'}</span>
+              <span className="truncate text-xs text-muted">{contador ? 'Contador' : (crp ?? 'Sem CRP cadastrado')}</span>
             </div>
           </div>
-          <Link
-            to="/perfil"
-            className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
-          >
-            Meu perfil
-          </Link>
-          <Link
-            to="/planos"
-            className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
-          >
-            Planos
-          </Link>
+          {contador ? null : (
+            <>
+              <Link
+                to="/perfil"
+                className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
+              >
+                Meu perfil
+              </Link>
+              <Link
+                to="/planos"
+                className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
+              >
+                Planos
+              </Link>
+            </>
+          )}
           <button
             type="button"
             onClick={() => void auth.sair()}

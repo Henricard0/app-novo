@@ -49,6 +49,7 @@ describe('layout do app', () => {
       'Pacientes',
       'Supervisão',
       'Financeiro',
+      'Contador',
       'Documentos',
     ])
     expect(within(menu).getByRole('link', { name: 'Início' })).toHaveAttribute('aria-current', 'page')
@@ -64,7 +65,7 @@ describe('layout do app', () => {
   it('sem CRP, avisa que não há CRP cadastrado', async () => {
     renderizarRota('/inicio', {
       logado: true,
-      perfil: { id: 'x', full_name: 'Bianca Lima', crp_region: null, crp_number: null },
+      perfil: { id: 'x', full_name: 'Bianca Lima', crp_region: null, crp_number: null, account_type: 'psicologo' },
     })
     expect(await screen.findByText('Sem CRP cadastrado')).toBeInTheDocument()
   })
@@ -84,9 +85,9 @@ describe('layout do app', () => {
     const usuario = userEvent.setup()
     const { router } = renderizarRota('/inicio', { logado: true })
     await usuario.click(await screen.findByRole('button', { name: 'Menu' }))
-    await usuario.click(screen.getByRole('link', { name: 'Financeiro' }))
-    expect(await screen.findByRole('heading', { level: 1, name: 'Financeiro' })).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/financeiro')
+    await usuario.click(screen.getByRole('link', { name: 'Documentos' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Documentos' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/documentos')
     expect(screen.getByRole('button', { name: 'Menu' })).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByText(/Em construção · Fase 5/)).toBeInTheDocument()
   })

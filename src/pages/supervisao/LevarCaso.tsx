@@ -88,7 +88,7 @@ function Formulario({
 
   const opcoes = {
     nomesPaciente: [paciente.full_name, ...paciente.nicknames],
-    nomesContatos: paciente.patient_contacts.map((c) => c.name),
+    nomesContatos: [...paciente.patient_contacts.map((c) => c.name), ...(paciente.payer_name ? [paciente.payer_name] : [])],
     rotuloPaciente,
     datasMesAno,
     termosExtras: extras.split(',').map((t) => t.trim()).filter(Boolean),

@@ -54,6 +54,13 @@ export type DadosPaciente = {
   nascimento: string | null
   telefone: string | null
   email: string | null
+  /** Valor padrão da sessão; preenche as sessões novas. */
+  valorPadrao: number | null
+  /** Só dígitos. */
+  cpf: string | null
+  /** Quem paga, quando não é o próprio paciente. */
+  responsavelNome: string | null
+  responsavelCpf: string | null
 }
 
 export type DadosContato = { id?: string; nome: string; parentesco: string | null; telefone: string | null }
@@ -71,6 +78,10 @@ export async function salvarPaciente(
     birth_date: dados.nascimento,
     phone: dados.telefone,
     email: dados.email,
+    default_fee: dados.valorPadrao,
+    cpf: dados.cpf,
+    payer_name: dados.responsavelNome,
+    payer_cpf: dados.responsavelNome ? dados.responsavelCpf : null,
   }
 
   let pacienteId = id
@@ -148,6 +159,8 @@ export type DadosSessao = {
   local: string | null
   /** Quantas semanas seguidas criar (1 = só esta). */
   semanas: number
+  /** Valor da sessão em reais (null = sem valor definido). */
+  valor: number | null
 }
 
 /** Monta os horários das sessões, uma por semana a partir da data escolhida. */
@@ -170,6 +183,7 @@ export async function criarSessoes(dados: DadosSessao): Promise<Resultado> {
     series_id: serie,
     modality: dados.modalidade,
     location: dados.local,
+    fee: dados.valor,
   }))
   const { error } = await supabase.from('appointments').insert(linhas)
   return { erro: error ? traduzirErroBanco(error) : null }
@@ -180,7 +194,7 @@ export async function atualizarSessao(id: string, dados: Omit<DadosSessao, 'paci
   if (!h) return { erro: 'Data ou horário inválido.' }
   const { error } = await supabase
     .from('appointments')
-    .update({ ...h, modality: dados.modalidade, location: dados.local })
+    .update({ ...h, modality: dados.modalidade, location: dados.local, fee: dados.valor })
     .eq('id', id)
   return { erro: error ? traduzirErroBanco(error) : null }
 }

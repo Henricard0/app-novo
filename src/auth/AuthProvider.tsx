@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let ativo = true
     supabase
       .from('profiles')
-      .select('id, full_name, crp_region, crp_number')
+      .select('id, full_name, crp_region, crp_number, account_type')
       .eq('id', idUsuario)
       .maybeSingle()
       .then(({ data }) => {
@@ -52,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [idUsuario, versaoPerfil])
 
   const perfil = perfilLido && perfilLido.id === idUsuario ? perfilLido.perfil : null
+  const perfilCarregando = Boolean(idUsuario) && !(perfilLido && perfilLido.id === idUsuario)
 
   const sair = useCallback(async () => {
     await supabase.auth.signOut()
@@ -60,8 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const recarregarPerfil = useCallback(() => setVersaoPerfil((v) => v + 1), [])
 
   const valor = useMemo<EstadoAuth>(
-    () => ({ carregando, session, user: session?.user ?? null, perfil, sair, recarregarPerfil }),
-    [carregando, session, perfil, sair, recarregarPerfil],
+    () => ({ carregando, session, user: session?.user ?? null, perfil, perfilCarregando, sair, recarregarPerfil }),
+    [carregando, session, perfil, perfilCarregando, sair, recarregarPerfil],
   )
 
   return <ContextoAuth.Provider value={valor}>{children}</ContextoAuth.Provider>

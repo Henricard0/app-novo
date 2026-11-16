@@ -18,8 +18,9 @@ function erroDoLink(search: string, hash: string): string | null {
   return 'O link expirou ou já foi usado. Entre com sua senha ou peça um novo link.'
 }
 
-export function Entrar() {
-  useTituloPagina('Entrar')
+export function Entrar({ area }: { area?: 'contador' }) {
+  const contador = area === 'contador'
+  useTituloPagina(contador ? 'Entrar na área do contador' : 'Entrar')
   const location = useLocation()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
@@ -42,7 +43,11 @@ export function Entrar() {
   }
 
   return (
-    <LayoutEntrada titulo="Entrar" subtitulo="Acesse seu consultório e sua supervisão.">
+    <LayoutEntrada
+      titulo="Entrar"
+      area={area}
+      subtitulo={contador ? 'Acesse seus clientes psicólogos.' : 'Acesse seu consultório e sua supervisão.'}
+    >
       <form noValidate onSubmit={aoEnviar} className="flex flex-col gap-5">
         {erroGeral ? <Aviso tom="erro">{erroGeral}</Aviso> : null}
         <CampoTexto
@@ -73,8 +78,14 @@ export function Entrar() {
         </Link>
         <p className="text-muted">
           Ainda não tem conta?{' '}
-          <Link to="/criar-conta" className="inline-flex min-h-11 items-center font-semibold">
-            Criar conta
+          <Link to={contador ? '/contador/cadastro' : '/criar-conta'} className="inline-flex min-h-11 items-center font-semibold">
+            {contador ? 'Cadastrar como contador' : 'Criar conta'}
+          </Link>
+        </p>
+        <p className="text-muted">
+          {contador ? 'É psicólogo? ' : 'É contador? '}
+          <Link to={contador ? '/entrar' : '/contador/entrar'} className="inline-flex min-h-11 items-center font-semibold">
+            {contador ? 'Entrar no consultório' : 'Acessar a área do contador'}
           </Link>
         </p>
       </div>

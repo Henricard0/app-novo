@@ -31,6 +31,15 @@ import {
   type StatusSessao,
 } from '@/lib/consultorio/formato'
 import { useConsulta } from '@/lib/consultorio/useConsulta'
+import { registrarPagamento } from '@/lib/financeiro/api'
+import {
+  OPCOES_FORMA,
+  ROTULO_PAGAMENTO,
+  lerReais,
+  paraCampoReais,
+  type FormaPagamento,
+  type SituacaoPagamento,
+} from '@/lib/financeiro/formato'
 import { useTituloPagina } from '@/lib/titulo'
 
 /** /agenda/nova (aceita ?paciente= e ?data=) e /agenda/:id/editar */
@@ -75,7 +84,9 @@ export function FormSessao() {
 
 const OPCOES_DURACAO = [30, 40, 45, 50, 60, 90, 120].map((m) => ({ valor: String(m), rotulo: `${m} minutos` }))
 
-type Erros = Partial<Record<'paciente' | 'data' | 'hora' | 'semanas', string | null>>
+type Erros = Partial<Record<'paciente' | 'data' | 'hora' | 'semanas' | 'valor' | 'pagoEm', string | null>>
+
+const OPCOES_PAGAMENTO = (Object.keys(ROTULO_PAGAMENTO) as SituacaoPagamento[]).map((p) => ({ valor: p, rotulo: ROTULO_PAGAMENTO[p] }))
 
 function Formulario({
   pacientes,
@@ -101,6 +112,11 @@ function Formulario({
   const [modalidade, setModalidade] = useState<Modalidade>((sessao?.modality as Modalidade) ?? 'presencial')
   const [local, setLocal] = useState(sessao?.location ?? '')
   const [status, setStatus] = useState<StatusSessao>((sessao?.status as StatusSessao) ?? 'agendada')
+  const valorDoPaciente = (idPaciente: string) => paraCampoReais(pacientes.find((p) => p.id === idPaciente)?.default_fee)
+  const [valor, setValor] = useState(sessao ? paraCampoReais(sessao.fee) : valorDoPaciente(pacienteId))
+  const [pagamento, setPagamento] = useState<SituacaoPagamento>((sessao?.payment_status as SituacaoPagamento) ?? 'a_receber')
+  const [pagoEm, setPagoEm] = useState(sessao?.paid_on ?? paraDataISO(new Date()))
+  const [forma, setForma] = useState<FormaPagamento>((sessao?.payment_method as FormaPagamento) ?? 'pix')
   const [repetir, setRepetir] = useState(false)
   const [semanas, setSemanas] = useState('8')
   const [erros, setErros] = useState<Erros>({})
@@ -125,17 +141,25 @@ function Formulario({
         repetir && !(Number.isInteger(quantidade) && quantidade >= 2 && quantidade <= 52)
           ? 'Escolha entre 2 e 52 semanas.'
           : null,
+      valor: valor.trim() && lerReais(valor) === null ? 'Use só números, como 180 ou 180,00.' : null,
+      pagoEm: sessao && pagamento === 'pago' && !lerDataISO(pagoEm) ? 'Informe a data do pagamento.' : null,
     }
     setErros(novosErros)
     setErroGeral(null)
     if (Object.values(novosErros).some(Boolean)) return
 
     setEnviando(true)
-    const comum = { data, hora, duracao: Number(duracao), modalidade, local: local.trim() || null }
+    const comum = { data, hora, duracao: Number(duracao), modalidade, local: local.trim() || null, valor: lerReais(valor) }
     let erro: string | null
     if (sessao) {
       erro = (await atualizarSessao(sessao.id, comum)).erro
       if (!erro && status !== sessao.status) erro = (await mudarStatusSessao(sessao.id, status)).erro
+      const pagamentoMudou =
+        pagamento !== sessao.payment_status ||
+        (pagamento === 'pago' && (pagoEm !== sessao.paid_on || forma !== sessao.payment_method))
+      if (!erro && pagamentoMudou) {
+        erro = (await registrarPagamento(sessao.id, { situacao: pagamento, pagoEm, forma })).erro
+      }
     } else {
       erro = (await criarSessoes({ ...comum, pacienteId, semanas: quantidade })).erro
     }
@@ -171,7 +195,10 @@ function Formulario({
               vazio="Escolha o paciente"
               opcoes={pacientes.map((p) => ({ valor: p.id, rotulo: p.full_name }))}
               value={pacienteId}
-              onChange={(e) => setPacienteId(e.target.value)}
+              onChange={(e) => {
+                setPacienteId(e.target.value)
+                setValor(valorDoPaciente(e.target.value))
+              }}
               erro={erros.paciente}
             />
           )}
@@ -231,6 +258,18 @@ function Formulario({
             onChange={(e) => setLocal(e.target.value)}
           />
 
+          <CampoTexto
+            rotulo="Valor da sessão (R$)"
+            opcional
+            name="valor"
+            inputMode="decimal"
+            autoComplete="off"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
+            erro={erros.valor}
+            className="max-w-48"
+          />
+
           {sessao ? (
             <CampoSelecao
               rotulo="Situação"
@@ -239,6 +278,37 @@ function Formulario({
               value={status}
               onChange={(e) => setStatus(e.target.value as StatusSessao)}
             />
+          ) : null}
+
+          {sessao ? (
+            <div className="grid grid-cols-1 gap-5 rounded-control bg-bg p-4 sm:grid-cols-3">
+              <CampoSelecao
+                rotulo="Pagamento"
+                name="pagamento"
+                opcoes={OPCOES_PAGAMENTO}
+                value={pagamento}
+                onChange={(e) => setPagamento(e.target.value as SituacaoPagamento)}
+              />
+              {pagamento === 'pago' ? (
+                <>
+                  <CampoTexto
+                    rotulo="Pago em"
+                    type="date"
+                    name="pago-em"
+                    value={pagoEm}
+                    onChange={(e) => setPagoEm(e.target.value)}
+                    erro={erros.pagoEm}
+                  />
+                  <CampoSelecao
+                    rotulo="Forma"
+                    name="forma"
+                    opcoes={OPCOES_FORMA}
+                    value={forma}
+                    onChange={(e) => setForma(e.target.value as FormaPagamento)}
+                  />
+                </>
+              ) : null}
+            </div>
           ) : (
             <div className="flex flex-col gap-3 rounded-control bg-bg p-4">
               <CampoCaixa rotulo="Repetir toda semana" checked={repetir} onChange={(e) => setRepetir(e.target.checked)} />

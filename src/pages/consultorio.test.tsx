@@ -329,6 +329,7 @@ describe('Agenda', () => {
         modalidade: 'presencial',
         local: null,
         semanas: 4,
+        valor: null,
       }),
     )
   })

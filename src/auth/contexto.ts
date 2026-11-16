@@ -2,7 +2,7 @@ import type { Session, User } from '@supabase/supabase-js'
 import { createContext, useContext } from 'react'
 import type { Tables } from '@/types/database'
 
-export type Perfil = Pick<Tables<'profiles'>, 'id' | 'full_name' | 'crp_region' | 'crp_number'>
+export type Perfil = Pick<Tables<'profiles'>, 'id' | 'full_name' | 'crp_region' | 'crp_number' | 'account_type'>
 
 export type EstadoAuth = {
   /** true enquanto a sessão salva ainda está sendo lida. */
@@ -11,6 +11,8 @@ export type EstadoAuth = {
   user: User | null
   /** null enquanto carrega ou se não foi possível ler o perfil. */
   perfil: Perfil | null
+  /** true enquanto o perfil de quem está logado ainda está sendo lido. */
+  perfilCarregando: boolean
   sair: () => Promise<void>
   /** Lê o perfil de novo do banco (depois de editar nome ou CRP). */
   recarregarPerfil: () => void

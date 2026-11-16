@@ -3,10 +3,12 @@ import { useNavigate, useParams } from 'react-router'
 import { Aviso } from '@/components/ui/Aviso'
 import { Botao, LinkBotao } from '@/components/ui/Botao'
 import { Cabecalho } from '@/components/ui/Cabecalho'
+import { CampoCaixa } from '@/components/ui/CampoCaixa'
 import { CampoTexto } from '@/components/ui/CampoTexto'
 import { TelaCarregando } from '@/components/ui/TelaCarregando'
 import { buscarPaciente, salvarPaciente, type DadosContato, type PacienteComContatos } from '@/lib/consultorio/api'
 import { lerDataISO, paraDataISO } from '@/lib/consultorio/formato'
+import { cpfValido, formatarCpf, lerReais, paraCampoReais, soDigitos } from '@/lib/financeiro/formato'
 import { useConsulta } from '@/lib/consultorio/useConsulta'
 import { useTituloPagina } from '@/lib/titulo'
 import { validarEmail } from '@/lib/validacao'
@@ -29,7 +31,7 @@ export function FormPaciente() {
 
 type LinhaContato = DadosContato & { chave: string }
 
-type Erros = Partial<Record<'nome' | 'email' | 'nascimento' | 'contatos', string | null>>
+type Erros = Partial<Record<'nome' | 'email' | 'nascimento' | 'contatos' | 'valor' | 'cpf' | 'responsavelCpf', string | null>>
 
 function Formulario({ paciente }: { paciente: PacienteComContatos | null }) {
   const navigate = useNavigate()
@@ -38,6 +40,11 @@ function Formulario({ paciente }: { paciente: PacienteComContatos | null }) {
   const [nascimento, setNascimento] = useState(paciente?.birth_date ?? '')
   const [telefone, setTelefone] = useState(paciente?.phone ?? '')
   const [email, setEmail] = useState(paciente?.email ?? '')
+  const [valor, setValor] = useState(paraCampoReais(paciente?.default_fee))
+  const [cpf, setCpf] = useState(formatarCpf(paciente?.cpf))
+  const [outroPagador, setOutroPagador] = useState(Boolean(paciente?.payer_name))
+  const [responsavel, setResponsavel] = useState(paciente?.payer_name ?? '')
+  const [responsavelCpf, setResponsavelCpf] = useState(formatarCpf(paciente?.payer_cpf))
   const [contatos, setContatos] = useState<LinhaContato[]>(
     (paciente?.patient_contacts ?? []).map((c) => ({
       chave: c.id,
@@ -66,6 +73,9 @@ function Formulario({ paciente }: { paciente: PacienteComContatos | null }) {
           ? 'Confira a data de nascimento.'
           : null,
       contatos: contatos.some((c) => !c.nome.trim()) ? 'Informe o nome de cada contato ou remova a linha.' : null,
+      valor: valor.trim() && lerReais(valor) === null ? 'Use só números, como 180 ou 180,00.' : null,
+      cpf: cpf.trim() && !cpfValido(cpf) ? 'Confira o CPF.' : null,
+      responsavelCpf: outroPagador && responsavelCpf.trim() && !cpfValido(responsavelCpf) ? 'Confira o CPF.' : null,
     }
     setErros(novosErros)
     setErroGeral(null)
@@ -84,6 +94,10 @@ function Formulario({ paciente }: { paciente: PacienteComContatos | null }) {
         nascimento: nascimento || null,
         telefone: telefone.trim() || null,
         email: email.trim() || null,
+        valorPadrao: lerReais(valor),
+        cpf: cpf.trim() ? soDigitos(cpf) : null,
+        responsavelNome: outroPagador && responsavel.trim() ? responsavel.trim() : null,
+        responsavelCpf: outroPagador && responsavelCpf.trim() ? soDigitos(responsavelCpf) : null,
       },
       contatos.map((c) => ({
         id: c.id,
@@ -167,6 +181,73 @@ function Formulario({ paciente }: { paciente: PacienteComContatos | null }) {
             onChange={(e) => setEmail(e.target.value)}
             erro={erros.email}
           />
+        </section>
+
+        <section
+          aria-labelledby="titulo-financeiro-paciente"
+          className="flex flex-col gap-4 rounded-card border border-border bg-surface p-5 sm:p-6"
+        >
+          <div className="flex flex-col gap-1">
+            <h2 id="titulo-financeiro-paciente" className="text-lg font-bold">
+              Valor e recibos
+            </h2>
+            <p className="text-sm text-muted">Opcional. O CPF de quem paga entra no recibo e no carnê-leão.</p>
+          </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <CampoTexto
+              rotulo="Valor da sessão (R$)"
+              opcional
+              name="valor"
+              inputMode="decimal"
+              autoComplete="off"
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
+              erro={erros.valor}
+              ajuda="Já vem preenchido nas sessões novas."
+            />
+            <CampoTexto
+              rotulo="CPF do paciente"
+              opcional
+              name="cpf"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={14}
+              value={cpf}
+              onChange={(e) => setCpf(e.target.value)}
+              onBlur={() => setCpf((v) => formatarCpf(v))}
+              erro={erros.cpf}
+            />
+          </div>
+          <CampoCaixa
+            rotulo="Outra pessoa paga as sessões (ex.: mãe ou pai)"
+            checked={outroPagador}
+            onChange={(e) => setOutroPagador(e.target.checked)}
+          />
+          {outroPagador ? (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <CampoTexto
+                rotulo="Nome de quem paga"
+                name="responsavel"
+                autoComplete="off"
+                maxLength={200}
+                value={responsavel}
+                onChange={(e) => setResponsavel(e.target.value)}
+                ajuda="Também é removido dos casos levados à supervisão."
+              />
+              <CampoTexto
+                rotulo="CPF de quem paga"
+                opcional
+                name="responsavel-cpf"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={14}
+                value={responsavelCpf}
+                onChange={(e) => setResponsavelCpf(e.target.value)}
+                onBlur={() => setResponsavelCpf((v) => formatarCpf(v))}
+                erro={erros.responsavelCpf}
+              />
+            </div>
+          ) : null}
         </section>
 
         <section
