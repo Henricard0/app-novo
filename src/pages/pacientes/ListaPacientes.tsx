@@ -11,6 +11,7 @@ import { Vazio } from '@/components/ui/Vazio'
 import { listarPacientes } from '@/lib/consultorio/api'
 import { idade } from '@/lib/consultorio/formato'
 import { useConsulta } from '@/lib/consultorio/useConsulta'
+import { LIMITE_GRATUITO, buscarMeuPlano } from '@/lib/planos/api'
 import { useTituloPagina } from '@/lib/titulo'
 
 /** Compara sem acento e sem diferenciar maiúsculas. */
@@ -21,6 +22,8 @@ function normalizar(texto: string): string {
 export function ListaPacientes() {
   useTituloPagina('Pacientes')
   const { carregando, dados, erro } = useConsulta('pacientes', listarPacientes)
+  const plano = useConsulta('meu-plano', buscarMeuPlano)
+  const noGratuito = plano.dados?.plano === 'gratuito'
   const [busca, setBusca] = useState('')
   const [verArquivados, setVerArquivados] = useState(false)
 
@@ -57,6 +60,14 @@ export function ListaPacientes() {
         />
       </div>
 
+      {noGratuito ? (
+        <Aviso tom="info">
+          Plano gratuito: {totalAtivos} de {LIMITE_GRATUITO} pacientes ativos. Pacientes arquivados não contam.{' '}
+          <Link to="/planos" className="font-semibold">
+            Conhecer o Essencial
+          </Link>
+        </Aviso>
+      ) : null}
       {erro ? <Aviso tom="erro">{erro}</Aviso> : null}
       {carregando ? <TelaCarregando /> : null}
 

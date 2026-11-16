@@ -21,6 +21,7 @@ import {
 import { useConsulta } from '@/lib/consultorio/useConsulta'
 import { dataPorExtenso, saudacao } from '@/lib/data'
 import { primeiroNome } from '@/lib/texto'
+import { buscarMeuPlano, diasDeTeste } from '@/lib/planos/api'
 import { useTituloPagina } from '@/lib/titulo'
 
 export function Inicio() {
@@ -34,6 +35,8 @@ export function Inicio() {
   const sessoes = useConsulta(`hoje:${chaveHoje}`, () => listarSessoesEntre(hoje, somarDias(hoje, 1)))
   const pendencias = useConsulta(`pendencias:${chaveHoje}`, () => listarPendencias())
   const deHoje = (sessoes.dados ?? []).filter((s) => s.status !== 'cancelada')
+  const plano = useConsulta('meu-plano', buscarMeuPlano)
+  const diasRestantes = plano.dados?.plano === 'teste' ? diasDeTeste(plano.dados.trial_ends_at) : null
 
   return (
     <>
@@ -44,6 +47,15 @@ export function Inicio() {
           {nome ? `, ${nome}` : ''}
         </h1>
       </div>
+
+      {diasRestantes !== null ? (
+        <Aviso tom="info">
+          Você está no teste grátis do Essencial: {diasRestantes} {diasRestantes === 1 ? 'dia restante' : 'dias restantes'}.{' '}
+          <Link to="/planos" className="font-semibold">
+            Ver planos
+          </Link>
+        </Aviso>
+      ) : null}
 
       <div className="flex flex-wrap items-stretch gap-6">
         <Cartao

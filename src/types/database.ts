@@ -272,6 +272,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          plan: string
+          trial_ends_at: string | null
           created_at: string
           crp_number: string | null
           crp_region: string | null
@@ -280,6 +282,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          plan?: string
+          trial_ends_at?: string | null
           created_at?: string
           crp_number?: string | null
           crp_region?: string | null
@@ -288,6 +292,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          plan?: string
+          trial_ends_at?: string | null
           created_at?: string
           crp_number?: string | null
           crp_region?: string | null
@@ -844,11 +850,60 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          cycle: string
+          discount_until: string | null
+          id: string
+          new_graduate_discount: boolean
+          next_payment_at: string | null
+          provider: string
+          provider_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          cycle: string
+          discount_until?: string | null
+          id?: string
+          new_graduate_discount?: boolean
+          next_payment_at?: string | null
+          provider?: string
+          provider_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          cycle?: string
+          discount_until?: string | null
+          id?: string
+          new_graduate_discount?: boolean
+          next_payment_at?: string | null
+          provider?: string
+          provider_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      meu_plano: {
+        Args: Record<PropertyKey, never>
+        Returns: { plano: string; trial_ends_at: string | null; pacientes_ativos: number; limite_pacientes: number | null }[]
+      }
       definir_grupo: { Args: { p_group: string | null; p_link: string }; Returns: undefined }
       enviar_caso: { Args: { p_case: string }; Returns: undefined }
       enviar_devolutiva: { Args: { p_feedback: string; p_minutos?: number }; Returns: undefined }

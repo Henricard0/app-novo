@@ -16,7 +16,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 1. Consultório mínimo (pacientes, agenda, prontuário) | Concluída |
 | 2a. Rede de supervisores (perfil, busca, pedido, convite por link) | Concluída |
 | 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas, grupos) | Concluída |
-| 3. Planos | A fazer |
+| 3. Planos e assinatura (Mercado Pago, modo de teste) | Em andamento: falta a conta de teste Comprador e o webhook |
 | 4. Estágio | A fazer |
 | 5. Extras | A fazer |
 
@@ -59,6 +59,19 @@ Há um projeto no Supabase usado só para testes, **com dados fictícios** (regi
 ### Site publicado (teste)
 
 O app está publicado na Vercel em <https://triade-hazel.vercel.app>, ligado ao projeto Supabase de teste (projeto `triade` na Vercel; as variáveis `VITE_SUPABASE_*` estão configuradas lá). Para publicar de novo a partir da sua máquina: `npx vercel deploy --prod`. A configuração do site (rotas, cabeçalhos e `noindex`) fica em `vercel.json`.
+
+## Pagamento (Mercado Pago)
+
+As Edge Functions ficam em `supabase/functions/`. Segredos, no painel do Supabase (Edge Functions → Secrets), nunca no código nem no chat:
+
+| Segredo | O que é |
+|---|---|
+| `MP_ACCESS_TOKEN` | Access Token das credenciais (de teste, por enquanto) da aplicação no Mercado Pago |
+| `MP_WEBHOOK_SECRET` | Assinatura secreta dos Webhooks da aplicação no Mercado Pago |
+| `MP_PAYER_EMAIL_TESTE` | Só no modo de teste: e-mail da conta de teste "Comprador" |
+| `SITE_ORIGINS` | Opcional: endereços do site aceitos como retorno do pagamento (separados por vírgula) |
+
+Webhook a cadastrar no Mercado Pago (evento "Planos e assinaturas"): `https://<projeto>.supabase.co/functions/v1/mercado-pago-webhook`.
 
 ## Comandos
 
@@ -114,5 +127,8 @@ scripts/           teste do banco sem Docker
 - `supervision_meetings` e `supervision_hours`: as pontas do vínculo veem; só o supervisor registra horas.
 - `supervision_groups`: o supervisor (com CRP) cria e monta (`definir_grupo`); os membros veem o nome e os encontros do grupo, mas **não os casos uns dos outros** (opção B).
 - A anonimização (`src/lib/supervisao/anonimizar.ts`) roda no navegador, sem API externa, e a revisão do psicólogo é obrigatória antes de enviar.
+- `profiles.plan` e `profiles.trial_ends_at`: o navegador não consegue mudar (não há grant); só o servidor, depois de confirmar o pagamento na API do Mercado Pago.
+- `subscriptions`: o dono só lê; quem escreve são as Edge Functions `assinatura` (criar, sincronizar, cancelar) e `mercado-pago-webhook` (avisos assinados com `MP_WEBHOOK_SECRET`, conferidos direto na API do Mercado Pago).
+- Limite do plano gratuito: 10 pacientes ativos, aplicado por gatilho no banco (`limitar_pacientes_do_plano`). Teste grátis de 30 dias sem limite.
 - O seed traz pacientes, sessões e registros fictícios da Marina e o Paulo como supervisor de exemplo na rede.
 - Dados de exemplo sempre fictícios.

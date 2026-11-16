@@ -16,6 +16,7 @@ import { ListaPacientes } from '@/pages/pacientes/ListaPacientes'
 import { FormRegistro } from '@/pages/prontuario/FormRegistro'
 import { HistoricoRegistro } from '@/pages/prontuario/HistoricoRegistro'
 import { MeuPerfil } from '@/pages/perfil/MeuPerfil'
+import { Planos } from '@/pages/planos/Planos'
 import { AceitarConvite } from '@/pages/supervisao/AceitarConvite'
 import { CasoSupervisao } from '@/pages/supervisao/CasoSupervisao'
 import { LevarCaso } from '@/pages/supervisao/LevarCaso'
@@ -60,6 +61,7 @@ export const rotas: RouteObject[] = [
           { path: '/supervisao/supervisores/:id', element: <PerfilSupervisorPublico /> },
           { path: '/convite/:token', element: <AceitarConvite /> },
           { path: '/perfil', element: <MeuPerfil /> },
+          { path: '/planos', element: <Planos /> },
           {
             path: '/financeiro',
             element: (

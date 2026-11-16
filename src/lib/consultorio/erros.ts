@@ -15,6 +15,11 @@ export function traduzirErroBanco(erro: unknown): string {
     case '22007':
     case '22008':
       return 'Algum dado está fora do formato aceito. Confira os campos e tente de novo.'
+    case 'P0001':
+      if (/limite de pacientes/.test((e as { message?: string }).message ?? '')) {
+        return 'Você chegou ao limite de 10 pacientes ativos do plano gratuito. Arquive um paciente ou assine o Essencial em “Planos”.'
+      }
+      return ERRO_GENERICO
     case 'P0002':
     case 'PGRST116':
       return 'Não encontramos este item. Ele pode ter sido excluído.'

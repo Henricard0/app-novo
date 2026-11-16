@@ -134,6 +134,12 @@ export function LayoutApp() {
           >
             Meu perfil
           </Link>
+          <Link
+            to="/planos"
+            className="flex min-h-11 items-center rounded-control px-1 text-[13px] font-semibold text-pine hover:text-pine-dark"
+          >
+            Planos
+          </Link>
           <button
             type="button"
             onClick={() => void auth.sair()}
