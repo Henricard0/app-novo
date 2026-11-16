@@ -78,10 +78,10 @@ Status do caso: `rascunho` → `na_pauta` → `discutido` → `devolutiva_recebi
 | Tabela | Campos principais |
 |---|---|
 | `profiles` | `id` (= auth.users.id), `full_name`, `crp_region`, `crp_number`, `plan` (`supervisor_free` \| `essencial`) |
-| `patients` | `id`, `owner_id`, `full_name`, `nicknames[]`, `birth_date`, contatos, `deleted_at` |
+| `patients` | `id`, `owner_id`, `full_name`, `nicknames[]`, `birth_date`, `phone`, `email`, `archived_at` (paciente não é apagado: é arquivado; sem CPF até a Fase 5) |
 | `patient_contacts` | `id`, `patient_id`, `name`, `relation` |
-| `appointments` | `id`, `owner_id`, `patient_id`, `starts_at`, `ends_at`, `modality`, `room`, `status` |
-| `clinical_records` | `id`, `owner_id`, `patient_id`, `appointment_id`, `author_id`, `body`, `status` (`final` \| `pendente` \| `ajuste_pedido` \| `validado`), `created_at`, `deleted_at` |
+| `appointments` | `id`, `owner_id`, `patient_id`, `series_id` (sessões semanais), `starts_at`, `ends_at`, `modality`, `location`, `status` (`agendada` \| `realizada` \| `faltou` \| `cancelada`) |
+| `clinical_records` | `id`, `owner_id`, `patient_id`, `appointment_id`, `author_id`, `session_date`, `body`, `status` (`final` \| `pendente` \| `ajuste_pedido` \| `validado`), `created_at`, `updated_by`, `deleted_at`, `deleted_by`, `deleted_reason` |
 | `clinical_record_versions` | `id`, `record_id`, `body`, `created_at`, `created_by` |
 | `supervision_links` | `id`, `supervisor_id`, `supervisee_id`, `group_id`, `format`, `frequency`, `modality`, `status` (`convidado` \| `ativo` \| `encerrado`) |
 | `supervision_groups` | `id`, `supervisor_id`, `name` |

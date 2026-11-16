@@ -5,9 +5,16 @@ import { CriarConta } from '@/pages/auth/CriarConta'
 import { Entrar } from '@/pages/auth/Entrar'
 import { EsqueciSenha } from '@/pages/auth/EsqueciSenha'
 import { NovaSenha } from '@/pages/auth/NovaSenha'
+import { Agenda } from '@/pages/agenda/Agenda'
+import { FormSessao } from '@/pages/agenda/FormSessao'
 import { EmConstrucao } from '@/pages/EmConstrucao'
 import { Inicio } from '@/pages/Inicio'
 import { NaoEncontrada } from '@/pages/NaoEncontrada'
+import { FichaPaciente } from '@/pages/pacientes/FichaPaciente'
+import { FormPaciente } from '@/pages/pacientes/FormPaciente'
+import { ListaPacientes } from '@/pages/pacientes/ListaPacientes'
+import { FormRegistro } from '@/pages/prontuario/FormRegistro'
+import { HistoricoRegistro } from '@/pages/prontuario/HistoricoRegistro'
 
 export const rotas: RouteObject[] = [
   { path: '/', element: <Navigate to="/inicio" replace /> },
@@ -27,26 +34,16 @@ export const rotas: RouteObject[] = [
         element: <LayoutApp />,
         children: [
           { path: '/inicio', element: <Inicio /> },
-          {
-            path: '/agenda',
-            element: (
-              <EmConstrucao
-                titulo="Agenda"
-                fase="Fase 1"
-                descricao="Agenda simples com as sessões do dia e da semana, presenciais e online."
-              />
-            ),
-          },
-          {
-            path: '/pacientes',
-            element: (
-              <EmConstrucao
-                titulo="Pacientes"
-                fase="Fase 1"
-                descricao="Cadastro de pacientes e prontuário com histórico de versões. Nada é apagado de verdade: a guarda mínima é de 5 anos."
-              />
-            ),
-          },
+          { path: '/agenda', element: <Agenda /> },
+          { path: '/agenda/nova', element: <FormSessao /> },
+          { path: '/agenda/:id/editar', element: <FormSessao /> },
+          { path: '/pacientes', element: <ListaPacientes /> },
+          { path: '/pacientes/novo', element: <FormPaciente /> },
+          { path: '/pacientes/:id', element: <FichaPaciente /> },
+          { path: '/pacientes/:id/editar', element: <FormPaciente /> },
+          { path: '/pacientes/:id/registros/novo', element: <FormRegistro /> },
+          { path: '/pacientes/:id/registros/:registroId/editar', element: <FormRegistro /> },
+          { path: '/pacientes/:id/registros/:registroId/historico', element: <HistoricoRegistro /> },
           {
             path: '/supervisao',
             element: (

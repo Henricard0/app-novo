@@ -40,3 +40,53 @@ begin
   end loop;
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Fase 1: pacientes, agenda e prontuário fictícios da Marina.
+-- Datas relativas a hoje, no fuso de São Paulo, para a agenda sempre ter algo.
+-- ---------------------------------------------------------------------------
+do $$
+declare
+  v_marina constant uuid := 'a1b2c3d4-0000-4000-8000-000000000001';
+  v_ana constant uuid := 'b2c3d4e5-0000-4000-8000-000000000001';
+  v_joao constant uuid := 'b2c3d4e5-0000-4000-8000-000000000002';
+  v_lucia constant uuid := 'b2c3d4e5-0000-4000-8000-000000000003';
+  v_serie constant uuid := 'c3d4e5f6-0000-4000-8000-000000000001';
+  v_semana int;
+  v_inicio timestamptz;
+  v_sessao uuid;
+begin
+  insert into public.patients (id, owner_id, full_name, nicknames, birth_date, phone, email) values
+    (v_ana, v_marina, 'Ana Beatriz Fictícia', '{Bia}', date '1991-03-14', '(41) 90000-0001', 'ana.ficticia@example.com'),
+    (v_joao, v_marina, 'João Pedro Exemplo', '{}', date '1985-07-02', '(41) 90000-0002', null),
+    (v_lucia, v_marina, 'Lúcia Modelo', '{Lu}', date '1978-11-25', null, null);
+
+  insert into public.patient_contacts (owner_id, patient_id, name, relation, phone) values
+    (v_marina, v_ana, 'Carlos Fictício', 'Pai', '(41) 90000-0011'),
+    (v_marina, v_lucia, 'Rita Modelo', 'Irmã', null);
+
+  -- Ana: toda semana no mesmo horário, 3 semanas passadas e 4 futuras.
+  for v_semana in -3..4 loop
+    v_inicio := ((current_date + v_semana * 7) + time '09:00') at time zone 'America/Sao_Paulo';
+    insert into public.appointments (owner_id, patient_id, series_id, starts_at, ends_at, modality, location, status)
+    values (v_marina, v_ana, v_serie, v_inicio, v_inicio + interval '50 minutes', 'presencial', 'Sala 2',
+            case when v_semana < 0 then 'realizada' else 'agendada' end)
+    returning id into v_sessao;
+
+    -- Registro nas sessões passadas, menos a da semana anterior (vira pendência no Início).
+    if v_semana < -1 then
+      insert into public.clinical_records (owner_id, patient_id, appointment_id, author_id, updated_by, session_date, body)
+      values (v_marina, v_ana, v_sessao, v_marina, v_marina, current_date + v_semana * 7,
+              'Registro fictício de exemplo. Paciente relatou semana mais tranquila no trabalho; seguimos com o foco combinado.');
+    end if;
+  end loop;
+
+  v_inicio := (current_date + time '14:00') at time zone 'America/Sao_Paulo';
+  insert into public.appointments (owner_id, patient_id, starts_at, ends_at, modality, location)
+  values (v_marina, v_joao, v_inicio, v_inicio + interval '50 minutes', 'online', 'https://meet.example.com/sala-ficticia');
+
+  v_inicio := ((current_date + 1) + time '16:30') at time zone 'America/Sao_Paulo';
+  insert into public.appointments (owner_id, patient_id, starts_at, ends_at, modality, location)
+  values (v_marina, v_lucia, v_inicio, v_inicio + interval '50 minutes', 'presencial', 'Sala 1');
+end;
+$$;

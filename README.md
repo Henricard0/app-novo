@@ -13,7 +13,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | Fase | Situação |
 |---|---|
 | 0. Base (projeto, Supabase, login, layout, tokens) | Concluída |
-| 1. Consultório mínimo | A fazer |
+| 1. Consultório mínimo (pacientes, agenda, prontuário) | Concluída |
 | 2. Supervisão | A fazer |
 | 3. Planos | A fazer |
 | 4. Estágio | A fazer |
@@ -97,4 +97,9 @@ scripts/           teste do banco sem Docker
 
 - RLS ativada em toda tabela, na mesma migration que a cria, com testes de acesso por papel (psicólogo, supervisor, estagiário e usuário sem vínculo).
 - `profiles`: cada usuário lê e edita só o próprio perfil (nome e CRP). O perfil é criado automaticamente no cadastro. Ninguém insere ou apaga perfis pelo app.
+- `patients`, `patient_contacts`, `appointments`: só o dono (`owner_id`) acessa. Paciente é arquivado, nunca apagado; sessão é cancelada, nunca apagada. Só os contatos podem ser removidos.
+- `clinical_records`: só o dono acessa. Não existe `delete`: a exclusão passa pela função `excluir_registro_clinico`, que marca `deleted_at`, quem excluiu e o motivo; o registro some das telas, mas fica guardado (Res. CFP 01/2009).
+- `clinical_record_versions`: cada edição do texto, da data ou da sessão guarda a versão anterior, gravada pelo próprio banco. Ninguém escreve, altera ou apaga versões.
+- `audit_log`: o banco registra quem criou, editou, excluiu, arquivou ou reativou pacientes e registros. Só leitura.
+- O seed traz pacientes, sessões e registros fictícios da Marina para testar.
 - Dados de exemplo sempre fictícios.
