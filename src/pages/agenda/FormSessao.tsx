@@ -68,6 +68,7 @@ export function FormSessao() {
       sessao={sessao.dados}
       pacienteInicial={params.get('paciente')}
       dataInicial={params.get('data')}
+      horaInicial={params.get('hora')}
     />
   )
 }
@@ -81,11 +82,13 @@ function Formulario({
   sessao,
   pacienteInicial,
   dataInicial,
+  horaInicial,
 }: {
   pacientes: Paciente[]
   sessao: SessaoComPaciente | null
   pacienteInicial: string | null
   dataInicial: string | null
+  horaInicial: string | null
 }) {
   const navigate = useNavigate()
   const inicio = sessao ? new Date(sessao.starts_at) : null
@@ -93,7 +96,7 @@ function Formulario({
     sessao?.patient_id ?? (pacientes.some((p) => p.id === pacienteInicial) ? pacienteInicial! : ''),
   )
   const [data, setData] = useState(inicio ? paraDataISO(inicio) : lerDataISO(dataInicial) ? dataInicial! : paraDataISO(new Date()))
-  const [hora, setHora] = useState(inicio ? paraHora(inicio) : '')
+  const [hora, setHora] = useState(inicio ? paraHora(inicio) : /^\d{2}:\d{2}$/.test(horaInicial ?? '') ? horaInicial! : '')
   const [duracao, setDuracao] = useState(sessao ? String(duracaoEmMinutos(sessao.starts_at, sessao.ends_at)) : '50')
   const [modalidade, setModalidade] = useState<Modalidade>((sessao?.modality as Modalidade) ?? 'presencial')
   const [local, setLocal] = useState(sessao?.location ?? '')

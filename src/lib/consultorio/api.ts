@@ -185,6 +185,22 @@ export async function atualizarSessao(id: string, dados: Omit<DadosSessao, 'paci
   return { erro: error ? traduzirErroBanco(error) : null }
 }
 
+/** Muda o horário da sessão (e, se pedido, das seguintes da série). Devolve quantas mudaram. */
+export async function moverSessao(
+  id: string,
+  inicio: Date,
+  fim: Date,
+  seguintes: boolean,
+): Promise<{ erro: string | null; total: number }> {
+  const { data, error } = await supabase.rpc('mover_sessao', {
+    p_id: id,
+    p_inicio: inicio.toISOString(),
+    p_fim: fim.toISOString(),
+    p_seguintes: seguintes,
+  })
+  return error ? { erro: traduzirErroBanco(error), total: 0 } : { erro: null, total: data ?? 1 }
+}
+
 export async function mudarStatusSessao(id: string, status: StatusSessao): Promise<Resultado> {
   const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
   return { erro: error ? traduzirErroBanco(error) : null }

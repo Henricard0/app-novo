@@ -19,6 +19,7 @@ vi.mock('@/lib/consultorio/api', async (original) => {
     criarSessoes: vi.fn(),
     atualizarSessao: vi.fn(),
     mudarStatusSessao: vi.fn(),
+    moverSessao: vi.fn(),
     listarPendencias: vi.fn(),
     listarRegistros: vi.fn(),
     buscarRegistro: vi.fn(),
@@ -203,7 +204,7 @@ describe('Ficha do paciente e prontuário', () => {
 })
 
 describe('Agenda', () => {
-  it('mostra os 7 dias da semana e permite mudar a situação', async () => {
+  it('na lista, mostra os 7 dias da semana e permite mudar a situação', async () => {
     const hoje = new Date()
     hoje.setHours(9, 0, 0, 0)
     m.listarSessoesEntre.mockResolvedValue({
@@ -228,13 +229,64 @@ describe('Agenda', () => {
     })
     m.mudarStatusSessao.mockResolvedValue({ erro: null })
     const usuario = userEvent.setup()
-    renderizarRota('/agenda', { logado: true })
+    renderizarRota('/agenda?visao=lista', { logado: true })
     expect(await screen.findByRole('link', { name: 'Ana Beatriz Fictícia' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(7)
     expect(screen.getByText(/Online · Semanal/)).toBeInTheDocument()
 
     await usuario.selectOptions(screen.getByLabelText(/Situação da sessão de Ana Beatriz Fictícia/), 'realizada')
     expect(m.mudarStatusSessao).toHaveBeenCalledWith('s1', 'realizada')
+  })
+
+  it('no calendário, clicar na sessão abre os detalhes com a situação e os atalhos', async () => {
+    const hoje = new Date()
+    hoje.setHours(10, 0, 0, 0)
+    m.listarSessoesEntre.mockResolvedValue({
+      dados: [
+        {
+          id: 's9',
+          owner_id: 'u1',
+          patient_id: 'p1',
+          series_id: null,
+          starts_at: hoje.toISOString(),
+          ends_at: new Date(hoje.getTime() + 50 * 60000).toISOString(),
+          modality: 'presencial',
+          location: 'Sala 2',
+          status: 'realizada',
+          created_at: AGORA,
+          updated_at: AGORA,
+          patients: { full_name: 'Ana Beatriz Fictícia' },
+          clinical_records: [],
+        },
+      ],
+      erro: null,
+    })
+    m.mudarStatusSessao.mockResolvedValue({ erro: null })
+    const usuario = userEvent.setup()
+    renderizarRota('/agenda', { logado: true })
+    const bloco = await screen.findByRole('button', { name: 'Ana Beatriz Fictícia, 10:00 às 10:50, Realizada' })
+    await usuario.click(bloco)
+    const dialogo = screen.getByRole('dialog', { name: 'Ana Beatriz Fictícia' })
+    expect(within(dialogo).getByText(/Presencial · Sala 2/)).toBeInTheDocument()
+    expect(within(dialogo).getByRole('link', { name: 'Escrever registro' })).toHaveAttribute(
+      'href',
+      '/pacientes/p1/registros/novo?sessao=s9',
+    )
+    await usuario.selectOptions(within(dialogo).getByLabelText('Situação'), 'faltou')
+    expect(m.mudarStatusSessao).toHaveBeenCalledWith('s9', 'faltou')
+    await usuario.click(within(dialogo).getByRole('button', { name: 'Fechar' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('clicar num horário vazio do calendário abre nova sessão com data e hora', async () => {
+    m.listarPacientes.mockResolvedValue({ dados: [paciente()], erro: null })
+    const usuario = userEvent.setup()
+    const { router } = renderizarRota('/agenda?semana=2026-11-16', { logado: true })
+    const vazios = await screen.findAllByRole('button', { name: 'Nova sessão às 09:00' })
+    await usuario.click(vazios[0]!)
+    expect(router.state.location.pathname).toBe('/agenda/nova')
+    expect(router.state.location.search).toBe('?data=2026-11-16&hora=09:00')
+    expect(await screen.findByLabelText('Horário')).toHaveValue('09:00')
   })
 
   it('nova sessão semanal mostra a prévia e cria as sessões', async () => {

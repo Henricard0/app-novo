@@ -100,6 +100,7 @@ scripts/           teste do banco sem Docker
 - `patients`, `patient_contacts`, `appointments`: só o dono (`owner_id`) acessa. Paciente é arquivado, nunca apagado; sessão é cancelada, nunca apagada. Só os contatos podem ser removidos.
 - `clinical_records`: só o dono acessa. Não existe `delete`: a exclusão passa pela função `excluir_registro_clinico`, que marca `deleted_at`, quem excluiu e o motivo; o registro some das telas, mas fica guardado (Res. CFP 01/2009).
 - `clinical_record_versions`: cada edição do texto, da data ou da sessão guarda a versão anterior, gravada pelo próprio banco. Ninguém escreve, altera ou apaga versões.
+- `mover_sessao(id, início, fim, seguintes)`: usada pelo calendário ao arrastar. Respeita a RLS (só move sessões suas) e, se pedido, aplica o mesmo deslocamento às sessões seguintes da série que ainda estão agendadas.
 - `audit_log`: o banco registra quem criou, editou, excluiu, arquivou ou reativou pacientes e registros. Só leitura.
 - O seed traz pacientes, sessões e registros fictícios da Marina para testar.
 - Dados de exemplo sempre fictícios.

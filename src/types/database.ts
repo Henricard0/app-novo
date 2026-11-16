@@ -306,6 +306,10 @@ export type Database = {
         Args: { p_id: string; p_motivo?: string }
         Returns: undefined
       }
+      mover_sessao: {
+        Args: { p_id: string; p_inicio: string; p_fim: string; p_seguintes?: boolean }
+        Returns: number
+      }
       sessao_combina_com_paciente: {
         Args: { p_appointment: string; p_patient: string }
         Returns: boolean
