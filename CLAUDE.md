@@ -17,7 +17,7 @@ Plataforma web de gestão de consultório para psicólogos, com **supervisão cl
 
 ## Regras inegociáveis
 
-1. **Sigilo.** Dado clínico nunca sai do consultório do psicólogo sem passar pela anonimização e pela revisão dele. O supervisor só enxerga cópias anonimizadas (`supervision_case_excerpts`). Nenhuma policy de RLS pode dar ao supervisor de casos acesso a `patients`, `clinical_records` ou `supervision_case_sources`.
+1. **Sigilo.** Dado clínico nunca sai do consultório do psicólogo sem passar pela anonimização e pela revisão dele. O supervisor só enxerga cópias anonimizadas (`supervision_case_excerpts`). Nenhuma policy de RLS pode dar ao supervisor de casos acesso a `patients`, `clinical_records` ou `supervision_case_sources`. O mesmo vale para o contador (Fase 6): ele nunca acessa dado clínico, agenda ou supervisão.
 2. **RLS em toda tabela**, ativada na mesma migration que cria a tabela. Para cada tabela nova, escreva testes de acesso por papel (psicólogo, supervisor, estagiário, usuário sem vínculo).
 3. **Registro clínico não é apagado de verdade** (soft delete com `deleted_at`): guarda mínima de 5 anos (Res. CFP 01/2009). Alterações em registros geram versão.
 4. **Interface 100% em português do Brasil.**
@@ -33,8 +33,7 @@ Plataforma web de gestão de consultório para psicólogos, com **supervisão cl
 
 ## Decisões em aberto (não decida sozinho)
 
-- Como incorporar o contador parceiro na Fase 6 (fiscal).
 - Provedor de assinatura digital.
 - Nome final do produto.
 
-Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; planos Gratuito (10 pacientes), Básico R$ 29,90 (30 pacientes), Essencial R$ 39,90 (ilimitado + NFS-e) e Profissional R$ 49,90 (tudo), com 30 dias grátis do Profissional e 50% para recém-formados; pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos; Fase 4 (estágio) suspensa; Fase 6 (fiscal) para pessoa física e CNPJ, nos planos Essencial e Profissional.
+Já decididas pelo Henrique (detalhes em `docs/especificacao.md`, seção 3): supervisionando não precisa de plano pago; planos Gratuito (10 pacientes), Básico R$ 29,90 (30 pacientes), Essencial R$ 39,90 (ilimitado + NFS-e) e Profissional R$ 49,90 (tudo), com 30 dias grátis do Profissional e 50% para recém-formados; pagamento pelo Mercado Pago; em grupo de supervisão, só o supervisor lê os casos; Fase 4 (estágio) suspensa; Fase 6 (fiscal) para pessoa física e CNPJ, nos planos Essencial e Profissional, com uma rede de contadores (login e tipo de conta separados, mesmo banco; o contador só vê o que o psicólogo liberar, nunca dado clínico; o valor é combinado entre eles e a Tríade não fica com porcentagem dos honorários).

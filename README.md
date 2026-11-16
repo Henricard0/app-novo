@@ -20,7 +20,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 3. Planos e assinatura (Mercado Pago, modo de teste) | Concluída em modo de teste |
 | 4. Estágio | Suspensa (exige contrato de estágio registrado ou convênio com cursos) |
 | 5. Extras (financeiro, recibos, NFS-e, declarações) | A fazer |
-| 6. Fiscal (carnê-leão, DAS, Fator R) | Proposta |
+| 6. Fiscal (carnê-leão, DAS, Fator R, rede de contadores com login separado) | Proposta, modelo decidido |
 
 ## Como rodar na sua máquina
 

@@ -22,7 +22,7 @@ Resumo para retomar o trabalho. Detalhes de produto em `docs/especificacao.md`; 
 | 3. Planos e assinatura (Mercado Pago, modo de teste) | Concluída em modo de teste |
 | 4. Estágio | Suspensa (exige contrato de estágio registrado ou convênio com cursos) |
 | 5. Extras (financeiro, recibos, NFS-e, declarações, assinatura digital) | A fazer — próxima |
-| 6. Fiscal (carnê-leão, DAS, Fator R, contador parceiro) | Proposta |
+| 6. Fiscal (carnê-leão, DAS, Fator R, rede de contadores) | Proposta, modelo decidido |
 
 Testes: 225 de acesso ao banco (pgTAP, `npm run db:test:sem-docker`) e 97 de tela (`npm test`), todos passando no último envio.
 
@@ -37,10 +37,11 @@ Testes: 225 de acesso ao banco (pgTAP, `npm run db:test:sem-docker`) e 97 de tel
 - **Agenda:** sessões semanais perguntam "só esta" ou "esta e as seguintes" ao arrastar.
 - **Paciente:** sem CPF até a Fase 5.
 - **Fase 6 (fiscal):** para pessoa física e CNPJ, nos planos Essencial e Profissional.
+- **Contadores (Fase 6):** rede de contadores com login e tipo de conta separados, no mesmo banco (jeito A). O contador só vê o que o psicólogo liberar, nunca dado clínico; o psicólogo só vê o perfil do contador e o que ele enviou. Valor combinado entre eles, sem porcentagem para a Tríade. Um e-mail = uma conta. Detalhes em `docs/especificacao.md`, Fase 6.
 
 ## Em aberto
 
-- **Fase 6:** como incorporar o contador parceiro. Recomendação apresentada: começar por parceria com contabilidade online (pacote "plano + contabilidade", serviço prestado com o CRC do parceiro, receita dividida); assistente fiscal completo para pessoa física já no app; braço contábil próprio só mais adiante. Consultar advogado e CRC-PR antes de vender.
+- **Fase 6:** se o contador paga mensalidade fixa ou usa de graça; validar o modelo com advogado e CRC-PR antes de lançar.
 - **Fase 5b:** escolher o intermediário de NFS-e (Focus NFe, Tecnospeed PlugNotas, NotaGateway…). A NFS-e Nacional é obrigatória para ME/EPP do Simples desde 01/11/2026.
 - Provedor de assinatura digital; nome final do produto.
 - Pendências técnicas da Fase 3: virada automática do desconto de recém-formado para o preço cheio depois de 12 meses; cancelamento hoje volta ao gratuito na hora (pode passar a valer só no fim do período pago).
