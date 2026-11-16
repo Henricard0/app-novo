@@ -25,7 +25,10 @@ Referência de mercado: o PsicoManager já cobre bem a gestão de consultório (
 
 - O supervisor escolhe se assina ou não. Sem assinar, as áreas de consultório aparecem bloqueadas com convite para o Essencial (ver `docs/referencia-telas/Supervisor.dc.html`).
 - Implementar como permissões por plano: coluna `profiles.plan` e uma função `has_feature(feature text)` usada no front e nas policies/funções do banco.
-- Preços: [A DEFINIR].
+- **Preços (decididos pelo Henrique em 16/11/2026):** Essencial a **R$ 38,30/mês** ou **R$ 383/ano** (dois meses grátis); **30 dias grátis** sem cartão; **50% de desconto no primeiro ano para recém-formados**. Plano Supervisor grátis.
+- **Plano gratuito:** além do Supervisor, haverá um plano gratuito com menos funcionalidades. O que fica de fora é definido na Fase 3.
+- **Supervisionando não precisa de plano pago** para usar a plataforma, encontrar supervisor e levar casos. A supervisão é cobrada pelo supervisor, combinada entre os dois, fora da plataforma.
+- **Pagamento dos planos:** Mercado Pago (assinatura). Até haver CNPJ, só em modo de teste.
 
 ## 4. Fluxos
 
@@ -35,7 +38,8 @@ Referência de mercado: o PsicoManager já cobre bem a gestão de consultório (
 3. **Convite por link:** para quem já tem supervisor fora da plataforma, qualquer um dos dois gera um link (vale 14 dias, uso único) e manda por WhatsApp ou e-mail. Quem fica como supervisor precisa ter CRP.
 4. Ao aceitar (pedido ou convite), nasce um `supervision_link` ativo. Qualquer uma das pontas pode encerrar.
 5. Quem não tem conta faz cadastro a partir do convite (o plano Supervisor grátis entra na Fase 3).
-6. **Depois:** selo "CRP verificado", foto no perfil, feed e chat ficam para fases futuras.
+6. **Grupos (decisão do Henrique, opção B):** o supervisor monta grupos e marca encontros do grupo; cada supervisionando leva os próprios casos e **só o supervisor lê os casos** — os colegas do grupo não veem os casos uns dos outros. As horas do encontro são registradas para cada presente.
+7. **Depois:** selo "CRP verificado", foto no perfil, feed e chat ficam para fases futuras.
 
 ### 4.2 Levar caso para supervisão (tela `LevarCaso.dc.html`)
 1. A partir do paciente, o psicólogo escolhe um ou mais registros do prontuário.

@@ -502,6 +502,30 @@ export type Database = {
           },
         ]
       }
+      supervision_groups: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          id: string
+          name: string
+          supervisor_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          supervisor_id?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          supervisor_id?: string
+        }
+        Relationships: []
+      }
       supervision_hours: {
         Row: {
           created_at: string
@@ -559,33 +583,43 @@ export type Database = {
       }
       supervision_meetings: {
         Row: {
+          group_id: string | null
           created_at: string
           created_by: string
           duration_min: number
           id: string
-          link_id: string
+          link_id: string | null
           starts_at: string
           status: string
         }
         Insert: {
+          group_id?: string | null
           created_at?: string
           created_by?: string
           duration_min?: number
           id?: string
-          link_id: string
+          link_id?: string | null
           starts_at: string
           status?: string
         }
         Update: {
+          group_id?: string | null
           created_at?: string
           created_by?: string
           duration_min?: number
           id?: string
-          link_id?: string
+          link_id?: string | null
           starts_at?: string
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'supervision_meetings_group_id_fkey'
+            columns: ['group_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_groups'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'supervision_meetings_link_id_fkey'
             columns: ['link_id']
@@ -641,6 +675,7 @@ export type Database = {
       }
       supervision_links: {
         Row: {
+          group_id: string | null
           created_at: string
           ended_at: string | null
           ended_by: string | null
@@ -652,6 +687,7 @@ export type Database = {
           supervisor_id: string
         }
         Insert: {
+          group_id?: string | null
           created_at?: string
           ended_at?: string | null
           ended_by?: string | null
@@ -663,6 +699,7 @@ export type Database = {
           supervisor_id: string
         }
         Update: {
+          group_id?: string | null
           created_at?: string
           ended_at?: string | null
           ended_by?: string | null
@@ -674,6 +711,13 @@ export type Database = {
           supervisor_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'supervision_links_group_id_fkey'
+            columns: ['group_id']
+            isOneToOne: false
+            referencedRelation: 'supervision_groups'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'supervision_links_supervisee_id_fkey'
             columns: ['supervisee_id']
@@ -805,6 +849,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      definir_grupo: { Args: { p_group: string | null; p_link: string }; Returns: undefined }
       enviar_caso: { Args: { p_case: string }; Returns: undefined }
       enviar_devolutiva: { Args: { p_feedback: string; p_minutos?: number }; Returns: undefined }
       marcar_caso_discutido: { Args: { p_case: string }; Returns: undefined }

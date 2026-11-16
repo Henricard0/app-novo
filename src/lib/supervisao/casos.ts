@@ -15,8 +15,10 @@ export type Devolutiva = Tables<'supervision_feedback'>
 export type Encaminhamento = Tables<'supervision_feedback_tasks'>
 export type Hora = Tables<'supervision_hours'>
 
+export type EncontroComGrupo = Encontro & { supervision_groups: { name: string } | null }
+
 export type CasoNaLista = Caso & {
-  supervision_meetings: Pick<Encontro, 'starts_at' | 'status'> | null
+  supervision_meetings: (Pick<Encontro, 'starts_at' | 'status' | 'group_id'> & { supervision_groups: { name: string } | null }) | null
   supervision_links: {
     supervisor: PessoaResumo | null
     supervisionando: PessoaResumo | null
@@ -37,11 +39,12 @@ function falha<T>(erro: unknown): Resposta<T> {
   return { dados: null, erro: traduzirErroBanco(erro) }
 }
 
-export async function listarEncontros(linkId: string): Promise<Resposta<Encontro[]>> {
+/** Encontros marcados do vínculo e, se ele estiver num grupo, do grupo. */
+export async function listarEncontros(linkId: string, grupoId: string | null = null): Promise<Resposta<EncontroComGrupo[]>> {
   const { data, error } = await supabase
     .from('supervision_meetings')
-    .select('*')
-    .eq('link_id', linkId)
+    .select('*, supervision_groups(name)')
+    .or(grupoId ? `link_id.eq.${linkId},group_id.eq.${grupoId}` : `link_id.eq.${linkId}`)
     .eq('status', 'agendado')
     .gte('starts_at', new Date(Date.now() - 6 * 3600000).toISOString())
     .order('starts_at')
@@ -113,7 +116,7 @@ export async function apagarRascunho(id: string): Promise<Resultado> {
   return { erro: error ? traduzirErroBanco(error) : null }
 }
 
-const COM_ENCONTRO_E_VINCULO = `*, supervision_meetings(starts_at, status), ${VINCULO}`
+const COM_ENCONTRO_E_VINCULO = `*, supervision_meetings(starts_at, status, group_id, supervision_groups(name)), ${VINCULO}`
 
 /** Casos que eu levei (supervisionando) ou recebi (supervisor), conforme a RLS. */
 export async function listarCasos(): Promise<Resposta<CasoNaLista[]>> {
@@ -183,6 +186,44 @@ export async function marcarDiscutido(casoId: string): Promise<Resultado> {
 
 export async function marcarEncaminhamento(id: string, feito: boolean): Promise<Resultado> {
   const { error } = await supabase.rpc('marcar_encaminhamento', { p_task: id, p_feito: feito })
+  return { erro: error ? traduzirErroBanco(error) : null }
+}
+
+export async function marcarEncontroDoGrupo(grupoId: string, inicio: Date): Promise<Resultado> {
+  const { error } = await supabase.from('supervision_meetings').insert({ group_id: grupoId, starts_at: inicio.toISOString() })
+  return { erro: error ? traduzirErroBanco(error) : null }
+}
+
+/** Encontros de grupo marcados pelo supervisor (próximos e recentes). */
+export async function listarEncontrosDeGrupo(): Promise<Resposta<EncontroComGrupo[]>> {
+  const { data, error } = await supabase
+    .from('supervision_meetings')
+    .select('*, supervision_groups(name)')
+    .not('group_id', 'is', null)
+    .gte('starts_at', new Date(Date.now() - 30 * 864e5).toISOString())
+    .order('starts_at')
+  return error ? falha(error) : { dados: data, erro: null }
+}
+
+/** Registra os minutos do encontro para cada presente (um registro por vínculo). */
+export async function registrarHorasDoEncontro(
+  encontro: Pick<Encontro, 'id' | 'starts_at'>,
+  presentes: { linkId: string; supervisionandoId: string }[],
+  minutos: number,
+): Promise<Resultado> {
+  const dia = new Date(encontro.starts_at)
+  const hoje = new Date()
+  const data = (dia > hoje ? hoje : dia).toLocaleDateString('sv-SE')
+  const { error } = await supabase.from('supervision_hours').insert(
+    presentes.map((p) => ({
+      link_id: p.linkId,
+      supervisee_id: p.supervisionandoId,
+      meeting_id: encontro.id,
+      minutes: minutos,
+      occurred_on: data,
+    })),
+  )
+  if (!error) await supabase.from('supervision_meetings').update({ status: 'concluido' }).eq('id', encontro.id)
   return { erro: error ? traduzirErroBanco(error) : null }
 }
 

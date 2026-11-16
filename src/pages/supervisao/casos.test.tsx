@@ -40,6 +40,8 @@ const VINCULO: rede.Vinculo = {
   created_at: AGORA,
   ended_at: null,
   ended_by: null,
+  group_id: null,
+  supervision_groups: null,
   supervisor: { full_name: 'Paulo Andrade', crp_region: '08', crp_number: '4567' },
   supervisionando: { full_name: 'Marina Costa', crp_region: '08', crp_number: '12345' },
 }

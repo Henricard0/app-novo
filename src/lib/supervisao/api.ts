@@ -16,7 +16,9 @@ export type Solicitacao = Tables<'supervision_requests'> & {
 export type Vinculo = Tables<'supervision_links'> & {
   supervisor: PessoaResumo | null
   supervisionando: PessoaResumo | null
+  supervision_groups: { name: string } | null
 }
+export type Grupo = Tables<'supervision_groups'>
 export type Convite = Tables<'supervision_invites'>
 
 type Resultado = { erro: string | null }
@@ -142,10 +144,32 @@ export async function listarVinculos(): Promise<Resposta<Vinculo[]>> {
   const { data, error } = await supabase
     .from('supervision_links')
     .select(
-      `*, supervisor:profiles!supervision_links_supervisor_id_fkey(${PESSOA}), supervisionando:profiles!supervision_links_supervisee_id_fkey(${PESSOA})`,
+      `*, supervisor:profiles!supervision_links_supervisor_id_fkey(${PESSOA}), supervisionando:profiles!supervision_links_supervisee_id_fkey(${PESSOA}), supervision_groups(name)`,
     )
     .order('created_at', { ascending: false })
   return error ? falha(error) : ok(data)
+}
+
+// ---------------------------------------------------------------------------
+// Grupos (o supervisor monta; só ele lê os casos — decisão "opção B")
+// ---------------------------------------------------------------------------
+
+export async function listarGrupos(): Promise<Resposta<Grupo[]>> {
+  const { data, error } = await supabase.from('supervision_groups').select('*').is('archived_at', null).order('name')
+  return error ? falha(error) : ok(data)
+}
+
+export async function criarGrupo(nome: string): Promise<Resultado> {
+  const { error } = await supabase.from('supervision_groups').insert({ name: nome.trim() })
+  if (error && (error as { code?: string }).code === '42501') {
+    return { erro: 'Para criar um grupo, cadastre seu CRP em “Meu perfil”.' }
+  }
+  return resultado(error)
+}
+
+export async function definirGrupo(linkId: string, grupoId: string | null): Promise<Resultado> {
+  const { error } = await supabase.rpc('definir_grupo', { p_link: linkId, p_group: grupoId })
+  return resultado(error)
 }
 
 export async function encerrarVinculo(id: string): Promise<Resultado> {

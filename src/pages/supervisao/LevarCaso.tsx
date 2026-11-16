@@ -83,7 +83,8 @@ function Formulario({
   const [erros, setErros] = useState<Partial<Record<'registros' | 'pergunta' | 'revisei' | 'encontro', string | null>>>({})
   const [erroGeral, setErroGeral] = useState<string | null>(null)
   const [enviando, setEnviando] = useState<'rascunho' | 'enviar' | null>(null)
-  const encontros = useConsulta(`encontros:${linkId}`, () => listarEncontros(linkId))
+  const grupoDoVinculo = supervisores.find((v) => v.id === linkId)?.group_id ?? null
+  const encontros = useConsulta(`encontros:${linkId}`, () => listarEncontros(linkId, grupoDoVinculo))
 
   const opcoes = {
     nomesPaciente: [paciente.full_name, ...paciente.nicknames],
@@ -291,7 +292,10 @@ function Formulario({
             rotulo="Encontro"
             vazio="Próximo encontro (sem data marcada)"
             opcoes={[
-              ...(encontros.dados ?? []).map((m) => ({ valor: m.id, rotulo: formatarDataHora(m.starts_at) })),
+              ...(encontros.dados ?? []).map((m) => ({
+                valor: m.id,
+                rotulo: `${formatarDataHora(m.starts_at)}${m.supervision_groups ? ` · ${m.supervision_groups.name}` : ''}`,
+              })),
               { valor: 'novo', rotulo: 'Marcar novo encontro…' },
             ]}
             value={encontro}

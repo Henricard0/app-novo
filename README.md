@@ -15,7 +15,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 0. Base (projeto, Supabase, login, layout, tokens) | Concluída |
 | 1. Consultório mínimo (pacientes, agenda, prontuário) | Concluída |
 | 2a. Rede de supervisores (perfil, busca, pedido, convite por link) | Concluída |
-| 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas) | Concluída (grupos em seguida) |
+| 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas, grupos) | Concluída |
 | 3. Planos | A fazer |
 | 4. Estágio | A fazer |
 | 5. Extras | A fazer |
@@ -112,6 +112,7 @@ scripts/           teste do banco sem Docker
 - `supervision_cases` e `supervision_case_excerpts`: o supervisionando escreve enquanto é rascunho; o supervisor do vínculo só lê depois de enviado (`enviar_caso`), e aí o texto fica congelado. O envio entra na auditoria como "compartilhou".
 - `supervision_feedback` e `supervision_feedback_tasks`: o supervisor escreve; o supervisionando lê depois de enviada (`enviar_devolutiva`) e marca encaminhamentos (`marcar_encaminhamento`). A devolutiva não entra no prontuário.
 - `supervision_meetings` e `supervision_hours`: as pontas do vínculo veem; só o supervisor registra horas.
+- `supervision_groups`: o supervisor (com CRP) cria e monta (`definir_grupo`); os membros veem o nome e os encontros do grupo, mas **não os casos uns dos outros** (opção B).
 - A anonimização (`src/lib/supervisao/anonimizar.ts`) roda no navegador, sem API externa, e a revisão do psicólogo é obrigatória antes de enviar.
 - O seed traz pacientes, sessões e registros fictícios da Marina e o Paulo como supervisor de exemplo na rede.
 - Dados de exemplo sempre fictícios.

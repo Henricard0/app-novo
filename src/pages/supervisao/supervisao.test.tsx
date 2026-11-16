@@ -26,6 +26,9 @@ vi.mock('@/lib/supervisao/api', async (original) => {
     apagarConvite: vi.fn(),
     verConvite: vi.fn(),
     aceitarConvite: vi.fn(),
+    listarGrupos: vi.fn().mockResolvedValue({ dados: [], erro: null }),
+    criarGrupo: vi.fn(),
+    definirGrupo: vi.fn(),
   }
 })
 
@@ -35,6 +38,7 @@ vi.mock('@/lib/supervisao/casos', async (original) => {
     ...real,
     listarCasos: vi.fn().mockResolvedValue({ dados: [], erro: null }),
     listarHoras: vi.fn().mockResolvedValue({ dados: [], erro: null }),
+    listarEncontrosDeGrupo: vi.fn().mockResolvedValue({ dados: [], erro: null }),
   }
 })
 
@@ -163,6 +167,8 @@ describe('Minha supervisão', () => {
           created_at: AGORA,
           ended_at: null,
           ended_by: null,
+          group_id: null,
+          supervision_groups: null,
           supervisor: { full_name: 'Paulo Andrade', crp_region: '08', crp_number: '4567' },
           supervisionando: { full_name: 'Marina Costa', crp_region: '08', crp_number: '12345' },
         },
@@ -177,6 +183,42 @@ describe('Minha supervisão', () => {
     const dialogo = screen.getByRole('dialog', { name: 'Encerrar supervisão?' })
     await usuario.click(within(dialogo).getByRole('button', { name: 'Encerrar supervisão' }))
     await waitFor(() => expect(m.encerrarVinculo).toHaveBeenCalledWith('v1'))
+  })
+})
+
+describe('Grupos de supervisão', () => {
+  it('supervisor cria grupo e coloca o supervisionando nele', async () => {
+    const vinculo = {
+      id: 'v9',
+      supervisor_id: EU,
+      supervisee_id: 'outra',
+      status: 'ativo',
+      format: 'individual',
+      origin: 'convite',
+      created_at: AGORA,
+      ended_at: null,
+      ended_by: null,
+      group_id: null,
+      supervision_groups: null,
+      supervisor: { full_name: 'Marina Costa', crp_region: '08', crp_number: '12345' },
+      supervisionando: { full_name: 'Bianca Lima', crp_region: null, crp_number: null },
+    }
+    m.listarVinculos.mockResolvedValue({ dados: [vinculo], erro: null })
+    m.listarGrupos.mockResolvedValue({
+      dados: [{ id: 'g1', supervisor_id: EU, name: 'Grupo TCC', created_at: AGORA, archived_at: null }],
+      erro: null,
+    })
+    m.criarGrupo.mockResolvedValue({ erro: null })
+    m.definirGrupo.mockResolvedValue({ erro: null })
+    const usuario = userEvent.setup()
+    renderizarRota('/supervisao', { logado: true })
+    const cartao = (await screen.findByRole('heading', { name: 'Grupos de supervisão' })).closest('section')!
+    expect(within(cartao).getByText(/os colegas do grupo não veem os casos uns dos outros/)).toBeInTheDocument()
+    await usuario.type(within(cartao).getByLabelText('Nome do novo grupo'), 'Grupo Infantil')
+    await usuario.click(within(cartao).getByRole('button', { name: 'Criar grupo' }))
+    await waitFor(() => expect(m.criarGrupo).toHaveBeenCalledWith('Grupo Infantil'))
+    await usuario.selectOptions(within(cartao).getByLabelText('Bianca Lima'), 'g1')
+    await waitFor(() => expect(m.definirGrupo).toHaveBeenCalledWith('v9', 'g1'))
   })
 })
 

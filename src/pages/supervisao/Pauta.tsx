@@ -22,7 +22,9 @@ export function Pauta() {
 
   const grupos = new Map<string, CasoNaLista[]>()
   for (const c of abertos.sort((a, b) => (a.supervision_meetings?.starts_at ?? '9').localeCompare(b.supervision_meetings?.starts_at ?? '9'))) {
-    const chave = c.supervision_meetings ? formatarDataHora(c.supervision_meetings.starts_at) : 'Próximo encontro (sem data)'
+    const chave = c.supervision_meetings
+      ? `${formatarDataHora(c.supervision_meetings.starts_at)}${c.supervision_meetings.supervision_groups ? ` · ${c.supervision_meetings.supervision_groups.name}` : ''}`
+      : 'Próximo encontro (sem data)'
     grupos.set(chave, [...(grupos.get(chave) ?? []), c])
   }
 

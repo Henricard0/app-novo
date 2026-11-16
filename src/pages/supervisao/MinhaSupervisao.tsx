@@ -28,6 +28,7 @@ import {
 } from '@/lib/supervisao/api'
 import { ROTULO_SITUACAO_CASO, formatarHoras, listarCasos, listarHoras } from '@/lib/supervisao/casos'
 import { useTituloPagina } from '@/lib/titulo'
+import { Grupos } from './Grupos'
 
 function Pessoa({ pessoa }: { pessoa: PessoaResumo | null }) {
   return (
@@ -278,6 +279,8 @@ export function MinhaSupervisao() {
         </Cartao>
       ) : null}
 
+      {meusSupervisionandos.length ? <Grupos supervisionandos={meusSupervisionandos} aoMudar={vinculos.recarregar} /> : null}
+
       {meusSupervisores.length || casosLevados.length ? (
         <div className="flex flex-wrap items-start gap-6">
           <Cartao titulo="Horas de supervisão" className="flex-[1_1_240px]">
@@ -362,6 +365,7 @@ function ListaVinculos({
             <Pessoa pessoa={pessoa(v)} />
             <span className="text-[13px] text-muted">
               Desde {formatarData(new Date(v.created_at))} · {v.origin === 'convite' ? 'por convite' : 'pela rede'}
+              {v.supervision_groups ? ` · ${v.supervision_groups.name}` : ''}
               {minutos(v.id) ? ` · ${formatarHoras(minutos(v.id))} de supervisão` : ''}
             </span>
           </span>
