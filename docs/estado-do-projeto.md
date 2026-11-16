@@ -6,10 +6,10 @@ Resumo para retomar o trabalho. Detalhes de produto em `docs/especificacao.md`; 
 
 - **Código:** branch `claude/focused-wozniak-y9d9ps` (pull request #1 para `main`, ainda não mesclado).
 - **Site de teste:** <https://triade-hazel.vercel.app> (Vercel, projeto `triade`). Publicar: `npx vercel deploy --prod`.
-- **Banco de teste:** Supabase `fjadohwypqsarkyklsqh` (us-east-1, plano gratuito, só dados fictícios). Todas as migrations de `supabase/migrations/` estão aplicadas e registradas.
+- **Banco:** Supabase `fjadohwypqsarkyklsqh` ("Henricard0's Project", us-east-1, plano gratuito). **É o projeto do Tríade** (decisão de 16/11/2026); por enquanto só dados fictícios. Todas as migrations de `supabase/migrations/` estão aplicadas e registradas.
 - **Edge Functions (Supabase de teste):** `assinatura` (com login) e `mercado-pago-webhook` (sem login, assinatura HMAC).
 - **Segredos no Supabase de teste:** `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`, `MP_PAYER_EMAIL_TESTE` (Mercado Pago em modo de teste). Valores nunca no código nem no chat.
-- **Projeto de produção:** `llqunvzphflvrghvjmbb` ("triade-producao", São Paulo, organização "Tríade") só com a estrutura da Fase 0; ainda não recebeu as migrations seguintes nem tem site apontando para ele.
+- **Outro projeto:** `llqunvzphflvrghvjmbb` ("triade-producao") não é mais do Tríade; o Henrique vai reaproveitá-lo. Não aplicar migrations nele.
 
 ## Fases
 
@@ -47,7 +47,7 @@ Testes: 316 de acesso ao banco (pgTAP, `npm run db:test:sem-docker`) e 112 de te
 - Provedor de assinatura digital; nome final do produto.
 - Financeiro: hoje disponível em todos os planos (o Profissional anuncia "financeiro e recibos"); decidir se o financeiro fica só nos pagos. Se o contador paga mensalidade ou usa de graça (hoje é grátis).
 - Pendências técnicas da Fase 3: virada automática do desconto de recém-formado para o preço cheio depois de 12 meses; cancelamento hoje volta ao gratuito na hora (pode passar a valer só no fim do período pago).
-- Antes de dados reais: plano pago do Supabase no projeto de São Paulo, aplicar todas as migrations nele, envio de e-mail próprio (SMTP) e domínio, termos de uso e política de privacidade, Vercel Pro, credenciais de produção do Mercado Pago (com CNPJ).
+- Antes de dados reais (lista em `docs/ambientes.md`): decidir a região (o projeto do Tríade está nos EUA), apagar os fictícios, plano pago do Supabase, envio de e-mail próprio (SMTP) e domínio, termos de uso e política de privacidade, Vercel Pro, credenciais de produção do Mercado Pago (com CNPJ).
 
 ## Contas de teste (fictícias)
 

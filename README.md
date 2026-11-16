@@ -51,13 +51,13 @@ O cadastro exige confirmar o e-mail. Localmente nenhum e-mail sai de verdade: el
 
 O painel do banco local (Supabase Studio) fica em <http://127.0.0.1:54323>.
 
-### Ambiente de teste hospedado
+### Projeto hospedado
 
-Há um projeto no Supabase usado só para testes, **com dados fictícios** (região us-east-1). A migration já foi aplicada e os mesmos usuários de exemplo existem lá. Para apontar o app para ele, coloque no `.env.local` a URL do projeto e a "Publishable key" (painel do Supabase → Project Settings → API Keys).
+O Tríade usa o projeto `fjadohwypqsarkyklsqh` ("Henricard0's Project") no Supabase, região us-east-1, hoje **só com dados fictícios**. A migration já foi aplicada e os mesmos usuários de exemplo existem lá. Para apontar o app para ele, coloque no `.env.local` a URL do projeto e a "Publishable key" (painel do Supabase → Project Settings → API Keys).
 
 - Login: senha mínima de 8 caracteres com letras e números; redirecionamentos liberados para `http://localhost:5173`.
 - E-mails: o servidor de e-mail padrão do Supabase só entrega para membros da equipe do projeto, e no plano gratuito não deixa trocar os textos (continuam em inglês). Os textos em português de `supabase/templates/` entram quando houver um SMTP próprio.
-- **Não use para dados reais.** Para produção, criar um projeto na região São Paulo (LGPD).
+- Antes de dados reais, siga a lista de `docs/ambientes.md` (região, plano pago, limpeza dos fictícios).
 
 ### Site publicado (teste)
 
