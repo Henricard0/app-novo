@@ -32,7 +32,7 @@ export const PLANOS_PAGOS: ReadonlyArray<{
     mensal: 39.9,
     anual: 399,
     resumo: 'O consultório completo, sem limites.',
-    recursos: ['Tudo do Básico', 'Pacientes ilimitados', 'Emissão de NFS-e (em breve)'],
+    recursos: ['Tudo do Básico', 'Pacientes ilimitados', 'Contador: rede de contadores, guias e pedidos', 'Emissão de NFS-e (em breve)'],
   },
   {
     id: 'profissional',

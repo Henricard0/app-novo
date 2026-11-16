@@ -19,8 +19,8 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 | 2b. Supervisão (casos anonimizados, pauta, devolutivas, horas, grupos) | Concluída |
 | 3. Planos e assinatura (Mercado Pago, modo de teste) | Concluída em modo de teste |
 | 4. Estágio | Suspensa (exige contrato de estágio registrado ou convênio com cursos) |
-| 5. Extras (financeiro, recibos, NFS-e, declarações) | A fazer |
-| 6. Fiscal (carnê-leão, DAS, Fator R, rede de contadores com login separado) | Proposta, modelo decidido |
+| 5. Extras (financeiro, recibos, NFS-e, declarações) | Financeiro mínimo feito (valores, pagamentos, despesas); o resto a fazer |
+| 6. Fiscal (carnê-leão, DAS, Fator R, rede de contadores com login separado) | Rede de contadores feita (modo de teste); cálculos fiscais a fazer |
 
 ## Como rodar na sua máquina
 
@@ -43,6 +43,7 @@ Todos com a senha `senha-teste-123`:
 | `marina.costa@example.com` | Psicóloga, CRP 08/12345 |
 | `paulo.andrade@example.com` | Psicólogo e supervisor, CRP 08/4567 |
 | `bianca.lima@example.com` | Estagiária, sem CRP |
+| `carla.souza@example.com` | Contadora, CRC-PR 12345 (entra por `/contador/entrar` e ativa a verificação em duas etapas no primeiro acesso) |
 
 ### E-mails de cadastro e senha
 
@@ -129,8 +130,14 @@ scripts/           teste do banco sem Docker
 - `supervision_meetings` e `supervision_hours`: as pontas do vínculo veem; só o supervisor registra horas.
 - `supervision_groups`: o supervisor (com CRP) cria e monta (`definir_grupo`); os membros veem o nome e os encontros do grupo, mas **não os casos uns dos outros** (opção B).
 - A anonimização (`src/lib/supervisao/anonimizar.ts`) roda no navegador, sem API externa, e a revisão do psicólogo é obrigatória antes de enviar.
+- `profiles.account_type` (`psicologo` ou `contador`): definido no cadastro e sem grant para mudar. Toda tabela do consultório e da supervisão tem uma policy **restritiva** que só deixa passar contas de psicólogo; gatilhos impedem contas de contador em vínculos, pedidos, convites e grupos de supervisão, e em pacientes.
+- `appointments.fee`, `payment_status`, `paid_on`, `payment_method`; `patients.default_fee`, `cpf`, `payer_name`, `payer_cpf`; `expenses`; `fiscal_profiles`: só o dono.
+- `accountant_profiles`: o contador edita o próprio; psicólogos veem os que estão na rede (com CRC) e os que já contataram.
+- `accountant_requests` e `accountant_links`: as duas pontas leem (o contador só com duas etapas). Pedir, responder, cancelar e encerrar só por funções. Um contador por vez por psicólogo, só nos planos Essencial, Profissional e no teste grátis. O psicólogo muda as autorizações (`share_totals`, `share_entries`, `share_expenses`).
+- O contador **não lê nenhuma tabela financeira direto**: só pelas funções `contador_clientes`, `contador_resumo`, `contador_lancamentos` e `contador_despesas`, que conferem vínculo ativo, plano, autorização e duas etapas (`aal2`), e registram cada leitura em `accountant_access_log` (o psicólogo vê).
+- `accountant_documents` (guias) e `accountant_tasks` (pedidos do contador): o psicólogo lê as suas sempre; o contador só enquanto atende. PDFs no bucket privado `guias/{psicólogo}/…`.
 - `profiles.plan` e `profiles.trial_ends_at`: o navegador não consegue mudar (não há grant); só o servidor, depois de confirmar o pagamento na API do Mercado Pago.
 - `subscriptions`: o dono só lê; quem escreve são as Edge Functions `assinatura` (criar, sincronizar, cancelar) e `mercado-pago-webhook` (avisos assinados com `MP_WEBHOOK_SECRET`, conferidos direto na API do Mercado Pago).
 - Limites: Gratuito 10 e Básico 30 pacientes ativos; Essencial e Profissional sem limite. Aplicados por gatilho no banco (`limitar_pacientes_do_plano`). Teste grátis de 30 dias do Profissional.
-- O seed traz pacientes, sessões e registros fictícios da Marina e o Paulo como supervisor de exemplo na rede.
+- O seed traz pacientes, sessões (com valores) e registros fictícios da Marina, o Paulo como supervisor de exemplo na rede e a Carla como contadora de exemplo na rede de contadores.
 - Dados de exemplo sempre fictícios.

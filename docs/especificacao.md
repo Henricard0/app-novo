@@ -147,6 +147,7 @@ Ainda sem tela desenhada: login e cadastro, aceite de convite, agenda, lista e f
   - **Dinheiro:** o valor é combinado entre psicólogo e contador, fora da plataforma. A Tríade **não fica com porcentagem dos honorários** (o código de ética do CFC veda agenciador remunerado por participação nos honorários); receita pelos planos e, talvez, mensalidade fixa do contador. Validar com advogado e CRC-PR antes de lançar.
   - **Etapas:** 6a assistente fiscal para pessoa física (carnê-leão e DARF, sem contador); 6b rede e conta de contador; 6c painel do contador (escopos, exportação, guias, pendências); 6d opcional: cobrança entre os dois pelo app, sempre por valor fixo.
   - A opção 3 (contabilidade própria da Tríade) fica para depois; se vier, entra na rede como mais um contador.
+  - **Feito em 16/11/2026 (modo de teste):** 6b e 6c, mais o financeiro mínimo da 5a (valor e pagamento das sessões, valor padrão, CPF e responsável financeiro do paciente, despesas, regime e pró-labore). Rotas do contador: `/contador/entrar`, `/contador/cadastro`, `/contador/seguranca`, `/contador`, `/contador/clientes/:id`, `/contador/perfil`. Do psicólogo: `/financeiro` e `/meu-contador`. O nome do responsável financeiro também é removido na anonimização da supervisão.
 
 ## 9. Regras e referências
 
