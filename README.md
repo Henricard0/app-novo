@@ -6,6 +6,7 @@ Plataforma web de gestão de consultório para psicólogos, com supervisão clí
 - Cores, fontes e componentes: [`docs/design.md`](docs/design.md)
 - Telas de referência (protótipos): [`docs/referencia-telas/`](docs/referencia-telas/)
 - Regras de trabalho: [`CLAUDE.md`](CLAUDE.md)
+- Onde paramos, decisões e pendências: [`docs/estado-do-projeto.md`](docs/estado-do-projeto.md)
 - Ambientes de teste e produção, e o que falta para receber dados reais: [`docs/ambientes.md`](docs/ambientes.md)
 
 ## Andamento
