@@ -6,7 +6,7 @@ Coloque um arquivo de áudio por cena em `narracao/`, com o número ou o id da c
 O script:
   - corta o silêncio do começo e do fim de cada arquivo;
   - acha as pausas da fala e encaixa cada legenda no trecho certo;
-  - estica a cena quando a fala é mais longa que o tempo do roteiro;
+  - estica a cena quando a fala é mais longa que o roteiro e encolhe quando sobra tempo (até 75%);
   - grava `timeline.narrado.json` (o timeline.json original não é alterado)
     e `out/narracao.wav` (a narração inteira já posicionada no tempo do vídeo).
 
@@ -246,7 +246,9 @@ def main():
         speech = s1 - s0
         need = lead + speech + breath
         old = sc["dur"]
-        sc["dur"] = round(max(old, need), 2)
+        # a cena acompanha a fala: estica quando falta tempo e encolhe quando sobra
+        # (até 75% do tempo do roteiro, para não atropelar as animações)
+        sc["dur"] = round(max(old * 0.75, need), 2)
         side = os.path.splitext(f)[0] + ".json"
         forced = json.load(open(side)).get("frases") if os.path.exists(side) else None
         starts = align(sc["captions"], s0, s1, ps, verbose="-v" in sys.argv, forced=forced)
