@@ -1,12 +1,14 @@
 """Sincroniza o vídeo com a narração gravada (ou gerada).
 
-Coloque um arquivo de áudio por cena em `narracao/`, com o número ou o id da cena no nome:
-  narracao/1_gancho.m4a, narracao/2_apresentacao.wav, ... (qualquer formato que o ffmpeg leia)
+Coloque a narração em `narracao/`, de um destes jeitos (qualquer formato que o ffmpeg leia):
+  - um arquivo por cena, com o número ou o id da cena no nome: 1_gancho.m4a, 2_apresentacao.wav...
+  - um arquivo único com a narração inteira (nome sem número na frente): o script alinha o
+    roteiro todo às pausas da fala e corta nas fronteiras entre as cenas.
 
 O script:
   - corta o silêncio do começo e do fim de cada arquivo;
   - acha as pausas da fala e encaixa cada legenda no trecho certo;
-  - estica a cena quando a fala é mais longa que o roteiro e encolhe quando sobra tempo (até 75%);
+  - estica a cena quando a fala é mais longa que o roteiro e encolhe quando sobra tempo (até 60%);
   - grava `timeline.narrado.json` (o timeline.json original não é alterado)
     e `out/narracao.wav` (a narração inteira já posicionada no tempo do vídeo).
 
@@ -87,7 +89,7 @@ def weight(t):
     return len(re.sub(r"\s", "", t.replace("*", ""))) + 3
 
 
-def align(captions, s0, s1, ps, verbose=False, forced=None):
+def align(captions, s0, s1, ps, verbose=False, forced=None, kinds_override=None):
     """devolve o início (s, relativo ao arquivo) de cada legenda.
 
     1) estima onde cada fronteira entre legendas cai, pelo tamanho do texto (só o tempo falado);
@@ -116,6 +118,8 @@ def align(captions, s0, s1, ps, verbose=False, forced=None):
     for k in range(n - 1):
         end = captions[k]["t"].replace("*", "").strip()[-1:]
         kind.append(3.0 if end in ".?!" else 2.0 if end in ":;" else 1.2 if end == "," else 0.0)
+    for k, v in (kinds_override or {}).items():
+        kind[k] = v
     C = [(a + b) / 2 for a, b in ps]
     INF = 1e18
 
@@ -129,7 +133,12 @@ def align(captions, s0, s1, ps, verbose=False, forced=None):
             dp[j, 0] = dp[j - 1, 0] + kind[B[j - 1]]
             for i in range(1, q + 1):
                 d = est[B[j - 1]] - C[P[i - 1]]
-                mc = d * d if abs(d) < 3.5 else INF
+                kb = kind[B[j - 1]]
+                plen = ps[P[i - 1]][1] - ps[P[i - 1]][0]
+                # fim de frase/cena pede pausa de verdade; pausas longas são preferidas
+                min_len = 0.25 if kb >= 5 else 0.2 if kb >= 3 else 0.15 if kb >= 2 else 0.0
+                ok = abs(d) < 3.5 and plen >= min_len
+                mc = d * d - 0.6 * kb * min(plen, 0.6) if ok else INF
                 opts = [dp[j - 1, i] + kind[B[j - 1]], dp[j, i - 1] + 0.25, dp[j - 1, i - 1] + mc]
                 k = int(np.argmin(opts))
                 dp[j, i], bt[j, i] = opts[k], k
@@ -227,12 +236,66 @@ def find_file(i, sid):
     return None
 
 
+AUDIO_EXT = (".wav", ".mp3", ".m4a", ".aac", ".ogg", ".flac", ".opus", ".webm", ".mp4")
+
+
+def audio_files():
+    return sorted(f for f in glob.glob(os.path.join(ROOT, "narracao", "*")) if f.lower().endswith(AUDIO_EXT))
+
+
+def split_full(path, tl, verbose=False):
+    """narração inteira num arquivo só: alinha o roteiro todo e corta nas fronteiras entre cenas"""
+    x = load(path)
+    v = speech_mask(x)
+    ps, s0, s1 = pauses(v)
+    caps, owner = [], []
+    for si, sc in enumerate(tl["scenes"]):
+        for c in sc["captions"]:
+            caps.append(c)
+            owner.append(si)
+    override = {k: 5.0 for k in range(len(caps) - 1) if owner[k] != owner[k + 1]}
+    starts = align(caps, s0, s1, ps, verbose, kinds_override=override)
+    segs = []
+    for si in range(len(tl["scenes"])):
+        idx = [k for k in range(len(caps)) if owner[k] == si]
+        a = starts[idx[0]]
+        if idx[-1] + 1 < len(caps):
+            nxt = starts[idx[-1] + 1]
+            pe = [p for p in ps if abs(p[1] - nxt) < 1e-6]
+            b = pe[0][0] if pe else nxt - 0.05
+            cut = nxt - 0.02
+        else:
+            b, cut = s1, len(x) / SR
+        segs.append((a, b, cut, [starts[k] - a for k in idx], len(ps)))
+    return x, segs
+
+
 def main():
     tl = json.load(open(os.path.join(ROOT, "timeline.json")))
     breath = tl["breath"]
     t_scene = 0.0
     placed = []
+    files = audio_files()
+    full = None
+    if len(files) == 1 and not re.match(r"\d", os.path.basename(files[0])):
+        print(f"arquivo único: {os.path.basename(files[0])} (cortando nas fronteiras entre cenas)")
+        full = split_full(files[0], tl, verbose="-v" in sys.argv)
     for i, sc in enumerate(tl["scenes"], 1):
+        if full:
+            x, segs = full
+            a, b, cut, rel, npaus = segs[i - 1]
+            lead = sc.get("lead", 0.15)
+            old = sc["dur"]
+            need = lead + (b - a) + breath
+            sc["dur"] = round(max(old * 0.6, need), 2)
+            for c, r in zip(sc["captions"], rel):
+                c["start"] = round(lead + r, 3)
+            ia = max(0, int((a - 0.04) * SR))
+            ib = min(len(x), int(min(b + 0.12, cut) * SR))
+            placed.append((t_scene + lead - (a - ia / SR), x[ia:ib]))
+            print(f"[{sc['id']}] fala {b - a:.1f}s ({a:.2f}-{b:.2f} no arquivo), cena {old:g}s -> {sc['dur']:g}s")
+            t_scene += sc["dur"]
+            continue
         f = find_file(i, sc["id"])
         if not f:
             print(f"[{sc['id']}] sem narração (mantém os tempos do roteiro)")
@@ -247,8 +310,8 @@ def main():
         need = lead + speech + breath
         old = sc["dur"]
         # a cena acompanha a fala: estica quando falta tempo e encolhe quando sobra
-        # (até 75% do tempo do roteiro, para não atropelar as animações)
-        sc["dur"] = round(max(old * 0.75, need), 2)
+        # (até 60% do tempo do roteiro, para não atropelar as animações)
+        sc["dur"] = round(max(old * 0.6, need), 2)
         side = os.path.splitext(f)[0] + ".json"
         forced = json.load(open(side)).get("frases") if os.path.exists(side) else None
         starts = align(sc["captions"], s0, s1, ps, verbose="-v" in sys.argv, forced=forced)
@@ -292,6 +355,6 @@ def main():
 
 
 if __name__ == "__main__":
-    if not glob.glob(os.path.join(ROOT, "narracao", "*")):
-        sys.exit("coloque os áudios da narração em narracao/ (um por cena)")
+    if not audio_files():
+        sys.exit("coloque a narração em narracao/ (um arquivo por cena, ou um arquivo único com tudo)")
     main()

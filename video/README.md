@@ -40,8 +40,10 @@ Depois de editar, rode `./build.sh` de novo.
 
 ### Sincronização automática com a narração
 
-1. Grave um áudio por cena e coloque em `narracao/`, com o número da cena no nome
-   (`1_gancho.m4a`, `2_apresentacao.m4a`, …, `6_cta.m4a`). Qualquer formato que o ffmpeg leia.
+1. Coloque a narração em `narracao/` (qualquer formato que o ffmpeg leia), de um destes jeitos:
+   - um arquivo único com a narração inteira (nome sem número na frente, ex.: `completa.mp3`):
+     o script alinha o roteiro todo às pausas da fala e corta nas fronteiras entre as cenas;
+   - um arquivo por cena, com o número no nome (`1_gancho.m4a`, `2_apresentacao.m4a`, …).
 2. Rode `./build.sh --narracao`.
 
 Para um teste sem gravação, `audio/tts_piper.py` gera a narração com uma voz sintética
