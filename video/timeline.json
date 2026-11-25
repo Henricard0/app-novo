@@ -1,0 +1,107 @@
+{
+  "_leia": "Tempos em segundos. Mude 'dur' de uma cena e tudo dentro dela (animações, legendas e efeitos) se reorganiza. Para sincronizar com a narração gravada, adicione \"start\" (segundos desde o início da cena) em cada legenda. Use *asteriscos* para destacar palavras na legenda.",
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "breath": 0.5,
+  "scenes": [
+    {
+      "id": "gancho",
+      "dur": 5,
+      "lead": 0.0,
+      "captions": [
+        { "t": "Ela chamou o namorado", "id": "chamou" },
+        { "t": "pelo nome do *ex*." },
+        { "t": "Foi só distração?", "id": "pergunta" }
+      ]
+    },
+    {
+      "id": "apresentacao",
+      "dur": 7,
+      "lead": 0.45,
+      "captions": [
+        { "t": "*Freud* tinha um nome", "id": "freud" },
+        { "t": "pra isso:" },
+        { "t": "*ato falho*.", "id": "atofalho" },
+        { "t": "E pra ele, quase nunca", "id": "quasenunca" },
+        { "t": "é só distração.", "id": "distracao" }
+      ]
+    },
+    {
+      "id": "exemplos",
+      "dur": 12,
+      "lead": 0.4,
+      "captions": [
+        { "t": "*Esquecer* justo", "id": "esquecer" },
+        { "t": "o compromisso" },
+        { "t": "que você não queria ir." },
+        { "t": "*Trocar* uma palavra", "id": "trocar" },
+        { "t": "por outra." },
+        { "t": "*Perder* um objeto", "id": "perder" },
+        { "t": "num lugar bem específico.", "id": "especifico" }
+      ]
+    },
+    {
+      "id": "explicacao",
+      "dur": 24,
+      "lead": 0.35,
+      "captions": [
+        { "t": "Funciona assim.", "id": "funciona" },
+        { "t": "Na nossa cabeça tem o que", "id": "cabeca" },
+        { "t": "a gente sabe que pensa," },
+        { "t": "o *consciente*,", "id": "consciente" },
+        { "t": "e tem o que a gente guardou" },
+        { "t": "sem perceber," },
+        { "t": "o *inconsciente*:", "id": "inconsciente" },
+        { "t": "desejos, lembranças", "id": "desejos" },
+        { "t": "e incômodos que a gente", "id": "incomodos" },
+        { "t": "prefere não encarar." },
+        { "t": "Só que o que fica guardado", "id": "guardado" },
+        { "t": "não some." },
+        { "t": "Ele continua", "id": "aparecer" },
+        { "t": "querendo aparecer." },
+        { "t": "No *ato falho*,", "id": "forcas" },
+        { "t": "essas duas forças" },
+        { "t": "disputam a mesma frase:", "id": "disputam" },
+        { "t": "você quer dizer uma coisa,", "id": "querdizer" },
+        { "t": "mas outra também", "id": "outra" },
+        { "t": "quer sair." },
+        { "t": "E por um segundo,", "id": "segundo" },
+        { "t": "a outra *ganha*.", "id": "ganha" },
+        { "t": "Por isso, pro Freud,", "id": "porisso" },
+        { "t": "o ato falho não é" },
+        { "t": "uma falha qualquer.", "id": "falha" },
+        { "t": "É o inconsciente", "id": "mensagem" },
+        { "t": "conseguindo" },
+        { "t": "dizer alguma coisa," },
+        { "t": "de um jeito *disfarçado*.", "id": "disfarcado" },
+        { "t": "Ele escreveu sobre isso", "id": "escreveu" },
+        { "t": "em *1901*,", "id": "ano" },
+        { "t": "no livro *Psicopatologia*", "id": "livro" },
+        { "t": "*da vida cotidiana*." }
+      ]
+    },
+    {
+      "id": "equilibrio",
+      "dur": 7,
+      "lead": 0.45,
+      "captions": [
+        { "t": "Nem todo erro esconde", "id": "nemtodo" },
+        { "t": "um grande segredo." },
+        { "t": "Mas vale a pergunta:", "id": "pergunta" },
+        { "t": "por que logo *essa* palavra?", "id": "porque" }
+      ]
+    },
+    {
+      "id": "cta",
+      "dur": 5,
+      "lead": 0.35,
+      "captions": [
+        { "t": "Conta aqui nos comentários", "id": "conta" },
+        { "t": "o seu ato falho" },
+        { "t": "mais constrangedor." },
+        { "t": "Eu sei que você tem um.", "id": "seique" }
+      ]
+    }
+  ]
+}
