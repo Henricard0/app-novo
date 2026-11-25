@@ -8,6 +8,7 @@ Tudo é gerado aqui (sem samples externos). Rodar: python3 audio/make_audio.py
 """
 import json
 import os
+import sys
 import wave
 
 import numpy as np
@@ -443,18 +444,54 @@ def write_wav(path, buf):
         w.writeframes(data.tobytes())
 
 
+def load_mono(path):
+    with wave.open(path) as w:
+        assert w.getframerate() == SR
+        d = np.frombuffer(w.readframes(w.getnframes()), dtype="<i2").astype(np.float64) / 32767
+        if w.getnchannels() == 2:
+            d = d.reshape(-1, 2).mean(axis=1)
+    return d
+
+
+def duck_gain(voice, n, depth_db=-8.0):
+    """ganho da trilha: abaixa onde há voz (ataque rápido, soltura lenta)"""
+    hop = int(0.01 * SR)
+    m = len(voice) // hop
+    r = np.sqrt(np.mean(voice[: m * hop].reshape(m, hop) ** 2, axis=1) + 1e-12)
+    on = (r > np.max(r) * 0.04).astype(float)
+    g = np.zeros_like(on)
+    a_att, a_rel = 1 - np.exp(-1 / 3), 1 - np.exp(-1 / 35)
+    for i in range(len(on)):
+        prev = g[i - 1] if i else 0.0
+        g[i] = prev + (a_att if on[i] > prev else a_rel) * (on[i] - prev)
+    g = np.repeat(g, hop)
+    g = np.concatenate([g, np.zeros(max(0, n - len(g)))])[:n]
+    return 10 ** (depth_db * g / 20)
+
+
 def main():
+    narr = None
+    if "--narracao" in sys.argv:
+        narr = load_mono(sys.argv[sys.argv.index("--narracao") + 1])
     meta = json.load(open(os.path.join(OUT, "sfx_events.json")))
     music = build_music(meta)
     sfx = build_sfx(meta)
-    mix = music + sfx
+    if narr is not None:
+        n = len(music)
+        narr = np.concatenate([narr, np.zeros(max(0, n - len(narr)))])[:n]
+        music = music * duck_gain(narr, n)[:, None]
+        sfx = sfx * duck_gain(narr, n, -3.0)[:, None]
+        mix = music * db(4) + sfx * db(3) + narr[:, None]
+    else:
+        mix = music + sfx
     peak = np.max(np.abs(mix))
     if peak > 0.95:
         mix *= 0.95 / peak
-    write_wav(os.path.join(OUT, "music.wav"), music)
-    write_wav(os.path.join(OUT, "sfx.wav"), sfx)
-    write_wav(os.path.join(OUT, "mix.wav"), mix)
-    print("ok: music.wav, sfx.wav, mix.wav  (pico da mixagem %.2f)" % min(peak, 0.95))
+    suffix = "_narrado" if narr is not None else ""
+    write_wav(os.path.join(OUT, f"music{suffix}.wav"), music)
+    write_wav(os.path.join(OUT, f"sfx{suffix}.wav"), sfx)
+    write_wav(os.path.join(OUT, f"mix{suffix}.wav"), mix)
+    print("ok: music%s.wav, sfx%s.wav, mix%s.wav  (pico da mixagem %.2f)" % (suffix, suffix, suffix, min(peak, 0.95)))
 
 
 if __name__ == "__main__":

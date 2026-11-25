@@ -38,6 +38,17 @@ Todos os tempos ficam em `timeline.json`:
 
 Depois de editar, rode `./build.sh` de novo.
 
+### Sincronização automática com a narração
+
+1. Grave um áudio por cena e coloque em `narracao/`, com o número da cena no nome
+   (`1_gancho.m4a`, `2_apresentacao.m4a`, …, `6_cta.m4a`). Qualquer formato que o ffmpeg leia.
+2. Rode `./build.sh --narracao`.
+
+O script corta os silêncios, encaixa cada legenda nas pausas da fala, estica a cena quando a
+fala passa do tempo do roteiro e abaixa a trilha (cerca de 8 dB) onde há voz. Sai
+`out/ato-falho_reels_narrado.mp4` e `out/legendas_narrado.srt`. O `timeline.json` original
+não é alterado: os tempos ajustados vão para `timeline.narrado.json`.
+
 Para ver um instante sem renderizar o vídeo: `node render.mjs --stills 12.5,40` (PNGs em
 `out/stills/`) ou abra `index.html?t=12.5` no navegador.
 

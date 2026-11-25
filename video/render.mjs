@@ -4,7 +4,7 @@
 //   node render.mjs --video out/base.mp4        -> vídeo sem áudio (com legendas)
 //   node render.mjs --video out/x.mp4 --no-captions
 //   node render.mjs --meta                      -> out/sfx_events.json e out/legendas.srt
-//   opções: --workers 4  --from 10 --to 20 (segundos)
+//   opções: --workers 4  --from 10 --to 20 (segundos)  --timeline timeline.narrado.json
 import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -18,7 +18,8 @@ const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i
 const flag = (k) => args.includes('--' + k);
 
 // timeline.json -> src/timeline.gen.js (lido pela página)
-const tl = JSON.parse(fs.readFileSync(path.join(ROOT, 'timeline.json'), 'utf8'));
+const TL_FILE = opt('timeline', 'timeline.json');
+const tl = JSON.parse(fs.readFileSync(path.join(ROOT, TL_FILE), 'utf8'));
 fs.writeFileSync(path.join(ROOT, 'src/timeline.gen.js'), '// gerado por render.mjs a partir de timeline.json\nwindow.TIMELINE = ' + JSON.stringify(tl) + ';\n');
 const FPS = tl.fps;
 const TOTAL = tl.scenes.reduce((a, s) => a + s.dur, 0);
@@ -107,7 +108,7 @@ async function meta() {
   const scenes = await page.evaluate(() => window.TLC.scenes.map((s) => ({ id: s.id, start: s.start, end: s.end })));
   fs.mkdirSync(path.join(ROOT, 'out'), { recursive: true });
   fs.writeFileSync(path.join(ROOT, 'out/sfx_events.json'), JSON.stringify({ total: TOTAL, scenes, events: sfx }, null, 1));
-  fs.writeFileSync(path.join(ROOT, 'out/legendas.srt'), srt);
+  fs.writeFileSync(path.join(ROOT, TL_FILE === 'timeline.json' ? 'out/legendas.srt' : 'out/legendas_narrado.srt'), srt);
   console.log('ok meta:', sfx.length, 'eventos de som');
   await browser.close();
 }
