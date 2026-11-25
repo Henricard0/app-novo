@@ -44,6 +44,10 @@ Depois de editar, rode `./build.sh` de novo.
    (`1_gancho.m4a`, `2_apresentacao.m4a`, …, `6_cta.m4a`). Qualquer formato que o ffmpeg leia.
 2. Rode `./build.sh --narracao`.
 
+Para um teste sem gravação, `audio/tts_piper.py` gera a narração com uma voz sintética
+(Piper, pt-BR) frase a frase e grava, ao lado de cada áudio, um `.json` com o início de cada
+frase. Quando esse arquivo existe, as frases viram âncoras exatas das legendas.
+
 O script corta os silêncios, encaixa cada legenda nas pausas da fala, estica a cena quando a
 fala passa do tempo do roteiro e abaixa a trilha (cerca de 8 dB) onde há voz. Sai
 `out/ato-falho_reels_narrado.mp4` e `out/legendas_narrado.srt`. O `timeline.json` original
@@ -60,4 +64,6 @@ Para ver um instante sem renderizar o vídeo: `node render.mjs --stills 12.5,40`
 - `src/scenes.js`: as 6 cenas, transições e eventos de som
 - `src/main.js`: linha do tempo, legendas e composição do quadro
 - `audio/make_audio.py`: trilha (marimba, baixo, chocalho) e efeitos
+- `audio/sync_narration.py`: encaixa cenas e legendas na narração e abaixa a trilha sob a voz
+- `audio/tts_piper.py`: narração de teste com voz sintética
 - `fonts/`: Fredoka e Patrick Hand (Google Fonts, licença SIL Open Font License)

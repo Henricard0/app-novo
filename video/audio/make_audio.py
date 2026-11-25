@@ -469,6 +469,25 @@ def duck_gain(voice, n, depth_db=-8.0):
     return 10 ** (depth_db * g / 20)
 
 
+def limiter(x, thr_db=-1.5, att=0.005, rel=0.08):
+    """limitador de picos com antecipação: só abaixa onde passaria do teto"""
+    thr = db(thr_db)
+    blk = int(att * SR)
+    a = np.max(np.abs(x), axis=1)
+    nb = int(np.ceil(len(a) / blk))
+    a = np.concatenate([a, np.zeros(nb * blk - len(a))]).reshape(nb, blk).max(axis=1)
+    need = np.minimum(1.0, thr / np.maximum(a, 1e-9))
+    need = np.minimum(need, np.concatenate([need[1:], [1.0]]))  # antecipa um bloco
+    g = np.empty_like(need)
+    k = 1 - np.exp(-blk / (rel * SR))
+    cur = 1.0
+    for i, v in enumerate(need):
+        cur = v if v < cur else cur + (v - cur) * k
+        g[i] = cur
+    gs = np.interp(np.arange(len(x)), np.arange(nb) * blk + blk / 2, g)
+    return x * gs[:, None]
+
+
 def main():
     narr = None
     if "--narracao" in sys.argv:
@@ -484,9 +503,8 @@ def main():
         mix = music * db(4) + sfx * db(3) + narr[:, None]
     else:
         mix = music + sfx
+    mix = limiter(mix)
     peak = np.max(np.abs(mix))
-    if peak > 0.95:
-        mix *= 0.95 / peak
     suffix = "_narrado" if narr is not None else ""
     write_wav(os.path.join(OUT, f"music{suffix}.wav"), music)
     write_wav(os.path.join(OUT, f"sfx{suffix}.wav"), sfx)

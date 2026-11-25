@@ -63,7 +63,7 @@ def speech_mask(x):
     return v
 
 
-def pauses(v, min_len=0.16):
+def pauses(v, min_len=0.11):
     """lista de (início, fim) em segundos das pausas internas"""
     out = []
     i = 0
@@ -87,16 +87,21 @@ def weight(t):
     return len(re.sub(r"\s", "", t.replace("*", ""))) + 3
 
 
-def align(captions, s0, s1, ps):
-    """devolve o início (s, relativo ao arquivo) de cada legenda"""
+def align(captions, s0, s1, ps, verbose=False, forced=None):
+    """devolve o início (s, relativo ao arquivo) de cada legenda.
+
+    1) estima onde cada fronteira entre legendas cai, pelo tamanho do texto (só o tempo falado);
+    2) casa as fronteiras com pontuação às pausas da fala, num alinhamento global em ordem
+       (programação dinâmica): ponto final pesa mais que vírgula;
+    3) as fronteiras sem pausa são distribuídas entre os pontos casados, pelo tamanho do texto.
+    """
+    n = len(captions)
     w = np.array([weight(c["t"]) for c in captions], dtype=float)
-    # tempo "falado" (sem pausas) acumulado
     total_pause = sum(b - a for a, b in ps)
     voiced = (s1 - s0) - total_pause
 
     def voiced_to_real(v):
-        t = s0
-        acc = 0.0
+        t, acc = s0, 0.0
         for a, b in ps:
             seg = a - t
             if acc + seg >= v:
@@ -105,24 +110,109 @@ def align(captions, s0, s1, ps):
             t = b
         return t + (v - acc)
 
-    starts = [s0]
-    used = set()
     cum = np.cumsum(w)[:-1] / w.sum()
-    for k, f in enumerate(cum):
-        est = voiced_to_real(f * voiced)
-        best = None
-        if re.search(r"[,.:;?!]\s*\**\s*$", captions[k]["t"]):
-            for idx, (a, b) in enumerate(ps):
-                if idx in used:
-                    continue
-                if abs((a + b) / 2 - est) < 0.7 and (best is None or abs((a + b) / 2 - est) < abs(sum(ps[best]) / 2 - est)):
-                    best = idx
-        if best is not None:
-            used.add(best)
-            st = ps[best][1]
-        else:
-            st = est
-        starts.append(max(st, starts[-1] + 0.25))
+    est = [voiced_to_real(f * voiced) for f in cum]  # fronteira k: entre legenda k e k+1
+    kind = []
+    for k in range(n - 1):
+        end = captions[k]["t"].replace("*", "").strip()[-1:]
+        kind.append(3.0 if end in ".?!" else 2.0 if end in ":;" else 1.2 if end == "," else 0.0)
+    C = [(a + b) / 2 for a, b in ps]
+    INF = 1e18
+
+    def plain_dp(B, est, P):
+        """casa fronteiras B (em ordem) com as pausas de índice P (em ordem)"""
+        m, q = len(B), len(P)
+        dp = np.full((m + 1, q + 1), INF)
+        bt = np.zeros((m + 1, q + 1), dtype=int)
+        dp[0, :] = np.arange(q + 1) * 0.25
+        for j in range(1, m + 1):
+            dp[j, 0] = dp[j - 1, 0] + kind[B[j - 1]]
+            for i in range(1, q + 1):
+                d = est[B[j - 1]] - C[P[i - 1]]
+                mc = d * d if abs(d) < 3.5 else INF
+                opts = [dp[j - 1, i] + kind[B[j - 1]], dp[j, i - 1] + 0.25, dp[j - 1, i - 1] + mc]
+                k = int(np.argmin(opts))
+                dp[j, i], bt[j, i] = opts[k], k
+        out = {}
+        j, i = m, q
+        while j > 0 and i > 0:
+            if bt[j, i] == 2:
+                out[B[j - 1]] = ps[P[i - 1]][1]
+                j, i = j - 1, i - 1
+            elif bt[j, i] == 0:
+                j -= 1
+            else:
+                i -= 1
+        return out
+
+    def dp_match(B, est, fixed):
+        """casa as fronteiras B com as pausas, trecho a trecho entre as âncoras já fixadas"""
+        out = dict(fixed)
+        pts = [(-1, s0)] + sorted(fixed.items()) + [(n - 1, s1)]
+        for (ka, ta), (kb, tb) in zip(pts[:-1], pts[1:]):
+            Bs = [k for k in B if ka < k < kb and k not in fixed]
+            P = [i for i, (pa, pb) in enumerate(ps) if pa > ta + 0.05 and pb < tb - 0.05]
+            if Bs and P:
+                out.update(plain_dp(Bs, est, P))
+        return out
+
+    def interpolate(anchors):
+        pts = [(-1, s0)] + sorted(anchors.items()) + [(n - 1, s1)]
+        e = list(est)
+        for (ka, ta), (kb, tb) in zip(pts[:-1], pts[1:]):
+            seg_w = w[ka + 1 : kb + 1].sum()
+            acc = 0.0
+            for k in range(ka + 1, kb):
+                acc += w[k]
+                e[k] = ta + (tb - ta) * acc / seg_w
+            if kb < n - 1:
+                e[kb] = tb
+        return e
+
+    # 1ª passada: só pontos finais e dois-pontos (âncoras fortes)
+    strong = [k for k in range(n - 1) if kind[k] >= 3]
+    if forced and len(forced) == len(strong):
+        # início de cada frase conhecido (narração gerada frase a frase)
+        fixed = dict(zip(strong, forced))
+        anchors = dp_match([k for k in range(n - 1) if kind[k] >= 2], interpolate(fixed), fixed)
+    else:
+        if forced:
+            print(f"   aviso: {len(forced)} marcas de frase para {len(strong)} frases; usando só as pausas")
+        anchors = dp_match([k for k in range(n - 1) if kind[k] >= 2], est, {})
+    # 2ª passada: vírgulas, com a estimativa corrigida pelas âncoras fortes
+    est = interpolate(anchors)
+    anchors = dp_match([k for k in range(n - 1) if kind[k] > 0], est, anchors)
+    # descarta âncoras que deixariam uma legenda curta demais para o texto
+    rate = (s1 - s0) / w.sum()
+    changed = True
+    while changed:
+        changed = False
+        pts = [(-1, s0)] + sorted(anchors.items()) + [(n - 1, s1)]
+        for (ka, ta), (kb, tb) in zip(pts[:-1], pts[1:]):
+            expect = w[ka + 1 : kb + 1].sum() * rate
+            if tb - ta < 0.5 * expect:
+                drop = min([x for x in (ka, kb) if x in anchors and not (forced and x in strong and len(forced) == len(strong))], key=lambda x: kind[x], default=None)
+                if drop is not None:
+                    del anchors[drop]
+                    changed = True
+                    break
+    # monta as fronteiras: âncoras + distribuição proporcional entre elas
+    pts = [(-1, s0)] + sorted(anchors.items()) + [(n - 1, s1)]
+    starts = [s0] + [None] * (n - 1)
+    for (ka, ta), (kb, tb) in zip(pts[:-1], pts[1:]):
+        seg_w = w[ka + 1 : kb + 1]
+        acc = 0.0
+        for k in range(ka + 1, kb):
+            acc += w[k]
+            starts[k + 1] = ta + (tb - ta) * acc / seg_w.sum()
+        if kb < n - 1:
+            starts[kb + 1] = tb
+    for k in range(1, n):
+        starts[k] = max(starts[k], starts[k - 1] + 0.25)
+    if verbose:
+        for k, c in enumerate(captions):
+            tag = "*" if (k - 1) in anchors else " "
+            print(f"   {starts[k]:6.2f}{tag} {c['t']}")
     return starts
 
 
@@ -130,6 +220,8 @@ def find_file(i, sid):
     files = glob.glob(os.path.join(ROOT, "narracao", "*"))
     for f in sorted(files):
         name = os.path.basename(f).lower()
+        if name.endswith(".json"):
+            continue
         if re.match(rf"0*{i}[_\-. ]", name) or sid in name:
             return f
     return None
@@ -155,7 +247,9 @@ def main():
         need = lead + speech + breath
         old = sc["dur"]
         sc["dur"] = round(max(old, need), 2)
-        starts = align(sc["captions"], s0, s1, ps)
+        side = os.path.splitext(f)[0] + ".json"
+        forced = json.load(open(side)).get("frases") if os.path.exists(side) else None
+        starts = align(sc["captions"], s0, s1, ps, verbose="-v" in sys.argv, forced=forced)
         for c, st in zip(sc["captions"], starts):
             c["start"] = round(lead + (st - s0), 3)
         a = max(0, int((s0 - 0.04) * SR))
