@@ -2,3 +2,5 @@ out/
 node_modules/
 narracao/
 timeline.narrado.json
+__pycache__/
+src/timeline.gen.js

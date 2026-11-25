@@ -54,7 +54,7 @@ fala passa do tempo do roteiro e abaixa a trilha (cerca de 8 dB) onde há voz. S
 não é alterado: os tempos ajustados vão para `timeline.narrado.json`.
 
 Para ver um instante sem renderizar o vídeo: `node render.mjs --stills 12.5,40` (PNGs em
-`out/stills/`) ou abra `index.html?t=12.5` no navegador.
+`out/stills/`) ou abra `index.html?t=12.5` no navegador (depois de rodar o render pelo menos uma vez, que gera `src/timeline.gen.js`).
 
 ## Estrutura
 
